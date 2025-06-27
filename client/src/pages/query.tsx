@@ -187,10 +187,10 @@ export default function QueryPage() {
       {/* Left Sidebar - Recent Queries & Quick Actions */}
       <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-apple-3 border-b border-neutral-200">
           <Button
             color="primary"
-            className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-mono font-bold"
+            className="w-full btn-hover font-mono font-bold"
             startContent={<Plus size={16} />}
             onClick={handleNewConversation}
           >
@@ -199,25 +199,25 @@ export default function QueryPage() {
         </div>
 
         {/* Recent Conversations */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <h3 className="font-mono font-bold text-sm text-gray-700 mb-3">RECENT QUERIES</h3>
+        <div className="flex-1 overflow-y-auto p-apple-3">
+          <h3 className="font-mono font-bold text-sm text-neutral-700 mb-apple-2">RECENT QUERIES</h3>
           <div className="space-y-2">
             {(conversations as any[]).slice(0, 10).map((conv) => (
               <Card 
                 key={conv.id}
-                className={`cursor-pointer transition-colors hover:bg-orange-50 ${
-                  currentConversationId === conv.id ? 'bg-orange-100 border-orange-300' : ''
+                className={`cursor-pointer card-hover scale-in ${
+                  currentConversationId === conv.id ? 'border-apple-primary bg-orange-50' : ''
                 }`}
                 onClick={() => {
                   setCurrentConversationId(conv.id);
                   loadMessages(conv.id);
                 }}
               >
-                <CardBody className="p-3">
-                  <p className="font-mono text-sm font-bold text-gray-900 truncate">
+                <CardBody className="p-apple-2">
+                  <p className="font-mono text-sm font-bold text-neutral-900 truncate">
                     {conv.title}
                   </p>
-                  <p className="text-xs text-gray-500 font-mono">
+                  <p className="text-xs text-neutral-500 font-mono">
                     {new Date(conv.updatedAt).toLocaleDateString()}
                   </p>
                 </CardBody>
@@ -226,15 +226,16 @@ export default function QueryPage() {
           </div>
 
           {/* Quick Suggestions */}
-          <div className="mt-6">
-            <h3 className="font-mono font-bold text-sm text-gray-700 mb-3">QUICK ACTIONS</h3>
-            <div className="space-y-2">
+          <div className="mt-apple-4">
+            <h3 className="font-mono font-bold text-sm text-neutral-700 mb-apple-2">QUICK ACTIONS</h3>
+            <div className="gap-apple-1 flex flex-col">
               {quickSuggestions.slice(0, 6).map((suggestion, index) => (
                 <Button
                   key={index}
                   variant="flat"
                   size="sm"
-                  className="w-full justify-start text-left font-mono text-xs"
+                  className="w-full justify-start text-left font-mono text-xs btn-hover fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
                   onClick={() => setInput(suggestion)}
                 >
                   {suggestion}
@@ -281,22 +282,22 @@ export default function QueryPage() {
                 >
                   <div className={`max-w-3xl ${message.role === 'user' ? 'ml-12' : 'mr-12'}`}>
                     {/* Message Header */}
-                    <div className={`flex items-center space-x-2 mb-2 ${
+                    <div className={`flex items-center gap-apple-1 mb-apple-1 ${
                       message.role === 'user' ? 'justify-end' : 'justify-start'
                     }`}>
                       <Avatar
                         size="sm"
                         name={message.role === 'user' ? 'U' : 'M1'}
                         className={message.role === 'user' 
-                          ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white font-mono' 
-                          : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white font-mono'
+                          ? 'bg-gradient-to-r from-apple-primary to-orange-600 text-white font-mono scale-in' 
+                          : 'bg-gradient-to-r from-apple-secondary to-blue-600 text-white font-mono scale-in'
                         }
                       />
-                      <span className="font-mono font-bold text-sm text-gray-700">
+                      <span className="font-mono font-bold text-sm text-neutral-700">
                         {message.role === 'user' ? 'YOU' : 'MOBIUS ONE'}
                       </span>
                       {message.confidence && (
-                        <Chip size="sm" color="success" variant="flat" className="font-mono">
+                        <Chip size="sm" className="font-mono status-online">
                           {message.confidence}% CONFIDENCE
                         </Chip>
                       )}
@@ -305,13 +306,13 @@ export default function QueryPage() {
                     {/* Message Content */}
                     <Card className={`${
                       message.role === 'user' 
-                        ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white' 
-                        : 'bg-white border border-gray-200'
+                        ? 'bg-gradient-to-r from-apple-primary to-orange-600 text-white slide-in-right' 
+                        : 'bg-white border border-neutral-200 card-hover slide-in-left'
                     }`}>
-                      <CardBody className="p-4">
+                      <CardBody className="p-apple-3">
                         <p className={`${
-                          message.role === 'user' ? 'text-white' : 'text-gray-800'
-                        } leading-relaxed`}>
+                          message.role === 'user' ? 'text-white' : 'text-neutral-800'
+                        } leading-relaxed text-body`}>
                           {message.content}
                         </p>
 
@@ -394,31 +395,31 @@ export default function QueryPage() {
         </div>
 
         {/* Smart Input Area */}
-        <div className="border-t border-gray-200 bg-white p-6">
+        <div className="border-t border-neutral-200 bg-white p-apple-4">
           <div className="max-w-4xl mx-auto">
             {/* System Selector */}
-            <div className="flex items-center space-x-4 mb-4">
-              <span className="font-mono font-bold text-sm text-gray-700">QUERY:</span>
-              <div className="flex space-x-2">
+            <div className="flex items-center gap-apple-3 mb-apple-3">
+              <span className="font-mono font-bold text-sm text-neutral-700">QUERY:</span>
+              <div className="flex gap-apple-1">
                 <Chip
-                  className={`cursor-pointer font-mono ${
-                    selectedSystems === 'all' ? 'bg-orange-100 text-orange-800' : ''
+                  className={`cursor-pointer font-mono transition-all ${
+                    selectedSystems === 'all' ? 'status-info' : 'hover:bg-neutral-100'
                   }`}
                   onClick={() => setSelectedSystems('all')}
                 >
                   All Systems
                 </Chip>
                 <Chip
-                  className={`cursor-pointer font-mono ${
-                    selectedSystems === 'salesforce' ? 'bg-blue-100 text-blue-800' : ''
+                  className={`cursor-pointer font-mono transition-all ${
+                    selectedSystems === 'salesforce' ? 'status-info' : 'hover:bg-neutral-100'
                   }`}
                   onClick={() => setSelectedSystems('salesforce')}
                 >
                   Salesforce
                 </Chip>
                 <Chip
-                  className={`cursor-pointer font-mono ${
-                    selectedSystems === 'netsuite' ? 'bg-green-100 text-green-800' : ''
+                  className={`cursor-pointer font-mono transition-all ${
+                    selectedSystems === 'netsuite' ? 'status-online' : 'hover:bg-neutral-100'
                   }`}
                   onClick={() => setSelectedSystems('netsuite')}
                 >
@@ -443,19 +444,19 @@ export default function QueryPage() {
             </div>
 
             {/* Input Field */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-apple-3">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask anything about your business data..."
                 size="lg"
                 classNames={{
-                  input: "font-mono",
-                  inputWrapper: "bg-gray-50 border-2 border-gray-200 hover:border-orange-300 focus-within:border-orange-500"
+                  input: "font-mono text-base",
+                  inputWrapper: "bg-neutral-50 border-2 border-neutral-200 hover:border-apple-primary focus-within:border-apple-primary focus-ring"
                 }}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 endContent={
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-apple-1">
                     <Chip size="sm" className="font-mono text-xs">
                       {input.length}/500
                     </Chip>
@@ -468,14 +469,14 @@ export default function QueryPage() {
                 color={isListening ? "danger" : "default"}
                 variant="flat"
                 onClick={handleVoiceInput}
-                className="min-w-12"
+                className={`min-w-12 btn-hover ${isListening ? 'status-warning' : ''}`}
               >
                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}
               </Button>
               
               <Button
                 color="primary"
-                className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-mono font-bold min-w-24"
+                className="btn-hover font-mono font-bold min-w-24"
                 endContent={<Send size={18} />}
                 onClick={handleSendMessage}
                 isDisabled={!input.trim() || isTyping}
@@ -494,25 +495,25 @@ export default function QueryPage() {
       </div>
 
       {/* Right Sidebar - System Status & Metrics */}
-      <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
+      <div className="w-80 bg-white border-l border-neutral-200 flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200">
-          <h2 className="font-mono font-bold text-gray-900">SYSTEM STATUS</h2>
+        <div className="p-apple-3 border-b border-neutral-200">
+          <h2 className="font-mono font-bold text-neutral-900">SYSTEM STATUS</h2>
         </div>
 
         {/* System Connections */}
-        <div className="p-4 space-y-4">
-          <div className="space-y-3">
+        <div className="p-apple-3 space-y-4">
+          <div className="gap-apple-2 flex flex-col">
             {connectedSystems.map((system: any) => (
-              <Card key={system.id} className="border border-gray-200">
-                <CardBody className="p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono font-bold text-sm">{system.systemType.toUpperCase()}</span>
-                    <Chip size="sm" color="success" variant="flat" className="font-mono">
+              <Card key={system.id} className="card-hover scale-in">
+                <CardBody className="p-apple-2">
+                  <div className="flex items-center justify-between mb-apple-1">
+                    <span className="font-mono font-bold text-sm text-neutral-900">{system.systemType.toUpperCase()}</span>
+                    <Chip size="sm" className="font-mono status-online">
                       ONLINE
                     </Chip>
                   </div>
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
+                  <div className="flex items-center gap-apple-1 text-xs text-neutral-600">
                     <Clock size={12} />
                     <span className="font-mono">Last sync: 2 mins ago</span>
                   </div>
@@ -522,13 +523,13 @@ export default function QueryPage() {
           </div>
 
           {/* Quick Actions */}
-          <div className="pt-4 border-t border-gray-200">
-            <h3 className="font-mono font-bold text-sm text-gray-700 mb-3">QUICK ACTIONS</h3>
-            <div className="space-y-2">
+          <div className="pt-apple-3 border-t border-neutral-200">
+            <h3 className="font-mono font-bold text-sm text-neutral-700 mb-apple-2">QUICK ACTIONS</h3>
+            <div className="gap-apple-1 flex flex-col">
               <Button
                 size="sm"
                 variant="flat"
-                className="w-full justify-start font-mono"
+                className="w-full justify-start font-mono btn-hover fade-in"
                 startContent={<Download size={14} />}
                 onClick={handleExportChat}
               >
@@ -537,16 +538,18 @@ export default function QueryPage() {
               <Button
                 size="sm"
                 variant="flat"
-                className="w-full justify-start font-mono"
+                className="w-full justify-start font-mono btn-hover fade-in"
                 startContent={<BarChart3 size={14} />}
+                style={{ animationDelay: '100ms' }}
               >
                 View Analytics
               </Button>
               <Button
                 size="sm"
                 variant="flat"
-                className="w-full justify-start font-mono"
+                className="w-full justify-start font-mono btn-hover fade-in"
                 startContent={<Settings size={14} />}
+                style={{ animationDelay: '200ms' }}
               >
                 System Settings
               </Button>
