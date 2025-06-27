@@ -37,6 +37,7 @@ function PublicApp() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/landing" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="*" element={<LandingPage />} />
     </Routes>
