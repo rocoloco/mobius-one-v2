@@ -19,31 +19,17 @@ function Router() {
 }
 
 function App() {
-  const [theme, setTheme] = useState<"retro-light" | "retro-dark">("retro-light");
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === "retro-light" ? "retro-dark" : "retro-light");
-  };
-
   return (
     <ThemeProvider
       attribute="class"
       defaultTheme="retro-light"
-      themes={["retro-light", "retro-dark"]}
+      themes={["retro-light"]}
       enableSystem={false}
     >
       <HeroUIProvider>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
-            <div className={`${theme} min-h-screen`}>
-              {/* Global theme toggle - you can place this in a header/nav later */}
-              <button
-                onClick={toggleTheme}
-                className="fixed top-4 right-4 z-50 retro-button px-4 py-2 text-xs"
-              >
-                {theme === "retro-light" ? "DARK MODE" : "LIGHT MODE"}
-              </button>
-              
+            <div className="retro-light min-h-screen">
               <Toaster />
               <Router />
             </div>
