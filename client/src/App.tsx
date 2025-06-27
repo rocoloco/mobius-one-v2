@@ -45,11 +45,17 @@ function PublicApp() {
 }
 
 function AppRouter() {
+  const isLoggedOut = localStorage.getItem('logout') === 'true';
+  
   const { data: user, isLoading } = useQuery({
     queryKey: ['/api/user'],
     retry: false,
-    enabled: true
+    enabled: !isLoggedOut
   });
+
+  if (isLoggedOut) {
+    return <PublicApp />;
+  }
 
   if (isLoading) {
     return (

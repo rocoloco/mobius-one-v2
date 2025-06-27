@@ -165,9 +165,8 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
             variant="bordered"
             className="w-full font-mono text-xs border-gray-300"
             onClick={() => {
-              // Clear authentication and redirect to landing page
-              localStorage.clear();
-              sessionStorage.clear();
+              // Set logout flag and redirect to landing page
+              localStorage.setItem('logout', 'true');
               window.location.href = '/';
             }}
           >

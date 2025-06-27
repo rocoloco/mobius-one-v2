@@ -32,9 +32,8 @@ export default function LandingPage() {
   };
 
   const handleStartQuerying = () => {
-    // Clear any existing auth state and go to login
-    localStorage.clear();
-    sessionStorage.clear();
+    // Set logout flag and go to login
+    localStorage.setItem('logout', 'true');
     navigate('/login');
   };
 

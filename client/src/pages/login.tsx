@@ -25,7 +25,8 @@ export default function LoginPage() {
       // In a real app, this would call your authentication API
       console.log("Login attempt:", { username: formData.username, isLogin });
       
-      // Simulate success and redirect to dashboard
+      // Clear logout flag and redirect to dashboard
+      localStorage.removeItem('logout');
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 1000);
