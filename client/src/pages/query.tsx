@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { Button, Card, CardBody, Input, Avatar, Chip, Progress, Accordion, AccordionItem } from "@heroui/react";
+import { Button, Input, Avatar } from "@heroui/react";
 import { 
-  Send, Mic, MicOff, Download, Save, Calendar, BarChart3, Database, 
-  AlertCircle, CheckCircle, Clock, Settings, Zap, ArrowDown, ChevronRight, 
-  ExternalLink, Plus, Search, History, Loader2, WifiOff, RefreshCw
+  Send, Mic, MicOff, Download, Settings, Plus, Search, History, 
+  Loader2, AlertCircle, CheckCircle, Database, ChevronLeft, ChevronRight,
+  Bot, User, Zap, BarChart3, Calendar, ExternalLink
 } from "lucide-react";
 import { chatApi } from "@/lib/chatApi";
 
@@ -33,7 +33,6 @@ export default function QueryPage() {
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const [selectedSystems, setSelectedSystems] = useState<string>("all");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<ErrorState>({ show: false, message: "" });
@@ -57,7 +56,6 @@ export default function QueryPage() {
     enabled: true
   });
 
-  // Auto-focus input and handle pre-filled queries
   useEffect(() => {
     const queryParam = searchParams.get('q');
     if (queryParam) {
@@ -66,7 +64,6 @@ export default function QueryPage() {
     inputRef.current?.focus();
   }, [searchParams]);
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -131,7 +128,7 @@ export default function QueryPage() {
           role: 'assistant',
           content: response.aiMessage.content,
           timestamp: new Date(response.aiMessage.createdAt),
-          confidence: response.aiMessage.metadata ? JSON.parse(response.aiMessage.metadata)?.confidence : 92,
+          confidence: response.aiMessage.metadata ? JSON.parse(response.aiMessage.metadata)?.confidence : 94,
           sources: response.aiMessage.systemSource ? [response.aiMessage.systemSource] : ['Salesforce', 'NetSuite']
         }
       ]);
@@ -142,7 +139,6 @@ export default function QueryPage() {
       setIsTyping(false);
       const errorMessage = error.message || "Failed to send message";
       
-      // Check for specific error types
       if (errorMessage.includes("401") || errorMessage.includes("Unauthorized")) {
         setError({
           show: true,
@@ -150,15 +146,6 @@ export default function QueryPage() {
           action: {
             label: "Login",
             onClick: () => window.location.href = "/api/login"
-          }
-        });
-      } else if (errorMessage.includes("network") || errorMessage.includes("fetch")) {
-        setError({
-          show: true,
-          message: "Network connection error. Please check your internet connection.",
-          action: {
-            label: "Retry",
-            onClick: () => sendMessageMutation.mutate(input)
           }
         });
       } else if (connectedSystems.length === 0) {
@@ -242,172 +229,157 @@ export default function QueryPage() {
     }
   };
 
-  const handleExportChat = () => {
-    try {
-      const chatData = {
-        conversation: messages,
-        timestamp: new Date().toISOString(),
-        systems: selectedSystems
-      };
-      const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `chat-export-${new Date().toISOString().split('T')[0]}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      setError({
-        show: true,
-        message: "Failed to export chat. Please try again."
-      });
-    }
+  const getConfidenceClass = (confidence?: number) => {
+    if (!confidence) return "confidence-medium";
+    if (confidence >= 90) return "confidence-high";
+    if (confidence >= 70) return "confidence-medium";
+    return "confidence-low";
   };
 
   return (
-    <div className="h-screen flex bg-gradient-surface">
-      {/* Left Sidebar - Collapsible */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} bg-white/80 backdrop-blur-sm border-r border-neutral-200 flex flex-col transition-all duration-300`}>
+    <div className="h-screen flex bg-gray-50">
+      {/* Left Sidebar */}
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} sidebar flex flex-col transition-all duration-300`}>
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-neutral-200 flex items-center justify-between">
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           {!sidebarCollapsed && (
             <Button
-              className="btn-hover font-sans"
-              startContent={<Plus size={16} />}
+              className="btn-primary"
               onClick={handleNewConversation}
             >
+              <Plus className="mr-2 h-4 w-4" />
               New Query
             </Button>
           )}
           <Button
-            isIconOnly
-            variant="flat"
+            className="btn-ghost p-2"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
-            <ChevronRight className={`transition-transform ${sidebarCollapsed ? '' : 'rotate-180'}`} size={16} />
+            {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
         </div>
 
         {!sidebarCollapsed && (
-          <div className="flex-1 overflow-y-auto p-4">
-            <Accordion variant="light" className="px-0">
-              {/* Recent Conversations */}
-              <AccordionItem
-                key="conversations"
-                aria-label="Recent Conversations"
-                title={<span className="font-display text-sm">Recent Conversations</span>}
-                startContent={<History size={16} />}
-              >
-                <div className="space-y-2">
-                  {(conversations as any[]).slice(0, 8).map((conv) => (
-                    <Card 
-                      key={conv.id}
-                      className={`cursor-pointer card-hover ${
-                        currentConversationId === conv.id ? 'border-primary bg-primary/5' : ''
-                      }`}
-                      onClick={() => {
-                        setCurrentConversationId(conv.id);
-                        loadMessages(conv.id);
-                      }}
-                    >
-                      <CardBody className="p-3">
-                        <p className="font-sans text-sm font-medium text-neutral-900 truncate">
-                          {conv.title}
-                        </p>
-                        <p className="text-xs text-muted">
-                          {new Date(conv.updatedAt).toLocaleDateString()}
-                        </p>
-                      </CardBody>
-                    </Card>
-                  ))}
-                </div>
-              </AccordionItem>
+          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            {/* Recent Conversations */}
+            <div>
+              <h3 className="font-semibold text-sm text-gray-700 mb-3 flex items-center gap-2">
+                <History className="h-4 w-4" />
+                Recent Conversations
+              </h3>
+              <div className="space-y-2">
+                {(conversations as any[]).slice(0, 6).map((conv) => (
+                  <div 
+                    key={conv.id}
+                    className={`card-hover p-3 cursor-pointer ${
+                      currentConversationId === conv.id ? 'bg-blue-50 border-blue-200' : ''
+                    }`}
+                    onClick={() => {
+                      setCurrentConversationId(conv.id);
+                      loadMessages(conv.id);
+                    }}
+                  >
+                    <p className="font-medium text-sm text-gray-900 truncate">
+                      {conv.title}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(conv.updatedAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-              {/* Quick Suggestions */}
-              <AccordionItem
-                key="suggestions"
-                aria-label="Quick Suggestions"
-                title={<span className="font-display text-sm">Quick Suggestions</span>}
-                startContent={<Zap size={16} />}
-              >
-                <div className="space-y-2">
-                  {quickSuggestions.map((suggestion, index) => (
-                    <Button
-                      key={index}
-                      variant="flat"
-                      size="sm"
-                      className="w-full justify-start text-left font-sans btn-hover"
-                      onClick={() => setInput(suggestion)}
-                    >
-                      {suggestion}
-                    </Button>
-                  ))}
-                </div>
-              </AccordionItem>
+            {/* Quick Suggestions */}
+            <div>
+              <h3 className="font-semibold text-sm text-gray-700 mb-3 flex items-center gap-2">
+                <Zap className="h-4 w-4" />
+                Quick Suggestions
+              </h3>
+              <div className="space-y-2">
+                {quickSuggestions.slice(0, 4).map((suggestion, index) => (
+                  <button
+                    key={index}
+                    className="w-full text-left p-2 text-xs text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                    onClick={() => setInput(suggestion)}
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-              {/* System Status */}
-              <AccordionItem
-                key="systems"
-                aria-label="System Status"
-                title={<span className="font-display text-sm">System Status</span>}
-                startContent={<Database size={16} />}
-              >
-                <div className="space-y-3">
-                  {(systemConnections as any[]).map((system) => (
-                    <div key={system.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${
-                          system.isConnected ? 'bg-success' : 'bg-error'
-                        }`}></div>
-                        <span className="font-sans text-sm">
-                          {system.systemType.charAt(0).toUpperCase() + system.systemType.slice(1)}
-                        </span>
-                      </div>
-                      <Chip 
-                        size="sm" 
-                        className={`font-sans ${
-                          system.isConnected ? 'status-online' : 'status-offline'
-                        }`}
-                      >
-                        {system.isConnected ? 'Online' : 'Offline'}
-                      </Chip>
+            {/* System Status */}
+            <div>
+              <h3 className="font-semibold text-sm text-gray-700 mb-3 flex items-center gap-2">
+                <Database className="h-4 w-4" />
+                System Status
+              </h3>
+              <div className="space-y-2">
+                {(systemConnections as any[]).map((system) => (
+                  <div key={system.id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`h-2 w-2 rounded-full ${
+                        system.isConnected ? 'bg-green-500' : 'bg-red-500'
+                      }`}></div>
+                      <span className="text-sm text-gray-700">
+                        {system.systemType.charAt(0).toUpperCase() + system.systemType.slice(1)}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              </AccordionItem>
-            </Accordion>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      system.isConnected 
+                        ? 'system-status-online' 
+                        : 'system-status-offline'
+                    }`}>
+                      {system.isConnected ? 'Online' : 'Offline'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="border-b border-gray-200 bg-white p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">Mobius One AI Assistant</h1>
+              <p className="text-sm text-gray-600">Ask questions about your business data in natural language</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="system-status-online">
+                <Database className="h-3 w-3" />
+                {connectedSystems.length}/2 Systems Online
+              </div>
+              <Avatar 
+                name={(user as any)?.username?.charAt(0).toUpperCase() || 'U'} 
+                className="h-8 w-8"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Error Banner */}
         {error.show && (
-          <div className="bg-error/10 border-l-4 border-error p-4 m-4 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="text-error" size={20} />
-                <p className="font-sans text-error font-medium">{error.message}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {error.action && (
-                  <Button
-                    size="sm"
-                    className="btn-hover font-sans"
-                    onClick={error.action.onClick}
-                  >
-                    {error.action.label}
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  variant="flat"
-                  onClick={() => setError({ show: false, message: "" })}
-                >
-                  Dismiss
+          <div className="error-banner m-4">
+            <AlertCircle className="h-5 w-5" />
+            <p className="flex-1">{error.message}</p>
+            <div className="flex items-center gap-2">
+              {error.action && (
+                <Button className="btn-primary" onClick={error.action.onClick}>
+                  {error.action.label}
                 </Button>
-              </div>
+              )}
+              <Button
+                className="btn-ghost"
+                onClick={() => setError({ show: false, message: "" })}
+              >
+                Dismiss
+              </Button>
             </div>
           </div>
         )}
@@ -417,135 +389,95 @@ export default function QueryPage() {
           <div className="max-w-4xl mx-auto space-y-6">
             {messages.length === 0 ? (
               <div className="text-center py-12">
-                <div className="terminal-glass p-8 mb-6 inline-block">
-                  <Zap className="text-terminal-accent mx-auto mb-4" size={32} style={{ color: '#22D3EE', filter: 'drop-shadow(0 0 8px #22D3EE)' }} />
-                  <h2 className="text-xl font-mono terminal-title mb-2">
-                    MOBIUS ONE AI TERMINAL
+                <div className="card p-8 mb-6 inline-block bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+                  <Bot className="text-blue-600 mx-auto mb-4" size={32} />
+                  <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                    Welcome to Mobius One
                   </h2>
-                  <p className="terminal-subtitle font-mono text-sm">
+                  <p className="text-gray-600 mb-4">
                     Ask questions across your business systems in natural language
                   </p>
-                </div>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {quickSuggestions.slice(0, 3).map((suggestion, index) => (
-                    <Chip
-                      key={index}
-                      className="cursor-pointer hover:bg-primary/10 font-sans"
-                      onClick={() => setInput(suggestion)}
-                    >
-                      {suggestion}
-                    </Chip>
-                  ))}
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {quickSuggestions.slice(0, 3).map((suggestion, index) => (
+                      <button
+                        key={index}
+                        className="px-3 py-1 text-xs bg-white border border-blue-200 rounded-full hover:bg-blue-50 transition-colors"
+                        onClick={() => setInput(suggestion)}
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
               messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} fade-in`}
-                >
-                  <div className={`max-w-3xl ${message.role === 'user' ? 'ml-12' : 'mr-12'}`}>
-                    {/* Message Header */}
-                    <div className={`flex items-center gap-2 mb-2 ${
-                      message.role === 'user' ? 'justify-end' : 'justify-start'
-                    }`}>
-                      <Avatar
-                        size="sm"
-                        name={message.role === 'user' ? 'U' : 'M1'}
-                        className={message.role === 'user' 
-                          ? 'bg-gradient-primary text-white font-mono' 
-                          : 'bg-gradient-secondary text-white font-mono'
-                        }
-                      />
-                      <span className="font-display text-sm text-neutral-700">
-                        {message.role === 'user' ? 'You' : 'Mobius One'}
-                      </span>
-                      {message.confidence && (
-                        <Chip size="sm" className="status-online font-sans">
-                          {message.confidence}% confidence
-                        </Chip>
-                      )}
+                <div key={message.id} className="animate-fade-in">
+                  {message.role === 'user' ? (
+                    <div className="flex justify-end mb-4">
+                      <div className="message-bubble-user">
+                        <p>{message.content}</p>
+                      </div>
                     </div>
-
-                    {/* Message Content */}
-                    <Card className={`${
-                      message.role === 'user' 
-                        ? 'bg-gradient-primary text-white slide-in-right' 
-                        : 'card-hover slide-in-left'
-                    }`}>
-                      <CardBody className="p-4">
-                        <p className={`${
-                          message.role === 'user' ? 'text-white' : 'text-neutral-800'
-                        } leading-relaxed font-sans`}>
-                          {message.content}
-                        </p>
-
+                  ) : (
+                    <div className="flex justify-start mb-4">
+                      <div className="message-bubble-ai">
+                        <p className="mb-3">{message.content}</p>
+                        
                         {/* AI Response Enhancements */}
-                        {message.role === 'assistant' && (
-                          <div className="mt-4 space-y-3">
-                            {/* Sources */}
+                        <div className="space-y-3 border-t border-gray-200 pt-3">
+                          {/* Confidence & Sources */}
+                          <div className="flex items-center gap-3">
+                            {message.confidence && (
+                              <span className={getConfidenceClass(message.confidence)}>
+                                {message.confidence}% confidence
+                              </span>
+                            )}
                             {message.sources && (
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-sans font-medium text-neutral-500">Sources:</span>
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-gray-500">Sources:</span>
                                 {message.sources.map((source, index) => (
-                                  <Chip key={index} size="sm" variant="flat" className="font-sans text-xs">
+                                  <span key={index} className="text-xs bg-gray-100 px-2 py-1 rounded">
                                     {source}
-                                  </Chip>
+                                  </span>
                                 ))}
                               </div>
                             )}
-
-                            {/* Quick Actions */}
-                            <div className="flex items-center gap-2 pt-2 border-t border-neutral-100">
-                              <Button size="sm" variant="flat" className="btn-hover font-sans" startContent={<Download size={14} />}>
-                                Export
-                              </Button>
-                              <Button size="sm" variant="flat" className="btn-hover font-sans" startContent={<Save size={14} />}>
-                                Save
-                              </Button>
-                              <Button size="sm" variant="flat" className="btn-hover font-sans" startContent={<Calendar size={14} />}>
-                                Schedule
-                              </Button>
-                              <Button size="sm" variant="flat" className="btn-hover font-sans" startContent={<ExternalLink size={14} />}>
-                                Share
-                              </Button>
-                            </div>
                           </div>
-                        )}
-                      </CardBody>
-                    </Card>
 
-                    {/* Timestamp */}
-                    <p className={`text-xs text-neutral-400 font-sans mt-1 ${
-                      message.role === 'user' ? 'text-right' : 'text-left'
-                    }`}>
-                      {message.timestamp.toLocaleTimeString()}
-                    </p>
-                  </div>
+                          {/* Quick Actions */}
+                          <div className="flex items-center gap-2">
+                            <Button className="btn-ghost text-xs p-1">
+                              <Download className="h-3 w-3 mr-1" />
+                              Export
+                            </Button>
+                            <Button className="btn-ghost text-xs p-1">
+                              <BarChart3 className="h-3 w-3 mr-1" />
+                              Analyze
+                            </Button>
+                            <Button className="btn-ghost text-xs p-1">
+                              <Calendar className="h-3 w-3 mr-1" />
+                              Schedule
+                            </Button>
+                            <Button className="btn-ghost text-xs p-1">
+                              <ExternalLink className="h-3 w-3 mr-1" />
+                              Share
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))
             )}
 
             {/* Typing Indicator */}
             {isTyping && (
-              <div className="flex justify-start fade-in">
-                <div className="max-w-3xl mr-12">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Avatar
-                      size="sm"
-                      name="M1"
-                      className="bg-gradient-secondary text-white font-mono"
-                    />
-                    <span className="font-display text-sm text-neutral-700">Mobius One</span>
-                  </div>
-                  <Card className="card-hover">
-                    <CardBody className="p-4">
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="animate-spin text-primary" size={16} />
-                        <span className="text-sm text-neutral-600 font-sans">Analyzing your query...</span>
-                      </div>
-                    </CardBody>
-                  </Card>
+              <div className="flex justify-start animate-fade-in">
+                <div className="ai-loading">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Analyzing your query...</span>
                 </div>
               </div>
             )}
@@ -554,93 +486,54 @@ export default function QueryPage() {
           </div>
         </div>
 
-        {/* Enhanced Input Area */}
-        <div className="border-t border-neutral-200 bg-white/80 backdrop-blur-sm p-6">
+        {/* Input Area */}
+        <div className="border-t border-gray-200 bg-white p-6">
           <div className="max-w-4xl mx-auto">
-            {/* System Selector */}
-            <div className="flex items-center gap-4 mb-4">
-              <span className="font-display text-sm text-neutral-700">Query:</span>
-              <div className="flex gap-2">
-                <Chip
-                  className={`cursor-pointer font-sans transition-all ${
-                    selectedSystems === 'all' ? 'status-info' : 'hover:bg-neutral-100'
-                  }`}
-                  onClick={() => setSelectedSystems('all')}
-                >
-                  All Systems
-                </Chip>
-                <Chip
-                  className={`cursor-pointer font-sans transition-all ${
-                    selectedSystems === 'salesforce' ? 'status-info' : 'hover:bg-neutral-100'
-                  }`}
-                  onClick={() => setSelectedSystems('salesforce')}
-                >
-                  Salesforce
-                </Chip>
-                <Chip
-                  className={`cursor-pointer font-sans transition-all ${
-                    selectedSystems === 'netsuite' ? 'status-online' : 'hover:bg-neutral-100'
-                  }`}
-                  onClick={() => setSelectedSystems('netsuite')}
-                >
-                  NetSuite
-                </Chip>
-              </div>
-            </div>
-
-            {/* Input Field */}
             <div className="flex items-center gap-4">
-              <Input
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask anything about your business data..."
-                size="lg"
-                classNames={{
-                  input: "font-sans text-base",
-                  inputWrapper: "bg-white border-2 border-neutral-200 hover:border-primary focus-within:border-primary shadow-lg"
-                }}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                endContent={
-                  <div className="flex items-center gap-2">
-                    <Chip size="sm" className="font-sans text-xs">
-                      {input.length}/500
-                    </Chip>
-                  </div>
-                }
-              />
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask anything about your business data..."
+                  className="input-modern pl-10 h-12 text-base"
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  disabled={isTyping}
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+                  {input.length}/500
+                </div>
+              </div>
               
               <Button
-                isIconOnly
-                color={isListening ? "warning" : "default"}
-                variant="flat"
+                className={`btn-ghost p-3 ${isListening ? 'bg-yellow-100 text-yellow-700' : ''}`}
                 onClick={handleVoiceInput}
-                className={`min-w-12 btn-hover ${isListening ? 'status-warning' : ''}`}
               >
-                {isListening ? <MicOff size={18} /> : <Mic size={18} />}
+                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
               </Button>
               
               <Button
-                className="btn-hover font-sans min-w-24"
-                endContent={<Send size={18} />}
+                className="btn-primary h-12 px-6"
                 onClick={handleSendMessage}
-                isDisabled={!input.trim() || isTyping}
-                isLoading={isTyping}
+                disabled={!input.trim() || isTyping}
               >
-                Send
+                {isTyping ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    Send
+                    <Send className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </div>
 
             {/* Input Help */}
-            <div className="flex items-center justify-between mt-2 text-xs text-neutral-500 font-sans">
+            <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
               <span>Press Enter to send • Voice input available</span>
               <span>
-                Complexity: <span className={`font-medium ${
-                  input.length > 100 ? 'text-warning' : 
-                  input.length > 50 ? 'text-secondary' : 'text-success'
-                }`}>
-                  {input.length > 100 ? 'High' : input.length > 50 ? 'Medium' : 'Low'}
-                </span>
+                Connected to {connectedSystems.length} business system{connectedSystems.length !== 1 ? 's' : ''}
               </span>
             </div>
           </div>
