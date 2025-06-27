@@ -29,11 +29,17 @@ This is a full-stack business AI assistant application that integrates with Sale
 
 ## Key Components
 
-### Chat System
-- Real-time chat interface with message history
-- Support for user and AI assistant messages
-- Message metadata handling for system data integration
-- Conversation management with persistent storage
+### Chat System with iOS UX Patterns
+- iOS Messages-style conversation interface with bubble logic
+- Apple's typing indicators and message status patterns
+- Progressive disclosure for complex data visualization
+- Retro terminal aesthetic with modern usability standards
+
+### Enhanced Navigation Architecture
+- iOS-style navigation hierarchies with clear information structure
+- Apple's interaction patterns with retro visual treatments
+- Focus management and keyboard navigation (Apple accessibility standards)
+- Touch target sizing following Apple's 44px minimum guidelines
 
 ### External Integrations
 - **Salesforce Service**: CRM data access (opportunities, accounts, leads)
@@ -100,6 +106,13 @@ Changelog:
 - June 27, 2025. Initial setup
 - June 27, 2025. Added PostgreSQL database with Drizzle ORM
 - June 27, 2025. Implemented retro UI theme with terminal aesthetics
+- June 27, 2025. Enhanced retro theme with Apple UX patterns:
+  * Added iOS spring animation curves and timing
+  * Implemented iOS Messages-style conversation bubbles
+  * Enhanced input areas with Apple interaction patterns
+  * Integrated iOS navigation hierarchies with retro styling
+  * Added Apple accessibility standards (44px touch targets, focus management)
+  * Maintained retro visual identity while improving usability
 ```
 
 ## User Preferences

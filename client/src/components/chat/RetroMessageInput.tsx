@@ -101,21 +101,40 @@ export default function RetroMessageInput({
       </div>
       
       <CardBody className="p-6">
-        {/* Quick Command Suggestions */}
+        {/* iOS-style Quick Command Suggestions */}
         <div className="mb-4">
-          <div className="flex items-center space-x-2 mb-2">
+          <div className="flex items-center space-x-2 mb-3">
             <Command className="w-4 h-4 text-primary" />
             <span className="text-xs font-mono font-bold text-foreground-700 uppercase tracking-wide">
               QUICK_COMMANDS:
             </span>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {suggestedCommands.map((cmd, index) => (
-              <Chip
+          <div className="ios-segmented-control mb-2">
+            {suggestedCommands.slice(0, 2).map((cmd, index) => (
+              <div
                 key={index}
+                className={`ios-segment ${message === cmd ? 'active' : ''}`}
+                onClick={() => setMessage(cmd)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setMessage(cmd);
+                  }
+                }}
+              >
+                {cmd}
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {suggestedCommands.slice(2).map((cmd, index) => (
+              <Chip
+                key={index + 2}
                 size="sm"
                 variant="flat"
-                className="font-mono text-xs cursor-pointer hover:bg-primary-100 transition-colors"
+                className="font-mono text-xs cursor-pointer hover:bg-primary-100 transition-all duration-150"
                 onClick={() => setMessage(cmd)}
               >
                 {cmd}
@@ -126,71 +145,73 @@ export default function RetroMessageInput({
         
         <div className="flex items-end space-x-4">
           <div className="flex-1">
-            <div className="relative">
+            <div className="ios-input-container">
               <div className="relative">
-                <Textarea
+                <textarea
+                  ref={textareaRef}
                   value={message}
-                  onValueChange={handleTextareaChange}
-                  placeholder={placeholder}
-                  className="retro-input font-mono text-sm"
-                  classNames={{
-                    input: "font-mono placeholder:text-foreground-400 placeholder:uppercase placeholder:tracking-wide",
-                    inputWrapper: "border-2 border-default-400 hover:border-primary-500 focus-within:border-primary-500",
-                  }}
-                  minRows={2}
-                  maxRows={6}
+                  onChange={(e) => handleTextareaChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder=" "
+                  className="ios-input resize-none min-h-[60px] max-h-[120px] w-full font-mono text-sm"
                   disabled={disabled}
+                  rows={2}
+                  style={{
+                    paddingRight: '120px' // Space for action buttons
+                  }}
                 />
-                <div className="absolute bottom-2 right-2 flex items-center space-x-1">
+                <label className="ios-floating-label font-mono text-sm">
+                  {placeholder}
+                </label>
+                
+                {/* iOS-style action buttons */}
+                <div className="absolute bottom-3 right-3 flex items-center space-x-1">
                   <Tooltip content="Attach File">
-                    <Button
-                      variant="light"
-                      size="sm"
-                      isIconOnly
-                      onPress={handleAttachFile}
-                      className="retro-button text-xs"
+                    <button
+                      type="button"
+                      onClick={handleAttachFile}
+                      className="p-2 rounded-full hover:bg-gray-100 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      style={{ minWidth: '32px', minHeight: '32px' }}
                     >
-                      <Paperclip size={14} />
-                    </Button>
+                      <Paperclip size={14} className="text-gray-600" />
+                    </button>
                   </Tooltip>
                   
                   <Tooltip content="Add Emoji">
-                    <Button
-                      variant="light"
-                      size="sm"
-                      isIconOnly
-                      onPress={handleAddEmoji}
-                      className="retro-button text-xs"
+                    <button
+                      type="button"
+                      onClick={handleAddEmoji}
+                      className="p-2 rounded-full hover:bg-gray-100 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      style={{ minWidth: '32px', minHeight: '32px' }}
                     >
-                      <Smile size={14} />
-                    </Button>
+                      <Smile size={14} className="text-gray-600" />
+                    </button>
                   </Tooltip>
                   
                   <Tooltip content={isListening ? "Stop Recording" : "Voice Input"}>
-                    <Button
-                      variant="light"
-                      size="sm"
-                      isIconOnly
-                      onPress={handleVoiceInput}
-                      className={`retro-button text-xs ${
+                    <button
+                      type="button"
+                      onClick={handleVoiceInput}
+                      className={`p-2 rounded-full transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-orange-500 ${
                         isListening 
-                          ? 'text-danger-500 animate-pulse' 
-                          : ''
+                          ? 'text-red-500 bg-red-50 animate-pulse' 
+                          : 'text-gray-600 hover:bg-gray-100'
                       }`}
+                      style={{ minWidth: '32px', minHeight: '32px' }}
                     >
                       {isListening ? <Square size={14} /> : <Mic size={14} />}
-                    </Button>
+                    </button>
                   </Tooltip>
                 </div>
               </div>
             </div>
             
-            {/* Input Status Bar */}
-            <div className="flex items-center justify-between mt-2">
+            {/* iOS-style Input Status Bar */}
+            <div className="flex items-center justify-between mt-3 px-2">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2 text-xs font-mono text-foreground-500">
                   <Terminal className="w-3 h-3" />
-                  <span>ENTER_TO_SEND • SHIFT+ENTER_FOR_NEW_LINE</span>
+                  <span>⏎ SEND • ⇧⏎ NEW LINE</span>
                 </div>
                 {isListening && (
                   <Chip 
@@ -206,16 +227,19 @@ export default function RetroMessageInput({
               </div>
               
               <div className="flex items-center space-x-3">
-                {/* Character Counter */}
+                {/* iOS-style Character Counter */}
                 <div className="flex items-center space-x-2">
-                  <Progress 
-                    size="sm" 
-                    value={progressValue}
-                    color={progressValue > 90 ? "danger" : progressValue > 70 ? "warning" : "success"}
-                    className="w-16"
-                  />
+                  <div className="w-12 h-1 bg-gray-200 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-300 rounded-full ${
+                        progressValue > 90 ? 'bg-red-500' : 
+                        progressValue > 70 ? 'bg-yellow-500' : 'bg-green-500'
+                      }`}
+                      style={{ width: `${Math.min(progressValue, 100)}%` }}
+                    />
+                  </div>
                   <span className={`text-xs font-mono ${
-                    charCount > maxChars * 0.9 ? 'text-danger-500' : 'text-foreground-500'
+                    charCount > maxChars * 0.9 ? 'text-red-500' : 'text-foreground-500'
                   }`}>
                     {charCount}/{maxChars}
                   </span>
@@ -223,29 +247,36 @@ export default function RetroMessageInput({
                 
                 {/* System Status */}
                 <div className="flex items-center space-x-2">
-                  <Zap className="w-3 h-3 text-success-500 animate-pulse" />
+                  <Zap className="w-3 h-3 text-green-500 animate-pulse" />
                   <span className="text-xs text-foreground-500 font-mono">
-                    LITELLM_AI_READY
+                    AI_READY
                   </span>
                 </div>
               </div>
             </div>
           </div>
           
-          {/* Send Button */}
+          {/* iOS-style Send Button with retro styling */}
           <Tooltip content="Execute Command">
-            <Button
-              onPress={handleSend}
+            <button
+              onClick={handleSend}
               disabled={!canSend}
-              className={`retro-button px-6 py-4 font-mono font-bold uppercase tracking-wider ${
+              className={`retro-button font-mono font-bold uppercase tracking-wider transition-all duration-150 ${
                 canSend 
-                  ? 'bg-primary text-primary-foreground hover:bg-primary-600' 
-                  : 'bg-default-200 text-default-500 cursor-not-allowed'
+                  ? 'opacity-100 cursor-pointer transform-gpu active:scale-95' 
+                  : 'opacity-50 cursor-not-allowed'
               }`}
-              startContent={<Send size={16} />}
+              style={{
+                minHeight: '44px',
+                padding: '12px 24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
             >
+              <Send size={16} />
               EXECUTE
-            </Button>
+            </button>
           </Tooltip>
         </div>
       </CardBody>

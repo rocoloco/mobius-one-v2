@@ -255,95 +255,86 @@ export default function RetroMessage({ message }: RetroMessageProps) {
   };
 
   return (
-    <div className={`flex items-start space-x-4 ${isUser ? 'justify-end message-user' : 'message-ai'}`}>
-      {isUser && (
-        <div className="flex-1 flex justify-end">
-          <Card className="message-bubble user retro-card bg-primary text-primary-foreground max-w-md">
-            <CardBody className="p-4">
-              <p className="font-mono whitespace-pre-wrap">{message.content}</p>
-            </CardBody>
-          </Card>
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
+      {isUser ? (
+        /* iOS-style user message bubble with retro styling */
+        <div className="flex items-end space-x-2 max-w-[70%]">
+          <div 
+            className="message-bubble user px-4 py-3 rounded-2xl font-mono text-sm"
+            style={{
+              background: 'linear-gradient(135deg, #ff9800 0%, #ff6f00 100%)',
+              color: 'white',
+              borderRadius: '18px 18px 4px 18px',
+              boxShadow: '0 1px 3px rgba(255, 152, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              marginLeft: 'auto'
+            }}
+          >
+            {message.content}
+          </div>
+          <Avatar
+            size="sm"
+            name="JD"
+            className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-mono font-bold text-xs"
+          />
         </div>
-      )}
-
-      {isAssistant && (
-        <div className="retro-gradient p-2 rounded-lg flex-shrink-0">
-          <Bot className="text-white" size={16} />
-        </div>
-      )}
-
-      {isAssistant && (
-        <div className="flex-1">
-          <Card className="message-bubble assistant retro-card max-w-4xl">
-            <CardBody className="p-4">
-              <div className="prose prose-sm max-w-none">
-                <p className="font-mono text-sm whitespace-pre-wrap m-0 leading-relaxed">
-                  {message.content}
-                </p>
+      ) : (
+        /* iOS-style assistant message with retro styling */
+        <div className="flex items-start space-x-3 max-w-[85%]">
+          <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <Bot className="text-white" size={14} />
+          </div>
+          
+          <div className="flex-1">
+            <div 
+              className="message-bubble assistant px-4 py-3 rounded-2xl font-mono text-sm"
+              style={{
+                background: 'linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%)',
+                color: '#2d2d2d',
+                borderRadius: '18px 18px 18px 4px',
+                border: '1px solid #e0e0e0',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              <div className="whitespace-pre-wrap leading-relaxed">
+                {message.content}
               </div>
               
               {renderSystemData()}
 
-              {/* AI Processing Insights */}
+              {/* iOS-style processing indicator */}
               {parsedMetadata && (
-                <Card className="mt-4 bg-primary-50 border border-primary-300">
-                  <CardBody className="p-3">
-                    <div className="flex items-start space-x-2">
-                      <Activity className="text-primary flex-shrink-0 mt-0.5" size={16} />
-                      <div>
-                        <p className="text-sm font-mono font-bold text-primary-800 uppercase tracking-wide">
-                          AI_PROCESSING_COMPLETE
-                        </p>
-                        <p className="text-sm text-primary-700 font-mono">
-                          &gt; DATA_ANALYZED_AND_PROCESSED
-                        </p>
-                        <p className="text-sm text-primary-700 font-mono">
-                          &gt; INSIGHTS_GENERATED_FOR_BUSINESS_DECISION_MAKING
-                        </p>
-                      </div>
+                <div className="mt-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
+                  <div className="flex items-start space-x-2">
+                    <Activity className="text-blue-600 flex-shrink-0 mt-0.5" size={14} />
+                    <div>
+                      <p className="text-xs font-mono font-bold text-blue-800 mb-1">
+                        PROCESSING COMPLETE
+                      </p>
+                      <p className="text-xs text-blue-700 font-mono">
+                        Data analyzed and insights generated
+                      </p>
                     </div>
-                  </CardBody>
-                </Card>
+                  </div>
+                </div>
               )}
-            </CardBody>
-          </Card>
-          
-          <div className="flex items-center space-x-3 mt-2 ml-2">
-            <Chip 
-              size="sm" 
-              variant="flat" 
-              className="font-mono text-xs"
-              startContent={<Bot className="w-3 h-3" />}
-            >
-              AI_ASSISTANT
-            </Chip>
-            <span className="text-xs text-foreground-500 font-mono">
-              {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true }).toUpperCase()}
-            </span>
-            {message.systemSource && (
-              <>
-                <Divider orientation="vertical" className="h-3" />
-                <Chip 
-                  size="sm" 
-                  color={message.systemSource === 'salesforce' ? 'primary' : 'secondary'}
-                  variant="flat"
-                  className="font-mono text-xs"
-                  startContent={<Database className="w-3 h-3" />}
-                >
-                  {message.systemSource === 'salesforce' ? 'SALESFORCE' : 'NETSUITE'}
-                </Chip>
-              </>
-            )}
+            </div>
+            
+            {/* iOS-style message metadata */}
+            <div className="flex items-center space-x-2 mt-1 ml-1">
+              <span className="text-xs text-gray-500 font-mono">
+                {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+              </span>
+              {message.systemSource && (
+                <>
+                  <span className="text-xs text-gray-300">•</span>
+                  <span className="text-xs text-gray-500 font-mono uppercase">
+                    {message.systemSource}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      )}
-
-      {isUser && (
-        <Avatar
-          size="sm"
-          name="JD"
-          className="bg-primary-600 text-white font-mono font-bold"
-        />
       )}
     </div>
   );

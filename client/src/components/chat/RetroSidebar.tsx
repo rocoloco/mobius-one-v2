@@ -162,7 +162,7 @@ export default function RetroSidebar({
 
   return (
     <div className="w-80 sidebar-retro flex flex-col h-screen relative z-10">
-      {/* Terminal Header */}
+      {/* iOS-style Terminal Header with retro styling */}
       <div className="terminal-header">
         <div className="terminal-dot red"></div>
         <div className="terminal-dot yellow"></div>
@@ -172,72 +172,108 @@ export default function RetroSidebar({
         </span>
       </div>
 
-      {/* Main Header */}
-      <div className="p-6 border-b-2 border-primary-300">
-        <div className="flex items-center space-x-3">
-          <div className="retro-gradient p-3 rounded-lg">
-            <Terminal className="text-white" size={24} />
+      {/* iOS-style Navigation Header */}
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="retro-gradient p-2 rounded-lg">
+              <Terminal className="text-white" size={20} />
+            </div>
+            <div>
+              <h1 className="text-lg font-mono font-bold uppercase tracking-wider glow-text text-primary">
+                AI TERMINAL
+              </h1>
+              <p className="text-xs text-foreground-600 font-mono">
+                BUSINESS_SYSTEMS_INTERFACE
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-mono font-bold uppercase tracking-wider glow-text text-primary">
-              AI TERMINAL
-            </h1>
-            <p className="text-sm text-foreground-600 font-mono">
-              BUSINESS_SYSTEMS_INTERFACE
-            </p>
-          </div>
+          {/* iOS-style user avatar */}
+          {user && (
+            <Avatar
+              size="sm"
+              name={user.initials || user.name}
+              className="bg-gradient-to-r from-orange-400 to-red-500 text-white font-mono text-xs"
+            />
+          )}
         </div>
+        
+        {/* iOS-style primary action */}
+        <button
+          onClick={onNewConversation}
+          className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-mono font-bold text-sm rounded-xl py-3 px-4 transition-all duration-150 active:scale-95 shadow-lg"
+          style={{ minHeight: '44px' }}
+        >
+          <div className="flex items-center justify-center space-x-2">
+            <Plus size={16} />
+            <span>NEW SESSION</span>
+          </div>
+        </button>
       </div>
 
-      {/* Quick Actions */}
+      {/* iOS-style System Status Cards */}
       <div className="p-4">
-        <h3 className="text-sm font-mono font-bold text-foreground-700 mb-3 uppercase tracking-wider">
-          &gt; QUICK_ACTIONS
-        </h3>
-        <div className="space-y-2">
-          <Button
-            variant="ghost"
-            className="w-full justify-start retro-button font-mono uppercase tracking-wider"
-            onPress={onNewConversation}
-            startContent={<Plus className="text-primary" size={16} />}
-          >
-            NEW_SESSION
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start retro-button font-mono uppercase tracking-wider"
-            startContent={<History className="text-secondary" size={16} />}
-          >
-            HISTORY_LOG
-          </Button>
-        </div>
-      </div>
-
-      <Divider className="border-primary-300" />
-
-      {/* System Status */}
-      <div className="p-4">
-        <h3 className="text-sm font-mono font-bold text-foreground-700 mb-3 uppercase tracking-wider">
-          &gt; SYSTEM_STATUS
+        <h3 className="text-sm font-mono font-bold text-foreground-700 mb-3 uppercase tracking-wider flex items-center">
+          <Activity className="w-4 h-4 mr-2" />
+          SYSTEM STATUS
         </h3>
         <div className="space-y-3">
-          {renderSystemCard(
-            getSalesforceConnection(),
-            'salesforce',
-            <Database className="text-white" size={16} />,
-            'SALESFORCE',
-            'CRM_MODULE',
-            'bg-primary-500'
-          )}
-          
-          {renderSystemCard(
-            getNetSuiteConnection(),
-            'netsuite',
-            <Monitor className="text-white" size={16} />,
-            'NETSUITE',
-            'ERP_MODULE',
-            'bg-secondary-500'
-          )}
+          {/* iOS-style system cards with retro styling */}
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <Database className="text-white" size={12} />
+                  </div>
+                  <span className="font-mono font-bold text-sm">SALESFORCE</span>
+                </div>
+                <div className={`system-indicator ${getSalesforceConnection()?.isConnected ? 'connected' : 'disconnected'}`}>
+                  {getSalesforceConnection()?.isConnected ? 
+                    <><Wifi className="w-3 h-3" /> ONLINE</> : 
+                    <><WifiOff className="w-3 h-3" /> OFFLINE</>
+                  }
+                </div>
+              </div>
+              <p className="text-xs text-gray-600 font-mono mb-2">CRM MODULE</p>
+              <button
+                onClick={() => testConnection('salesforce')}
+                disabled={testingConnections.has('salesforce')}
+                className="w-full py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-mono transition-all duration-150 active:scale-95"
+                style={{ minHeight: '32px' }}
+              >
+                {testingConnections.has('salesforce') ? 'TESTING...' : 'TEST CONNECTION'}
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-purple-500 rounded-lg flex items-center justify-center">
+                    <Monitor className="text-white" size={12} />
+                  </div>
+                  <span className="font-mono font-bold text-sm">NETSUITE</span>
+                </div>
+                <div className={`system-indicator ${getNetSuiteConnection()?.isConnected ? 'connected' : 'disconnected'}`}>
+                  {getNetSuiteConnection()?.isConnected ? 
+                    <><Wifi className="w-3 h-3" /> ONLINE</> : 
+                    <><WifiOff className="w-3 h-3" /> OFFLINE</>
+                  }
+                </div>
+              </div>
+              <p className="text-xs text-gray-600 font-mono mb-2">ERP MODULE</p>
+              <button
+                onClick={() => testConnection('netsuite')}
+                disabled={testingConnections.has('netsuite')}
+                className="w-full py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-mono transition-all duration-150 active:scale-95"
+                style={{ minHeight: '32px' }}
+              >
+                {testingConnections.has('netsuite') ? 'TESTING...' : 'TEST CONNECTION'}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* System Summary */}
@@ -258,53 +294,65 @@ export default function RetroSidebar({
 
       <Divider className="border-primary-300" />
 
-      {/* Session History */}
-      <div className="flex-1 p-4">
-        <h3 className="text-sm font-mono font-bold text-foreground-700 mb-3 uppercase tracking-wider">
-          &gt; SESSION_HISTORY
-        </h3>
-        <ScrollShadow className="h-full retro-scrollbar">
-          <div className="space-y-2">
-            {conversations.length === 0 ? (
-              <Card className="bg-content2 border border-default-300">
-                <CardBody className="text-center py-8">
-                  <Terminal className="w-12 h-12 text-default-400 mx-auto mb-2" />
-                  <p className="text-sm text-foreground-500 font-mono">NO_SESSIONS_FOUND</p>
-                  <p className="text-xs text-foreground-400 font-mono">INITIALIZE_NEW_SESSION</p>
-                </CardBody>
-              </Card>
-            ) : (
-              conversations.map((conversation) => (
-                <Card
+      {/* iOS-style Session History */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="p-4 pb-0">
+          <h3 className="text-sm font-mono font-bold text-foreground-700 mb-3 uppercase tracking-wider flex items-center">
+            <History className="w-4 h-4 mr-2" />
+            SESSION HISTORY
+          </h3>
+        </div>
+        
+        <div className="flex-1 overflow-hidden px-4">
+          {conversations.length === 0 ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center py-8">
+                <Terminal className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-sm text-gray-600 font-mono mb-1">NO SESSIONS FOUND</p>
+                <p className="text-xs text-gray-400 font-mono">Tap "NEW SESSION" to start</p>
+              </div>
+            </div>
+          ) : (
+            <div className="h-full overflow-y-auto space-y-1 pb-4">
+              {conversations.map((conversation, index) => (
+                <button
                   key={conversation.id}
-                  isPressable
-                  onPress={() => onSelectConversation(conversation.id)}
-                  className={`transition-all duration-200 cursor-pointer ${
+                  onClick={() => onSelectConversation(conversation.id)}
+                  className={`w-full p-3 rounded-xl text-left transition-all duration-150 active:scale-95 ${
                     currentConversationId === conversation.id 
-                      ? 'retro-card bg-primary-100 border-primary-500' 
-                      : 'bg-content2 border-default-300 hover:border-primary-400'
+                      ? 'bg-gradient-to-r from-orange-100 to-red-100 border border-orange-300' 
+                      : 'bg-white hover:bg-gray-50 border border-gray-200'
                   }`}
+                  style={{ minHeight: '60px' }}
                 >
-                  <CardBody className="p-3">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-primary-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Bot className="text-white" size={12} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-mono font-medium truncate uppercase tracking-wide">
-                          {conversation.title}
-                        </p>
-                        <p className="text-xs text-foreground-500 mt-1 font-mono">
-                          {formatDistanceToNow(new Date(conversation.updatedAt), { addSuffix: true }).toUpperCase()}
-                        </p>
-                      </div>
+                  <div className="flex items-start space-x-3">
+                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                      currentConversationId === conversation.id
+                        ? 'bg-gradient-to-r from-orange-500 to-red-500'
+                        : 'bg-gray-400'
+                    }`}>
+                      <Bot className="text-white" size={12} />
                     </div>
-                  </CardBody>
-                </Card>
-              ))
-            )}
-          </div>
-        </ScrollShadow>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-mono font-medium truncate">
+                        {conversation.title}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1 font-mono">
+                        {formatDistanceToNow(new Date(conversation.updatedAt), { addSuffix: true })}
+                      </p>
+                    </div>
+                    {/* iOS-style chevron indicator */}
+                    <div className="flex items-center">
+                      <div className={`w-2 h-2 rounded-full ${
+                        currentConversationId === conversation.id ? 'bg-orange-500' : 'bg-gray-300'
+                      }`} />
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <Divider className="border-primary-300" />

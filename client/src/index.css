@@ -3,6 +3,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Apple UX Motion Tokens with Retro Styling */
+:root {
+  /* iOS Spring Animation Curves */
+  --apple-ease-spring: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --apple-ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --apple-ease-in-out: cubic-bezier(0.42, 0, 0.58, 1);
+  
+  /* Apple Button Press Timing */
+  --apple-press-duration: 150ms;
+  --apple-sheet-duration: 300ms;
+  
+  /* Apple Touch Targets */
+  --apple-touch-target: 44px;
+  --apple-spacing-unit: 16px;
+  
+  /* Apple Focus Colors with Retro Adaptation */
+  --apple-focus-ring: rgba(0, 122, 255, 0.6);
+  --retro-focus-ring: rgba(255, 152, 0, 0.8);
+  
+  /* Retro + Apple Semantic Colors */
+  --retro-primary: #ff9800;
+  --retro-secondary: #9c27b0;
+  --retro-success: #4caf50;
+  --retro-warning: #ff9800;
+  --retro-error: #f44336;
+  --retro-surface: #ffffff;
+  --retro-surface-variant: #f5f5f5;
+}
+
 body {
   font-family: 'JetBrains Mono', 'Courier New', monospace;
   font-weight: 400;
@@ -125,22 +154,55 @@ body {
   color: white;
   border: 2px solid #f57c00;
   box-shadow: 2px 2px 0px #f57c00, 4px 4px 0px #ff9800;
-  transition: all 0.1s ease;
+  transition: all var(--apple-press-duration) var(--apple-ease-spring);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 700;
-  padding: 8px 16px;
+  padding: 12px 24px; /* Apple touch target sizing */
+  min-height: var(--apple-touch-target);
   border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-button:focus {
+  outline: none;
+  box-shadow: 
+    2px 2px 0px #f57c00, 
+    4px 4px 0px #ff9800,
+    0 0 0 3px var(--retro-focus-ring);
 }
 
 .retro-button:hover {
-  transform: translate(-1px, -1px);
+  transform: translate(-1px, -1px) scale(1.02);
   box-shadow: 3px 3px 0px #f57c00, 5px 5px 0px #ff9800;
 }
 
 .retro-button:active {
-  transform: translate(1px, 1px);
+  transform: translate(1px, 1px) scale(0.98);
   box-shadow: 1px 1px 0px #f57c00, 2px 2px 0px #ff9800;
+  transition-duration: 50ms; /* iOS-style quick press feedback */
+}
+
+/* Apple-style press ripple with retro styling */
+.retro-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s var(--apple-ease-out), height 0.3s var(--apple-ease-out);
+  pointer-events: none;
+}
+
+.retro-button:active::after {
+  width: 200%;
+  height: 200%;
 }
 
 .sidebar-retro {
@@ -155,38 +217,101 @@ body {
     white;
 }
 
+/* iOS Messages-style bubbles with retro styling */
 .message-bubble {
-  padding: 16px;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border-radius: 18px;
   position: relative;
+  margin: 4px 0;
+  max-width: 70%;
+  word-wrap: break-word;
+  transition: all var(--apple-press-duration) var(--apple-ease-out);
 }
 
 .message-bubble.user {
-  background: #ff9800;
+  background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
   color: white;
   margin-left: auto;
-  max-width: 384px;
+  margin-right: var(--apple-spacing-unit);
   border-radius: 18px 18px 4px 18px;
+  box-shadow: 
+    0 1px 3px rgba(255, 152, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .message-bubble.assistant {
-  background: #f5f5f5;
-  max-width: 512px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+  color: #2d2d2d;
+  margin-left: var(--apple-spacing-unit);
   border-radius: 18px 18px 18px 4px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* iOS-style message status indicators */
+.message-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border-radius: 50%;
+  opacity: 0.7;
+  transition: opacity var(--apple-press-duration) var(--apple-ease-out);
+}
+
+.message-bubble.user::after {
+  right: 8px;
+  background: #ff6f00;
+}
+
+.message-bubble.assistant::after {
+  left: 8px;
+  background: #e0e0e0;
+}
+
+/* iOS-style message grouping */
+.message-bubble + .message-bubble {
+  margin-top: 2px;
+}
+
+.message-bubble:not(.same-sender) {
+  margin-top: 12px;
+}
+
+/* Apple-style focus for accessibility */
+.message-bubble:focus {
+  outline: none;
+  box-shadow: 
+    0 1px 3px rgba(255, 152, 0, 0.3),
+    0 0 0 3px var(--retro-focus-ring);
+}
+
+/* iOS-style typing indicator with retro styling */
 .typing-animation {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+  border-radius: 18px 18px 18px 4px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-left: var(--apple-spacing-unit);
+  margin-bottom: 8px;
+  max-width: fit-content;
+  animation: fadeInUp 0.3s var(--apple-ease-out);
 }
 
 .typing-dot {
   width: 8px;
   height: 8px;
-  background: currentColor;
+  background: #666;
   border-radius: 50%;
-  opacity: 0.6;
-  animation: typing 1.4s infinite ease-in-out;
+  opacity: 0.4;
+  animation: typing 1.4s infinite var(--apple-ease-in-out);
+  transform-origin: center;
 }
 
 .typing-dot:nth-child(1) { animation-delay: -0.32s; }
@@ -196,12 +321,21 @@ body {
 @keyframes typing {
   0%, 80%, 100% {
     transform: scale(0.8);
-    opacity: 0.5;
+    opacity: 0.4;
   }
   40% {
-    transform: scale(1);
-    opacity: 1;
+    transform: scale(1.2);
+    opacity: 0.8;
   }
+}
+
+/* iOS-style typing indicator label */
+.typing-label {
+  font-size: 12px;
+  color: #666;
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 4px;
+  opacity: 0.7;
 }
 
 .data-table {
@@ -330,6 +464,105 @@ body {
   z-index: 1;
 }
 
+/* iOS-style Input Areas with Retro Styling */
+.ios-input-container {
+  position: relative;
+  margin: var(--apple-spacing-unit) 0;
+}
+
+.ios-input {
+  width: 100%;
+  min-height: var(--apple-touch-target);
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  color: #2d2d2d;
+  transition: all var(--apple-press-duration) var(--apple-ease-out);
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.ios-input:focus {
+  outline: none;
+  border-color: var(--retro-primary);
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.8),
+    0 0 0 3px var(--retro-focus-ring);
+  transform: scale(1.01);
+}
+
+.ios-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* iOS-style floating label */
+.ios-floating-label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 16px;
+  pointer-events: none;
+  transition: all var(--apple-sheet-duration) var(--apple-ease-out);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+  padding: 0 4px;
+}
+
+.ios-input:focus + .ios-floating-label,
+.ios-input:not(:placeholder-shown) + .ios-floating-label {
+  top: 0;
+  font-size: 12px;
+  color: var(--retro-primary);
+  font-weight: 600;
+}
+
+/* iOS-style segmented control with retro styling */
+.ios-segmented-control {
+  display: flex;
+  background: #f0f0f0;
+  border-radius: 12px;
+  padding: 4px;
+  border: 2px solid #e0e0e0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ios-segment {
+  flex: 1;
+  padding: 8px 16px;
+  text-align: center;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  transition: all var(--apple-press-duration) var(--apple-ease-out);
+  min-height: var(--apple-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ios-segment.active {
+  background: linear-gradient(135deg, var(--retro-primary) 0%, #ff6f00 100%);
+  color: white;
+  box-shadow: 
+    0 2px 4px rgba(255, 152, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.ios-segment:hover:not(.active) {
+  background: rgba(255, 152, 0, 0.1);
+  color: var(--retro-primary);
+}
+
 /* Dark mode adjustments */
 .retro-dark .terminal-window {
   background: #2d2d2d;
@@ -353,8 +586,28 @@ body {
 }
 
 .retro-dark .message-bubble.assistant {
-  background: #363636;
+  background: linear-gradient(135deg, #363636 0%, #2d2d2d 100%);
   color: #00ff80;
+  border-color: #555;
+}
+
+.retro-dark .typing-animation {
+  background: linear-gradient(135deg, #363636 0%, #2d2d2d 100%);
+  border-color: #555;
+}
+
+.retro-dark .ios-input {
+  background: linear-gradient(135deg, #2d2d2d 0%, #363636 100%);
+  border-color: #555;
+  color: #00ff80;
+}
+
+.retro-dark .ios-input:focus {
+  border-color: #00ff80;
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.3),
+    0 1px 0 rgba(0, 255, 128, 0.1),
+    0 0 0 3px rgba(0, 255, 128, 0.3);
 }
 
 .retro-dark .data-table {
