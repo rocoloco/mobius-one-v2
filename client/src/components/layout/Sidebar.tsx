@@ -160,28 +160,17 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
             </div>
           </div>
           
-          <div className="space-y-2">
-            <Button
-              size="sm"
-              variant="flat"
-              className="w-full font-mono text-xs"
-              onClick={() => navigate('/landing')}
-            >
-              VIEW LANDING PAGE
-            </Button>
-            <Button
-              size="sm"
-              variant="bordered"
-              className="w-full font-mono text-xs border-gray-300"
-              onClick={() => {
-                // Simple logout - in a real app this would call an API
-                window.location.href = '/';
-                window.location.reload();
-              }}
-            >
-              SIGN OUT
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            variant="bordered"
+            className="w-full font-mono text-xs border-gray-300"
+            onClick={() => {
+              // Simple logout - redirect to landing page
+              window.location.href = '/landing';
+            }}
+          >
+            SIGN OUT
+          </Button>
         </div>
       )}
     </div>
