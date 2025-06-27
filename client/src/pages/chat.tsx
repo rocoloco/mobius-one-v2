@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import Sidebar from "@/components/chat/sidebar";
-import ChatArea from "@/components/chat/chat-area";
-import type { Conversation, Message, User, SystemConnection } from "@shared/schema";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import RetroSidebar from "@/components/chat/RetroSidebar";
+import RetroChatArea from "@/components/chat/RetroChatArea";
+import type { Conversation, User, SystemConnection } from "@shared/schema";
 
 export default function ChatPage() {
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const queryClient = useQueryClient();
 
   // Fetch user data
   const { data: user } = useQuery<User>({
@@ -37,7 +38,7 @@ export default function ChatPage() {
       const response = await fetch("/api/conversations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "New Conversation" }),
+        body: JSON.stringify({ title: "New Session" }),
         credentials: "include",
       });
 
@@ -55,9 +56,14 @@ export default function ChatPage() {
     setCurrentConversationId(conversationId);
   };
 
+  const handleConversationUpdate = () => {
+    // Refetch conversations to update titles/timestamps
+    queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
+  };
+
   return (
-    <div className="flex h-screen overflow-hidden bg-sf-bg">
-      <Sidebar
+    <div className="flex h-screen overflow-hidden crt-effect">
+      <RetroSidebar
         user={user}
         conversations={conversations}
         systemConnections={systemConnections || []}
@@ -65,12 +71,9 @@ export default function ChatPage() {
         onNewConversation={handleNewConversation}
         onSelectConversation={handleSelectConversation}
       />
-      <ChatArea
+      <RetroChatArea
         conversationId={currentConversationId}
-        onConversationUpdate={() => {
-          // Refetch conversations to update titles/timestamps
-          queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
-        }}
+        onConversationUpdate={handleConversationUpdate}
       />
     </div>
   );
