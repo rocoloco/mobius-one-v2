@@ -19,6 +19,7 @@ import NotFound from "@/pages/not-found";
 function AuthenticatedApp() {
   return (
     <Routes>
+      <Route path="/landing" element={<LandingPage />} />
       <Route path="/" element={<Layout />}>
         <Route index element={<DashboardPage />} />
         <Route path="dashboard" element={<DashboardPage />} />

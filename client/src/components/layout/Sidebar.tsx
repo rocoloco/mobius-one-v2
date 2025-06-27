@@ -143,7 +143,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
 
       {/* User Profile */}
       {!isCollapsed && user && (
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-gray-200 space-y-3">
           <div className="flex items-center space-x-3">
             <Avatar
               size="sm"
@@ -158,6 +158,29 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
                 ADMIN
               </p>
             </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Button
+              size="sm"
+              variant="flat"
+              className="w-full font-mono text-xs"
+              onClick={() => navigate('/landing')}
+            >
+              VIEW LANDING PAGE
+            </Button>
+            <Button
+              size="sm"
+              variant="bordered"
+              className="w-full font-mono text-xs border-gray-300"
+              onClick={() => {
+                // Simple logout - in a real app this would call an API
+                window.location.href = '/';
+                window.location.reload();
+              }}
+            >
+              SIGN OUT
+            </Button>
           </div>
         </div>
       )}
