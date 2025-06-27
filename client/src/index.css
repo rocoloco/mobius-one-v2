@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(0, 0%, 9%);
+  --muted: hsl(0, 0%, 95%);
+  --muted-foreground: hsl(0, 0%, 45%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(0, 0%, 9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(0, 0%, 9%);
+  --border: hsl(0, 0%, 90%);
+  --input: hsl(0, 0%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(0, 0%, 95%);
+  --secondary-foreground: hsl(0, 0%, 9%);
+  --accent: hsl(0, 0%, 95%);
+  --accent-foreground: hsl(0, 0%, 9%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(0, 0%, 9%);
+  --radius: 0.5rem;
+  
+  /* Custom Salesforce-inspired colors */
+  --sf-blue: hsl(207, 90%, 54%);
+  --sf-dark: hsl(211, 100%, 21%);
+  --sf-light: hsl(207, 90%, 77%);
+  --sf-success: hsl(140, 95%, 29%);
+  --sf-bg: hsl(0, 0%, 95%);
+  --sf-text: hsl(0, 0%, 9%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 4%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 4%, 16%);
+  --muted-foreground: hsl(240, 5%, 65%);
+  --popover: hsl(240, 10%, 4%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 4%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 4%, 16%);
+  --input: hsl(240, 4%, 16%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 4%, 16%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 4%, 16%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 63%, 31%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 5%, 84%);
+  
+  /* Dark mode Salesforce colors */
+  --sf-blue: hsl(207, 90%, 54%);
+  --sf-dark: hsl(211, 100%, 21%);
+  --sf-light: hsl(207, 90%, 77%);
+  --sf-success: hsl(140, 95%, 29%);
+  --sf-bg: hsl(240, 10%, 4%);
+  --sf-text: hsl(0, 0%, 98%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', 'Salesforce Sans', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .sf-blue {
+    color: var(--sf-blue);
+  }
+  
+  .bg-sf-blue {
+    background-color: var(--sf-blue);
+  }
+  
+  .sf-dark {
+    color: var(--sf-dark);
+  }
+  
+  .bg-sf-dark {
+    background-color: var(--sf-dark);
+  }
+  
+  .sf-light {
+    color: var(--sf-light);
+  }
+  
+  .bg-sf-light {
+    background-color: var(--sf-light);
+  }
+  
+  .sf-success {
+    color: var(--sf-success);
+  }
+  
+  .bg-sf-success {
+    background-color: var(--sf-success);
+  }
+  
+  .sf-bg {
+    background-color: var(--sf-bg);
+  }
+  
+  .sf-text {
+    color: var(--sf-text);
+  }
+}
+
+/* Custom scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground));
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground));
+}
+
+/* Message animations */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.message-ai {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.message-user {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: hsl(var(--muted-foreground));
+  animation: typing 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
