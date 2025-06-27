@@ -3,175 +3,192 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Shadcn/UI inspired design system */
+/* Authentic Shadcn/UI design system */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 84% 4.9%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 84% 4.9%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --ring: 221.2 83.2% 53.3%;
-  --radius: 0.5rem;
+  --background: #FFFFFF;
+  --foreground: #111827;
+  --muted: #F9FAFB;
+  --muted-foreground: #6B7280;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F9FAFB;
+  --secondary-foreground: #111827;
+  --accent: #F9FAFB;
+  --accent-foreground: #111827;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --ring: #2563EB;
+  --radius: 0.375rem;
 }
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--background);
+  color: var(--foreground);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Clean card system */
+/* Authentic Shadcn/UI card system */
 .card {
-  background-color: hsl(var(--card));
-  color: hsl(var(--card-foreground));
-  border: 1px solid hsl(var(--border));
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 .card-hover {
-  background-color: hsl(var(--card));
-  color: hsl(var(--card-foreground));
-  border: 1px solid hsl(var(--border));
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  transition: all 200ms ease;
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transition: all 150ms ease;
   cursor: pointer;
 }
 
 .card-hover:hover {
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  transform: translateY(-1px);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
 }
 
-/* Modern buttons */
+/* Authentic Shadcn/UI buttons */
 .btn-primary {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius);
   font-weight: 500;
-  transition: background-color 200ms ease;
+  font-size: 0.875rem;
+  transition: background-color 150ms ease;
   border: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .btn-primary:hover {
-  background-color: hsl(var(--primary) / 0.9);
+  background-color: #1D4ED8;
 }
 
 .btn-secondary {
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
+  background-color: transparent;
+  color: var(--foreground);
   padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
   font-weight: 500;
-  transition: background-color 200ms ease;
-  border: none;
+  font-size: 0.875rem;
+  transition: all 150ms ease;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .btn-secondary:hover {
-  background-color: hsl(var(--secondary) / 0.8);
+  background-color: var(--accent);
 }
 
 .btn-ghost {
   background-color: transparent;
-  color: hsl(var(--foreground));
+  color: var(--foreground);
   padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius);
   font-weight: 500;
-  transition: background-color 200ms ease;
+  font-size: 0.875rem;
+  transition: background-color 150ms ease;
   border: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .btn-ghost:hover {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+  background-color: var(--accent);
 }
 
-/* Clean input styling */
+/* Authentic Shadcn/UI input styling */
 .input-modern {
   display: flex;
   height: 2.5rem;
   width: 100%;
-  border-radius: 0.375rem;
-  border: 1px solid hsl(var(--border));
-  background-color: hsl(var(--background));
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--background);
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
-  transition: all 200ms ease;
+  transition: border-color 150ms ease;
 }
 
 .input-modern:focus {
   outline: none;
-  border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
 .input-modern::placeholder {
-  color: hsl(var(--muted-foreground));
+  color: var(--muted-foreground);
 }
 
-/* Status indicators */
+/* Minimal status indicators */
 .system-status-online {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   padding: 0.25rem 0.5rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
-  background-color: rgb(220 252 231);
-  color: rgb(22 101 52);
+  background-color: #F0FDF4;
+  color: #166534;
+  border: 1px solid #BBF7D0;
 }
 
 .system-status-offline {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   padding: 0.25rem 0.5rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
-  background-color: rgb(254 226 226);
-  color: rgb(153 27 27);
+  background-color: #FEF2F2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
 }
 
-/* AI-specific styling */
+/* Clean message bubbles */
 .message-bubble-user {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  border-radius: 0.75rem;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: 1rem;
   padding: 0.75rem 1rem;
   max-width: 80%;
   margin-left: auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .message-bubble-ai {
-  background-color: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border-radius: 1rem;
+  padding: 1rem;
   max-width: 80%;
   margin-right: auto;
-  border: 1px solid hsl(var(--border));
+  border: 1px solid var(--border);
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .confidence-high {
@@ -201,32 +218,33 @@ body {
   font-weight: 500;
 }
 
-/* Navigation styling */
+/* Clean navigation */
 .nav-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius);
   font-size: 0.875rem;
   font-weight: 500;
-  transition: all 200ms ease;
+  transition: background-color 150ms ease;
   cursor: pointer;
+  color: var(--muted-foreground);
 }
 
 .nav-item:hover {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+  background-color: var(--accent);
+  color: var(--accent-foreground);
 }
 
 .nav-item-active {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+  background-color: var(--accent);
+  color: var(--accent-foreground);
 }
 
 .sidebar {
-  border-right: 1px solid hsl(var(--border));
-  background-color: hsl(var(--card));
+  border-right: 1px solid var(--border);
+  background-color: var(--background);
 }
 
 /* Error states */

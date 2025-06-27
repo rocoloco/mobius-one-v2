@@ -3,9 +3,9 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Button, Input, Avatar } from "@heroui/react";
 import { 
-  Send, Mic, MicOff, Download, Settings, Plus, Search, History, 
-  Loader2, AlertCircle, CheckCircle, Database, ChevronLeft, ChevronRight,
-  Bot, User, Zap, BarChart3, Calendar, ExternalLink
+  Send, Mic, MicOff, Download, Plus, Search, History, 
+  Loader2, AlertCircle, Database, ChevronLeft, ChevronRight,
+  Bot, Zap, BarChart3, Calendar, ExternalLink, Clock
 } from "lucide-react";
 import { chatApi } from "@/lib/chatApi";
 
@@ -237,34 +237,34 @@ export default function QueryPage() {
   };
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="h-screen flex bg-white">
       {/* Left Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} sidebar flex flex-col transition-all duration-300`}>
         {/* Sidebar Header */}
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           {!sidebarCollapsed && (
-            <Button
+            <button
               className="btn-primary"
               onClick={handleNewConversation}
             >
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="h-4 w-4" />
               New Query
-            </Button>
+            </button>
           )}
-          <Button
+          <button
             className="btn-ghost p-2"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
             {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
+          </button>
         </div>
 
         {!sidebarCollapsed && (
           <div className="flex-1 overflow-y-auto p-4 space-y-6">
             {/* Recent Conversations */}
             <div>
-              <h3 className="font-semibold text-sm text-gray-700 mb-3 flex items-center gap-2">
-                <History className="h-4 w-4" />
+              <h3 className="font-semibold text-sm text-gray-900 mb-3 flex items-center gap-2">
+                <History className="h-4 w-4 text-gray-600" />
                 Recent Conversations
               </h3>
               <div className="space-y-2">
@@ -272,7 +272,7 @@ export default function QueryPage() {
                   <div 
                     key={conv.id}
                     className={`card-hover p-3 cursor-pointer ${
-                      currentConversationId === conv.id ? 'bg-blue-50 border-blue-200' : ''
+                      currentConversationId === conv.id ? 'bg-gray-50 border-gray-300' : ''
                     }`}
                     onClick={() => {
                       setCurrentConversationId(conv.id);
@@ -292,15 +292,15 @@ export default function QueryPage() {
 
             {/* Quick Suggestions */}
             <div>
-              <h3 className="font-semibold text-sm text-gray-700 mb-3 flex items-center gap-2">
-                <Zap className="h-4 w-4" />
+              <h3 className="font-semibold text-sm text-gray-900 mb-3 flex items-center gap-2">
+                <Zap className="h-4 w-4 text-gray-600" />
                 Quick Suggestions
               </h3>
               <div className="space-y-2">
                 {quickSuggestions.slice(0, 4).map((suggestion, index) => (
                   <button
                     key={index}
-                    className="w-full text-left p-2 text-xs text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                    className="w-full text-left p-2 text-xs text-gray-600 hover:bg-gray-50 rounded transition-colors"
                     onClick={() => setInput(suggestion)}
                   >
                     {suggestion}
@@ -311,8 +311,8 @@ export default function QueryPage() {
 
             {/* System Status */}
             <div>
-              <h3 className="font-semibold text-sm text-gray-700 mb-3 flex items-center gap-2">
-                <Database className="h-4 w-4" />
+              <h3 className="font-semibold text-sm text-gray-900 mb-3 flex items-center gap-2">
+                <Database className="h-4 w-4 text-gray-600" />
                 System Status
               </h3>
               <div className="space-y-2">
@@ -357,7 +357,7 @@ export default function QueryPage() {
               </div>
               <Avatar 
                 name={(user as any)?.username?.charAt(0).toUpperCase() || 'U'} 
-                className="h-8 w-8"
+                className="h-8 w-8 bg-gray-100 text-gray-700"
               />
             </div>
           </div>
@@ -370,27 +370,27 @@ export default function QueryPage() {
             <p className="flex-1">{error.message}</p>
             <div className="flex items-center gap-2">
               {error.action && (
-                <Button className="btn-primary" onClick={error.action.onClick}>
+                <button className="btn-primary" onClick={error.action.onClick}>
                   {error.action.label}
-                </Button>
+                </button>
               )}
-              <Button
+              <button
                 className="btn-ghost"
                 onClick={() => setError({ show: false, message: "" })}
               >
                 Dismiss
-              </Button>
+              </button>
             </div>
           </div>
         )}
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 bg-white">
           <div className="max-w-4xl mx-auto space-y-6">
             {messages.length === 0 ? (
               <div className="text-center py-12">
-                <div className="card p-8 mb-6 inline-block bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-                  <Bot className="text-blue-600 mx-auto mb-4" size={32} />
+                <div className="card p-8 mb-6 inline-block">
+                  <Bot className="text-gray-400 mx-auto mb-4" size={32} />
                   <h2 className="text-xl font-semibold text-gray-900 mb-2">
                     Welcome to Mobius One
                   </h2>
@@ -401,7 +401,7 @@ export default function QueryPage() {
                     {quickSuggestions.slice(0, 3).map((suggestion, index) => (
                       <button
                         key={index}
-                        className="px-3 py-1 text-xs bg-white border border-blue-200 rounded-full hover:bg-blue-50 transition-colors"
+                        className="px-3 py-1 text-xs bg-gray-50 border border-gray-200 rounded-full hover:bg-gray-100 transition-colors text-gray-700"
                         onClick={() => setInput(suggestion)}
                       >
                         {suggestion}
@@ -425,7 +425,7 @@ export default function QueryPage() {
                         <p className="mb-3">{message.content}</p>
                         
                         {/* AI Response Enhancements */}
-                        <div className="space-y-3 border-t border-gray-200 pt-3">
+                        <div className="space-y-3 border-t border-gray-100 pt-3">
                           {/* Confidence & Sources */}
                           <div className="flex items-center gap-3">
                             {message.confidence && (
@@ -437,7 +437,7 @@ export default function QueryPage() {
                               <div className="flex items-center gap-1">
                                 <span className="text-xs text-gray-500">Sources:</span>
                                 {message.sources.map((source, index) => (
-                                  <span key={index} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                  <span key={index} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                                     {source}
                                   </span>
                                 ))}
@@ -447,22 +447,22 @@ export default function QueryPage() {
 
                           {/* Quick Actions */}
                           <div className="flex items-center gap-2">
-                            <Button className="btn-ghost text-xs p-1">
+                            <button className="btn-ghost text-xs p-1">
                               <Download className="h-3 w-3 mr-1" />
                               Export
-                            </Button>
-                            <Button className="btn-ghost text-xs p-1">
+                            </button>
+                            <button className="btn-ghost text-xs p-1">
                               <BarChart3 className="h-3 w-3 mr-1" />
                               Analyze
-                            </Button>
-                            <Button className="btn-ghost text-xs p-1">
+                            </button>
+                            <button className="btn-ghost text-xs p-1">
                               <Calendar className="h-3 w-3 mr-1" />
                               Schedule
-                            </Button>
-                            <Button className="btn-ghost text-xs p-1">
+                            </button>
+                            <button className="btn-ghost text-xs p-1">
                               <ExternalLink className="h-3 w-3 mr-1" />
                               Share
-                            </Button>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -497,7 +497,7 @@ export default function QueryPage() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask anything about your business data..."
-                  className="input-modern pl-10 h-12 text-base"
+                  className="input-modern pl-10 h-12 text-base w-full"
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   disabled={isTyping}
                 />
@@ -506,14 +506,14 @@ export default function QueryPage() {
                 </div>
               </div>
               
-              <Button
-                className={`btn-ghost p-3 ${isListening ? 'bg-yellow-100 text-yellow-700' : ''}`}
+              <button
+                className={`btn-ghost p-3 ${isListening ? 'bg-yellow-50 text-yellow-700' : ''}`}
                 onClick={handleVoiceInput}
               >
                 {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
+              </button>
               
-              <Button
+              <button
                 className="btn-primary h-12 px-6"
                 onClick={handleSendMessage}
                 disabled={!input.trim() || isTyping}
@@ -523,10 +523,10 @@ export default function QueryPage() {
                 ) : (
                   <>
                     Send
-                    <Send className="ml-2 h-4 w-4" />
+                    <Send className="h-4 w-4" />
                   </>
                 )}
-              </Button>
+              </button>
             </div>
 
             {/* Input Help */}
