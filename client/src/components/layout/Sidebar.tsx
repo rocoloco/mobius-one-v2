@@ -45,8 +45,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
   });
 
   const navigationItems = [
-    { path: '/', label: 'Landing', icon: Home },
-    { path: '/dashboard', label: 'Dashboard', icon: BarChart3 },
+    { path: '/', label: 'Dashboard', icon: BarChart3 },
     { path: '/query', label: 'Query', icon: MessageSquare },
     { path: '/history', label: 'History', icon: History },
     { path: '/settings', label: 'Settings', icon: Settings },

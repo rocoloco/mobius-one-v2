@@ -30,8 +30,9 @@ This is a full-stack business AI assistant application that integrates with Sale
 ## Key Components
 
 ### Multi-Page Application Architecture
-- **Landing Page**: Value proposition and onboarding experience
-- **Dashboard**: System status and activity overview with real-time metrics
+- **Public Landing Page**: Value proposition and onboarding experience (no authentication required)
+- **Login/Signup Page**: Authentication interface with demo mode support
+- **Dashboard**: System status and activity overview with real-time metrics (default authenticated page)
 - **Query Interface**: Main conversational AI interface with iOS-style chat
 - **Settings**: System connections and user preferences management
 - **History**: Past sessions with search, filter, and export capabilities
@@ -127,6 +128,12 @@ Changelog:
   * Implemented collapsible sidebar navigation with system status
   * Added breadcrumb navigation and quick action floating button
   * Enhanced user experience with proper page transitions and loading states
+- June 27, 2025. Implemented authentication architecture:
+  * Created public landing page without sidebar navigation
+  * Added login/signup page with demo mode support
+  * Restructured app routing with authenticated and public sections
+  * Dashboard now serves as default authenticated home page
+  * All CTAs on landing page properly redirect to login flow
 ```
 
 ## User Preferences

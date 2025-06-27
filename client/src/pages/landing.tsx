@@ -114,7 +114,7 @@ export default function LandingPage() {
               color="primary"
               className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-mono font-bold px-8 py-4 text-lg"
               endContent={<ArrowRight size={20} />}
-              onClick={handleDemoQuery}
+              onClick={() => navigate('/login')}
               style={{ minHeight: '56px' }}
             >
               START QUERYING
@@ -125,6 +125,7 @@ export default function LandingPage() {
               variant="bordered"
               className="border-2 border-gray-300 text-gray-700 font-mono font-bold px-8 py-4 text-lg hover:bg-gray-50"
               startContent={<Play size={20} />}
+              onClick={handleDemoQuery}
               style={{ minHeight: '56px' }}
             >
               WATCH DEMO
@@ -280,7 +281,7 @@ export default function LandingPage() {
                       variant="flat"
                       className="font-mono font-bold"
                       endContent={<ArrowRight size={16} />}
-                      onClick={() => navigate('/query')}
+                      onClick={() => navigate('/login')}
                     >
                       TRY IT NOW
                     </Button>
@@ -456,7 +457,7 @@ export default function LandingPage() {
                   variant="flat"
                   className="w-full font-mono font-bold"
                   endContent={<MessageSquare size={16} />}
-                  onClick={() => navigate('/query')}
+                  onClick={() => navigate('/login')}
                 >
                   START ASKING
                 </Button>
@@ -559,7 +560,7 @@ export default function LandingPage() {
                 size="lg"
                 className="bg-white text-orange-600 font-mono font-bold px-8 py-4 text-lg hover:bg-gray-50"
                 endContent={<ArrowRight size={20} />}
-                onClick={() => navigate('/query')}
+                onClick={() => navigate('/login')}
                 style={{ minHeight: '56px' }}
               >
                 START QUERYING NOW
@@ -569,10 +570,10 @@ export default function LandingPage() {
                 variant="bordered"
                 className="border-2 border-white/30 text-white font-mono font-bold px-8 py-4 text-lg hover:bg-white/10"
                 endContent={<Settings size={20} />}
-                onClick={() => navigate('/settings')}
+                onClick={() => navigate('/login')}
                 style={{ minHeight: '56px' }}
               >
-                CONNECT SYSTEMS
+                SIGN UP FREE
               </Button>
             </div>
           </CardBody>
