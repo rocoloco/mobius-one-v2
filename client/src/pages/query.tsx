@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { Button, Card, CardBody, Input, Avatar, Chip, Divider, Select, SelectItem, Progress, Tooltip } from "@heroui/react";
-import { Send, Mic, MicOff, Download, Save, Calendar, BarChart3, Database, AlertCircle, CheckCircle, Clock, Filter, TrendingUp, Users, DollarSign, Plus, Search, Settings, Zap, ArrowDown, ChevronRight, ExternalLink } from "lucide-react";
+import { Button, Card, CardBody, Input, Avatar, Chip, Progress, Accordion, AccordionItem } from "@heroui/react";
+import { 
+  Send, Mic, MicOff, Download, Save, Calendar, BarChart3, Database, 
+  AlertCircle, CheckCircle, Clock, Settings, Zap, ArrowDown, ChevronRight, 
+  ExternalLink, Plus, Search, History, Loader2, WifiOff, RefreshCw
+} from "lucide-react";
 import { chatApi } from "@/lib/chatApi";
 
 interface Message {
@@ -13,6 +17,16 @@ interface Message {
   confidence?: number;
   sources?: string[];
   metadata?: any;
+  error?: boolean;
+}
+
+interface ErrorState {
+  show: boolean;
+  message: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 
 export default function QueryPage() {
@@ -22,8 +36,11 @@ export default function QueryPage() {
   const [selectedSystems, setSelectedSystems] = useState<string>("all");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [error, setError] = useState<ErrorState>({ show: false, message: "" });
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const { data: user } = useQuery({
     queryKey: ['/api/user'],
@@ -40,44 +57,31 @@ export default function QueryPage() {
     enabled: true
   });
 
-  // Sample suggestions based on available data
-  const quickSuggestions = [
-    "Show me this month's sales pipeline",
-    "Which customers have overdue payments?",
-    "Compare Q4 revenue vs last year",
-    "Top performing sales reps this quarter",
-    "What deals are at risk of slipping?",
-    "List all open opportunities above $50K"
-  ];
-
-  const queryTemplates = [
-    { label: "Show me...", value: "Show me " },
-    { label: "Which customers...", value: "Which customers " },
-    { label: "What is...", value: "What is " },
-    { label: "Compare...", value: "Compare " },
-    { label: "List all...", value: "List all " }
-  ];
-
-  const connectedSystems = Array.isArray(systemConnections) 
-    ? systemConnections.filter((conn: any) => conn.isConnected)
-    : [];
+  // Auto-focus input and handle pre-filled queries
+  useEffect(() => {
+    const queryParam = searchParams.get('q');
+    if (queryParam) {
+      setInput(queryParam);
+    }
+    inputRef.current?.focus();
+  }, [searchParams]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Handle URL parameters
-  useEffect(() => {
-    const conversationParam = searchParams.get('conversation');
-    if (conversationParam) {
-      const convId = parseInt(conversationParam);
-      if (!isNaN(convId)) {
-        setCurrentConversationId(convId);
-        loadMessages(convId);
-      }
-    }
-  }, [searchParams]);
+  const connectedSystems = Array.isArray(systemConnections) 
+    ? systemConnections.filter((conn: any) => conn.isConnected)
+    : [];
+
+  const quickSuggestions = [
+    "Show me this quarter's revenue breakdown",
+    "Which deals are at risk of slipping?",
+    "What's our customer churn rate?",
+    "Compare sales performance by region",
+    "List overdue invoices over $10K"
+  ];
 
   const loadMessages = async (conversationId: number) => {
     try {
@@ -90,8 +94,17 @@ export default function QueryPage() {
         confidence: msg.metadata ? JSON.parse(msg.metadata)?.confidence : undefined,
         sources: msg.systemSource ? [msg.systemSource] : undefined
       })));
+      setError({ show: false, message: "" });
     } catch (error) {
       console.error('Failed to load messages:', error);
+      setError({ 
+        show: true, 
+        message: "Failed to load conversation history. Please try refreshing the page.",
+        action: {
+          label: "Refresh",
+          onClick: () => window.location.reload()
+        }
+      });
     }
   };
 
@@ -118,14 +131,55 @@ export default function QueryPage() {
           role: 'assistant',
           content: response.aiMessage.content,
           timestamp: new Date(response.aiMessage.createdAt),
-          confidence: response.aiMessage.metadata ? JSON.parse(response.aiMessage.metadata)?.confidence : 85,
+          confidence: response.aiMessage.metadata ? JSON.parse(response.aiMessage.metadata)?.confidence : 92,
           sources: response.aiMessage.systemSource ? [response.aiMessage.systemSource] : ['Salesforce', 'NetSuite']
         }
       ]);
       setIsTyping(false);
+      setError({ show: false, message: "" });
     },
-    onError: () => {
+    onError: (error: any) => {
       setIsTyping(false);
+      const errorMessage = error.message || "Failed to send message";
+      
+      // Check for specific error types
+      if (errorMessage.includes("401") || errorMessage.includes("Unauthorized")) {
+        setError({
+          show: true,
+          message: "Authentication required. Please log in again.",
+          action: {
+            label: "Login",
+            onClick: () => window.location.href = "/api/login"
+          }
+        });
+      } else if (errorMessage.includes("network") || errorMessage.includes("fetch")) {
+        setError({
+          show: true,
+          message: "Network connection error. Please check your internet connection.",
+          action: {
+            label: "Retry",
+            onClick: () => sendMessageMutation.mutate(input)
+          }
+        });
+      } else if (connectedSystems.length === 0) {
+        setError({
+          show: true,
+          message: "No systems are connected. Please configure your data sources first.",
+          action: {
+            label: "Settings",
+            onClick: () => window.location.href = "/settings"
+          }
+        });
+      } else {
+        setError({
+          show: true,
+          message: "Unable to process your request. Our AI service may be temporarily unavailable.",
+          action: {
+            label: "Try Again",
+            onClick: () => setError({ show: false, message: "" })
+          }
+        });
+      }
     }
   });
 
@@ -142,9 +196,19 @@ export default function QueryPage() {
       const newConversation = await chatApi.createConversation("New Query Session");
       setCurrentConversationId(newConversation.id);
       setMessages([]);
+      setError({ show: false, message: "" });
       refetchConversations();
+      inputRef.current?.focus();
     } catch (error) {
       console.error('Failed to create conversation:', error);
+      setError({
+        show: true,
+        message: "Failed to start new conversation. Please try again.",
+        action: {
+          label: "Retry",
+          onClick: handleNewConversation
+        }
+      });
     }
   };
 
@@ -161,112 +225,212 @@ export default function QueryPage() {
         const transcript = event.results[0][0].transcript;
         setInput(transcript);
       };
+      recognition.onerror = () => {
+        setIsListening(false);
+        setError({
+          show: true,
+          message: "Voice recognition failed. Please type your question instead."
+        });
+      };
 
       recognition.start();
     } else {
-      alert('Voice recognition not supported in this browser');
+      setError({
+        show: true,
+        message: "Voice input is not supported in this browser. Please type your question."
+      });
     }
   };
 
   const handleExportChat = () => {
-    const chatData = {
-      conversation: messages,
-      timestamp: new Date().toISOString(),
-      systems: selectedSystems
-    };
-    const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `chat-export-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
+    try {
+      const chatData = {
+        conversation: messages,
+        timestamp: new Date().toISOString(),
+        systems: selectedSystems
+      };
+      const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `chat-export-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setError({
+        show: true,
+        message: "Failed to export chat. Please try again."
+      });
+    }
   };
 
   return (
-    <div className="h-screen flex bg-gradient-to-br from-orange-50 to-red-50">
-      {/* Left Sidebar - Recent Queries & Quick Actions */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        {/* Header */}
-        <div className="p-apple-3 border-b border-neutral-200">
+    <div className="h-screen flex bg-gradient-surface">
+      {/* Left Sidebar - Collapsible */}
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} bg-white/80 backdrop-blur-sm border-r border-neutral-200 flex flex-col transition-all duration-300`}>
+        {/* Sidebar Header */}
+        <div className="p-4 border-b border-neutral-200 flex items-center justify-between">
+          {!sidebarCollapsed && (
+            <Button
+              className="btn-hover font-sans"
+              startContent={<Plus size={16} />}
+              onClick={handleNewConversation}
+            >
+              New Query
+            </Button>
+          )}
           <Button
-            color="primary"
-            className="w-full btn-hover font-mono font-bold"
-            startContent={<Plus size={16} />}
-            onClick={handleNewConversation}
+            isIconOnly
+            variant="flat"
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
-            NEW QUERY SESSION
+            <ChevronRight className={`transition-transform ${sidebarCollapsed ? '' : 'rotate-180'}`} size={16} />
           </Button>
         </div>
 
-        {/* Recent Conversations */}
-        <div className="flex-1 overflow-y-auto p-apple-3">
-          <h3 className="font-mono font-bold text-sm text-neutral-700 mb-apple-2">RECENT QUERIES</h3>
-          <div className="space-y-2">
-            {(conversations as any[]).slice(0, 10).map((conv) => (
-              <Card 
-                key={conv.id}
-                className={`cursor-pointer card-hover scale-in ${
-                  currentConversationId === conv.id ? 'border-apple-primary bg-orange-50' : ''
-                }`}
-                onClick={() => {
-                  setCurrentConversationId(conv.id);
-                  loadMessages(conv.id);
-                }}
+        {!sidebarCollapsed && (
+          <div className="flex-1 overflow-y-auto p-4">
+            <Accordion variant="light" className="px-0">
+              {/* Recent Conversations */}
+              <AccordionItem
+                key="conversations"
+                aria-label="Recent Conversations"
+                title={<span className="font-display text-sm">Recent Conversations</span>}
+                startContent={<History size={16} />}
               >
-                <CardBody className="p-apple-2">
-                  <p className="font-mono text-sm font-bold text-neutral-900 truncate">
-                    {conv.title}
-                  </p>
-                  <p className="text-xs text-neutral-500 font-mono">
-                    {new Date(conv.updatedAt).toLocaleDateString()}
-                  </p>
-                </CardBody>
-              </Card>
-            ))}
-          </div>
+                <div className="space-y-2">
+                  {(conversations as any[]).slice(0, 8).map((conv) => (
+                    <Card 
+                      key={conv.id}
+                      className={`cursor-pointer card-hover ${
+                        currentConversationId === conv.id ? 'border-primary bg-primary/5' : ''
+                      }`}
+                      onClick={() => {
+                        setCurrentConversationId(conv.id);
+                        loadMessages(conv.id);
+                      }}
+                    >
+                      <CardBody className="p-3">
+                        <p className="font-sans text-sm font-medium text-neutral-900 truncate">
+                          {conv.title}
+                        </p>
+                        <p className="text-xs text-muted">
+                          {new Date(conv.updatedAt).toLocaleDateString()}
+                        </p>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              </AccordionItem>
 
-          {/* Quick Suggestions */}
-          <div className="mt-apple-4">
-            <h3 className="font-mono font-bold text-sm text-neutral-700 mb-apple-2">QUICK ACTIONS</h3>
-            <div className="gap-apple-1 flex flex-col">
-              {quickSuggestions.slice(0, 6).map((suggestion, index) => (
-                <Button
-                  key={index}
-                  variant="flat"
-                  size="sm"
-                  className="w-full justify-start text-left font-mono text-xs btn-hover fade-in"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                  onClick={() => setInput(suggestion)}
-                >
-                  {suggestion}
-                </Button>
-              ))}
-            </div>
+              {/* Quick Suggestions */}
+              <AccordionItem
+                key="suggestions"
+                aria-label="Quick Suggestions"
+                title={<span className="font-display text-sm">Quick Suggestions</span>}
+                startContent={<Zap size={16} />}
+              >
+                <div className="space-y-2">
+                  {quickSuggestions.map((suggestion, index) => (
+                    <Button
+                      key={index}
+                      variant="flat"
+                      size="sm"
+                      className="w-full justify-start text-left font-sans btn-hover"
+                      onClick={() => setInput(suggestion)}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </div>
+              </AccordionItem>
+
+              {/* System Status */}
+              <AccordionItem
+                key="systems"
+                aria-label="System Status"
+                title={<span className="font-display text-sm">System Status</span>}
+                startContent={<Database size={16} />}
+              >
+                <div className="space-y-3">
+                  {(systemConnections as any[]).map((system) => (
+                    <div key={system.id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          system.isConnected ? 'bg-success' : 'bg-error'
+                        }`}></div>
+                        <span className="font-sans text-sm">
+                          {system.systemType.charAt(0).toUpperCase() + system.systemType.slice(1)}
+                        </span>
+                      </div>
+                      <Chip 
+                        size="sm" 
+                        className={`font-sans ${
+                          system.isConnected ? 'status-online' : 'status-offline'
+                        }`}
+                      >
+                        {system.isConnected ? 'Online' : 'Offline'}
+                      </Chip>
+                    </div>
+                  ))}
+                </div>
+              </AccordionItem>
+            </Accordion>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
+        {/* Error Banner */}
+        {error.show && (
+          <div className="bg-error/10 border-l-4 border-error p-4 m-4 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="text-error" size={20} />
+                <p className="font-sans text-error font-medium">{error.message}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                {error.action && (
+                  <Button
+                    size="sm"
+                    className="btn-hover font-sans"
+                    onClick={error.action.onClick}
+                  >
+                    {error.action.label}
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="flat"
+                  onClick={() => setError({ show: false, message: "" })}
+                >
+                  Dismiss
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto space-y-6">
             {messages.length === 0 ? (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                  <Zap className="text-white" size={24} />
+                <div className="terminal-glass p-8 mb-6 inline-block">
+                  <Zap className="text-terminal-text mx-auto mb-4" size={32} />
+                  <h2 className="text-xl font-display text-terminal-text mb-2">
+                    MOBIUS ONE AI TERMINAL
+                  </h2>
+                  <p className="text-terminal-dim font-mono text-sm">
+                    Ask questions across your business systems in natural language
+                  </p>
                 </div>
-                <h2 className="text-2xl font-mono font-bold text-gray-900 mb-2">
-                  MOBIUS ONE AI TERMINAL
-                </h2>
-                <p className="text-gray-600 font-mono">
-                  Ask questions across your business systems in natural language
-                </p>
-                <div className="flex flex-wrap gap-2 mt-6 justify-center">
+                <div className="flex flex-wrap gap-2 justify-center">
                   {quickSuggestions.slice(0, 3).map((suggestion, index) => (
                     <Chip
                       key={index}
-                      className="cursor-pointer hover:bg-orange-100 font-mono"
+                      className="cursor-pointer hover:bg-primary/10 font-sans"
                       onClick={() => setInput(suggestion)}
                     >
                       {suggestion}
@@ -278,27 +442,27 @@ export default function QueryPage() {
               messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} fade-in`}
                 >
                   <div className={`max-w-3xl ${message.role === 'user' ? 'ml-12' : 'mr-12'}`}>
                     {/* Message Header */}
-                    <div className={`flex items-center gap-apple-1 mb-apple-1 ${
+                    <div className={`flex items-center gap-2 mb-2 ${
                       message.role === 'user' ? 'justify-end' : 'justify-start'
                     }`}>
                       <Avatar
                         size="sm"
                         name={message.role === 'user' ? 'U' : 'M1'}
                         className={message.role === 'user' 
-                          ? 'bg-gradient-to-r from-apple-primary to-orange-600 text-white font-mono scale-in' 
-                          : 'bg-gradient-to-r from-apple-secondary to-blue-600 text-white font-mono scale-in'
+                          ? 'bg-gradient-primary text-white font-mono' 
+                          : 'bg-gradient-secondary text-white font-mono'
                         }
                       />
-                      <span className="font-mono font-bold text-sm text-neutral-700">
-                        {message.role === 'user' ? 'YOU' : 'MOBIUS ONE'}
+                      <span className="font-display text-sm text-neutral-700">
+                        {message.role === 'user' ? 'You' : 'Mobius One'}
                       </span>
                       {message.confidence && (
-                        <Chip size="sm" className="font-mono status-online">
-                          {message.confidence}% CONFIDENCE
+                        <Chip size="sm" className="status-online font-sans">
+                          {message.confidence}% confidence
                         </Chip>
                       )}
                     </div>
@@ -306,13 +470,13 @@ export default function QueryPage() {
                     {/* Message Content */}
                     <Card className={`${
                       message.role === 'user' 
-                        ? 'bg-gradient-to-r from-apple-primary to-orange-600 text-white slide-in-right' 
-                        : 'bg-white border border-neutral-200 card-hover slide-in-left'
+                        ? 'bg-gradient-primary text-white slide-in-right' 
+                        : 'card-hover slide-in-left'
                     }`}>
-                      <CardBody className="p-apple-3">
+                      <CardBody className="p-4">
                         <p className={`${
                           message.role === 'user' ? 'text-white' : 'text-neutral-800'
-                        } leading-relaxed text-body`}>
+                        } leading-relaxed font-sans`}>
                           {message.content}
                         </p>
 
@@ -321,10 +485,10 @@ export default function QueryPage() {
                           <div className="mt-4 space-y-3">
                             {/* Sources */}
                             {message.sources && (
-                              <div className="flex items-center space-x-2">
-                                <span className="text-xs font-mono font-bold text-gray-500">SOURCES:</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-sans font-medium text-neutral-500">Sources:</span>
                                 {message.sources.map((source, index) => (
-                                  <Chip key={index} size="sm" variant="flat" className="font-mono text-xs">
+                                  <Chip key={index} size="sm" variant="flat" className="font-sans text-xs">
                                     {source}
                                   </Chip>
                                 ))}
@@ -332,17 +496,17 @@ export default function QueryPage() {
                             )}
 
                             {/* Quick Actions */}
-                            <div className="flex items-center space-x-2 pt-2 border-t border-gray-100">
-                              <Button size="sm" variant="flat" startContent={<Download size={14} />}>
+                            <div className="flex items-center gap-2 pt-2 border-t border-neutral-100">
+                              <Button size="sm" variant="flat" className="btn-hover font-sans" startContent={<Download size={14} />}>
                                 Export
                               </Button>
-                              <Button size="sm" variant="flat" startContent={<Save size={14} />}>
+                              <Button size="sm" variant="flat" className="btn-hover font-sans" startContent={<Save size={14} />}>
                                 Save
                               </Button>
-                              <Button size="sm" variant="flat" startContent={<Calendar size={14} />}>
+                              <Button size="sm" variant="flat" className="btn-hover font-sans" startContent={<Calendar size={14} />}>
                                 Schedule
                               </Button>
-                              <Button size="sm" variant="flat" startContent={<ExternalLink size={14} />}>
+                              <Button size="sm" variant="flat" className="btn-hover font-sans" startContent={<ExternalLink size={14} />}>
                                 Share
                               </Button>
                             </div>
@@ -352,7 +516,7 @@ export default function QueryPage() {
                     </Card>
 
                     {/* Timestamp */}
-                    <p className={`text-xs text-gray-500 font-mono mt-1 ${
+                    <p className={`text-xs text-neutral-400 font-sans mt-1 ${
                       message.role === 'user' ? 'text-right' : 'text-left'
                     }`}>
                       {message.timestamp.toLocaleTimeString()}
@@ -364,25 +528,21 @@ export default function QueryPage() {
 
             {/* Typing Indicator */}
             {isTyping && (
-              <div className="flex justify-start">
+              <div className="flex justify-start fade-in">
                 <div className="max-w-3xl mr-12">
-                  <div className="flex items-center space-x-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2">
                     <Avatar
                       size="sm"
                       name="M1"
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-mono"
+                      className="bg-gradient-secondary text-white font-mono"
                     />
-                    <span className="font-mono font-bold text-sm text-gray-700">MOBIUS ONE</span>
+                    <span className="font-display text-sm text-neutral-700">Mobius One</span>
                   </div>
-                  <Card className="bg-white border border-gray-200">
+                  <Card className="card-hover">
                     <CardBody className="p-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                        <span className="text-sm text-gray-500 font-mono">Analyzing your query...</span>
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="animate-spin text-primary" size={16} />
+                        <span className="text-sm text-neutral-600 font-sans">Analyzing your query...</span>
                       </div>
                     </CardBody>
                   </Card>
@@ -394,15 +554,15 @@ export default function QueryPage() {
           </div>
         </div>
 
-        {/* Smart Input Area */}
-        <div className="border-t border-neutral-200 bg-white p-apple-4">
+        {/* Enhanced Input Area */}
+        <div className="border-t border-neutral-200 bg-white/80 backdrop-blur-sm p-6">
           <div className="max-w-4xl mx-auto">
             {/* System Selector */}
-            <div className="flex items-center gap-apple-3 mb-apple-3">
-              <span className="font-mono font-bold text-sm text-neutral-700">QUERY:</span>
-              <div className="flex gap-apple-1">
+            <div className="flex items-center gap-4 mb-4">
+              <span className="font-display text-sm text-neutral-700">Query:</span>
+              <div className="flex gap-2">
                 <Chip
-                  className={`cursor-pointer font-mono transition-all ${
+                  className={`cursor-pointer font-sans transition-all ${
                     selectedSystems === 'all' ? 'status-info' : 'hover:bg-neutral-100'
                   }`}
                   onClick={() => setSelectedSystems('all')}
@@ -410,7 +570,7 @@ export default function QueryPage() {
                   All Systems
                 </Chip>
                 <Chip
-                  className={`cursor-pointer font-mono transition-all ${
+                  className={`cursor-pointer font-sans transition-all ${
                     selectedSystems === 'salesforce' ? 'status-info' : 'hover:bg-neutral-100'
                   }`}
                   onClick={() => setSelectedSystems('salesforce')}
@@ -418,7 +578,7 @@ export default function QueryPage() {
                   Salesforce
                 </Chip>
                 <Chip
-                  className={`cursor-pointer font-mono transition-all ${
+                  className={`cursor-pointer font-sans transition-all ${
                     selectedSystems === 'netsuite' ? 'status-online' : 'hover:bg-neutral-100'
                   }`}
                   onClick={() => setSelectedSystems('netsuite')}
@@ -428,36 +588,22 @@ export default function QueryPage() {
               </div>
             </div>
 
-            {/* Query Templates */}
-            <div className="flex items-center space-x-2 mb-4">
-              <span className="font-mono font-bold text-xs text-gray-500">TEMPLATES:</span>
-              {queryTemplates.map((template) => (
-                <Chip
-                  key={template.value}
-                  size="sm"
-                  className="cursor-pointer hover:bg-orange-100 font-mono"
-                  onClick={() => setInput(template.value)}
-                >
-                  {template.label}
-                </Chip>
-              ))}
-            </div>
-
             {/* Input Field */}
-            <div className="flex items-center gap-apple-3">
+            <div className="flex items-center gap-4">
               <Input
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask anything about your business data..."
                 size="lg"
                 classNames={{
-                  input: "font-mono text-base",
-                  inputWrapper: "bg-neutral-50 border-2 border-neutral-200 hover:border-apple-primary focus-within:border-apple-primary focus-ring"
+                  input: "font-sans text-base",
+                  inputWrapper: "bg-white border-2 border-neutral-200 hover:border-primary focus-within:border-primary shadow-lg"
                 }}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 endContent={
-                  <div className="flex items-center gap-apple-1">
-                    <Chip size="sm" className="font-mono text-xs">
+                  <div className="flex items-center gap-2">
+                    <Chip size="sm" className="font-sans text-xs">
                       {input.length}/500
                     </Chip>
                   </div>
@@ -466,7 +612,7 @@ export default function QueryPage() {
               
               <Button
                 isIconOnly
-                color={isListening ? "danger" : "default"}
+                color={isListening ? "warning" : "default"}
                 variant="flat"
                 onClick={handleVoiceInput}
                 className={`min-w-12 btn-hover ${isListening ? 'status-warning' : ''}`}
@@ -475,84 +621,27 @@ export default function QueryPage() {
               </Button>
               
               <Button
-                color="primary"
-                className="btn-hover font-mono font-bold min-w-24"
+                className="btn-hover font-sans min-w-24"
                 endContent={<Send size={18} />}
                 onClick={handleSendMessage}
                 isDisabled={!input.trim() || isTyping}
+                isLoading={isTyping}
               >
-                SEND
+                Send
               </Button>
             </div>
 
             {/* Input Help */}
-            <div className="flex items-center justify-between mt-2 text-xs text-gray-500 font-mono">
+            <div className="flex items-center justify-between mt-2 text-xs text-neutral-500 font-sans">
               <span>Press Enter to send • Voice input available</span>
-              <span>Complexity: {input.length > 100 ? 'High' : input.length > 50 ? 'Medium' : 'Low'}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Sidebar - System Status & Metrics */}
-      <div className="w-80 bg-white border-l border-neutral-200 flex flex-col">
-        {/* Header */}
-        <div className="p-apple-3 border-b border-neutral-200">
-          <h2 className="font-mono font-bold text-neutral-900">SYSTEM STATUS</h2>
-        </div>
-
-        {/* System Connections */}
-        <div className="p-apple-3 space-y-4">
-          <div className="gap-apple-2 flex flex-col">
-            {connectedSystems.map((system: any) => (
-              <Card key={system.id} className="card-hover scale-in">
-                <CardBody className="p-apple-2">
-                  <div className="flex items-center justify-between mb-apple-1">
-                    <span className="font-mono font-bold text-sm text-neutral-900">{system.systemType.toUpperCase()}</span>
-                    <Chip size="sm" className="font-mono status-online">
-                      ONLINE
-                    </Chip>
-                  </div>
-                  <div className="flex items-center gap-apple-1 text-xs text-neutral-600">
-                    <Clock size={12} />
-                    <span className="font-mono">Last sync: 2 mins ago</span>
-                  </div>
-                </CardBody>
-              </Card>
-            ))}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="pt-apple-3 border-t border-neutral-200">
-            <h3 className="font-mono font-bold text-sm text-neutral-700 mb-apple-2">QUICK ACTIONS</h3>
-            <div className="gap-apple-1 flex flex-col">
-              <Button
-                size="sm"
-                variant="flat"
-                className="w-full justify-start font-mono btn-hover fade-in"
-                startContent={<Download size={14} />}
-                onClick={handleExportChat}
-              >
-                Export Chat
-              </Button>
-              <Button
-                size="sm"
-                variant="flat"
-                className="w-full justify-start font-mono btn-hover fade-in"
-                startContent={<BarChart3 size={14} />}
-                style={{ animationDelay: '100ms' }}
-              >
-                View Analytics
-              </Button>
-              <Button
-                size="sm"
-                variant="flat"
-                className="w-full justify-start font-mono btn-hover fade-in"
-                startContent={<Settings size={14} />}
-                style={{ animationDelay: '200ms' }}
-              >
-                System Settings
-              </Button>
+              <span>
+                Complexity: <span className={`font-medium ${
+                  input.length > 100 ? 'text-warning' : 
+                  input.length > 50 ? 'text-secondary' : 'text-success'
+                }`}>
+                  {input.length > 100 ? 'High' : input.length > 50 ? 'Medium' : 'Low'}
+                </span>
+              </span>
             </div>
           </div>
         </div>

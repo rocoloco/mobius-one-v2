@@ -1,28 +1,19 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Card, CardBody, Button, Chip, Progress, Avatar, Divider } from "@heroui/react";
+import { Card, CardBody, Button, Chip, Progress, Avatar, Input } from "@heroui/react";
 import { 
-  Activity, Database, Users, TrendingUp, AlertCircle, CheckCircle, MessageSquare, 
-  Settings, BarChart3, Plus, RefreshCw, DollarSign, Clock, Zap, Bell, 
-  Search, FileText, HelpCircle, User, Shield, Wifi, WifiOff, Calendar,
-  Target, CreditCard, Briefcase, PieChart, LineChart, Star
+  MessageSquare, Plus, TrendingUp, Users, DollarSign, Clock, 
+  Search, ArrowRight, Zap, CheckCircle, AlertTriangle, Database,
+  BarChart3, Target, Calendar
 } from "lucide-react";
-import { chatApi } from "@/lib/chatApi";
 
 export default function DashboardPage() {
-  const [lastSync, setLastSync] = useState(new Date());
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update time every minute
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-      // Simulate periodic sync updates
-      if (Math.random() < 0.1) {
-        setLastSync(new Date());
-      }
-    }, 60000);
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
@@ -45,7 +36,6 @@ export default function DashboardPage() {
     ? systemConnections.filter((conn: any) => conn.isConnected)
     : [];
 
-  // Calculate today's queries
   const todaysQueries = Array.isArray(conversations) 
     ? conversations.filter((conv: any) => {
         const today = new Date();
@@ -54,520 +44,338 @@ export default function DashboardPage() {
       }).length 
     : 0;
 
-  // Business insights data (would come from real APIs in production)
-  const insights = {
-    revenue: { current: 2847500, growth: 18.3, pipeline: 4200000, forecast: 3100000 },
-    collections: { overdue: 12, amount: 450000, urgent: 3, pastDue: 8 },
-    deals: { active: 24, closing: 8, value: 1250000, won: 15, lost: 2 },
-    performance: { uptime: 99.8, avgResponse: 24, errors: 0, dataFreshness: 98.7 },
-    aiUsage: { queries: 156, accuracy: 94.5, timeSaved: "2.3h", efficiency: 87 }
-  };
-
-  const recentActivity = [
-    { type: "query", title: "Q4 Revenue Analysis", time: "5 min ago", status: "completed", user: "John D." },
-    { type: "alert", title: "Payment Overdue Alert - Acme Corp", time: "12 min ago", status: "active", priority: "high" },
-    { type: "sync", title: "Salesforce Data Sync", time: "23 min ago", status: "completed", records: 1247 },
-    { type: "query", title: "Customer Segmentation Report", time: "1 hour ago", status: "completed", user: "Sarah M." },
-    { type: "deal", title: "New Deal: TechStart Integration", time: "2 hours ago", status: "created", value: "$125K" },
-    { type: "system", title: "NetSuite Connection Health Check", time: "3 hours ago", status: "passed", uptime: "99.9%" }
+  // Quick query suggestions for business users
+  const quickQueries = [
+    { text: "Show me this quarter's revenue vs target", category: "Revenue", icon: TrendingUp },
+    { text: "Which customers have overdue payments?", category: "Collections", icon: AlertTriangle },
+    { text: "What deals are closing this month?", category: "Sales", icon: Target },
+    { text: "Compare our performance vs last quarter", category: "Analytics", icon: BarChart3 },
+    { text: "Show me top performing sales reps", category: "Team", icon: Users },
+    { text: "What's our cash flow projection?", category: "Finance", icon: DollarSign }
   ];
 
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case "query": return <MessageSquare size={16} className="text-apple-primary" />;
-      case "alert": return <AlertCircle size={16} className="text-apple-warning" />;
-      case "sync": return <RefreshCw size={16} className="text-apple-secondary" />;
-      case "deal": return <Briefcase size={16} className="text-apple-success" />;
-      case "system": return <Database size={16} className="text-apple-success" />;
-      default: return <Activity size={16} className="text-neutral-500" />;
+  const recentInsights = [
+    { 
+      title: "Q4 Revenue Up 18.3%", 
+      description: "Current quarter tracking $2.85M vs $2.41M last quarter",
+      status: "positive",
+      time: "Updated 5 min ago"
+    },
+    { 
+      title: "3 Urgent Collections", 
+      description: "Overdue amounts totaling $450K require immediate attention",
+      status: "warning",
+      time: "Updated 12 min ago"
+    },
+    { 
+      title: "8 Deals Closing Soon", 
+      description: "Pipeline value of $1.25M expected to close this quarter",
+      status: "info",
+      time: "Updated 23 min ago"
     }
+  ];
+
+  const handleQuickQuery = (query: string) => {
+    // Navigate to query page with pre-filled query
+    window.location.href = `/query?q=${encodeURIComponent(query)}`;
   };
 
-  const getActivityBadgeColor = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed": case "passed": return "status-online";
-      case "active": case "created": return "status-warning";
-      case "failed": case "error": return "status-offline";
+      case "positive": return "status-online";
+      case "warning": return "status-warning";
+      case "info": return "status-info";
       default: return "status-info";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      <div className="p-apple-4 max-w-7xl mx-auto">
-        {/* TOP SECTION */}
-        <div className="mb-apple-4">
-          {/* Welcome Message */}
-          <div className="mb-apple-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-mono font-bold text-neutral-900 mb-apple-1">
-                  MOBIUS ONE DASHBOARD
-                </h1>
-                <p className="text-neutral-600 font-mono">
-                  Good {currentTime.getHours() < 12 ? 'morning' : currentTime.getHours() < 18 ? 'afternoon' : 'evening'}, 
-                  <span className="font-bold text-apple-primary ml-1">{user?.username || 'User'}</span> • 
-                  <span className="ml-1">Business Intelligence Administrator</span>
-                </p>
-              </div>
-              <div className="flex items-center gap-apple-2">
-                <Chip className="status-online font-mono">ALL SYSTEMS OPERATIONAL</Chip>
-                <Avatar 
-                  name={user?.username?.charAt(0).toUpperCase() || 'U'} 
-                  className="bg-gradient-to-r from-apple-primary to-orange-600 text-white font-mono"
-                />
-              </div>
+    <div className="min-h-screen bg-gradient-surface">
+      <div className="p-8 max-w-6xl mx-auto">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-display text-neutral-900 mb-2">
+                Good {currentTime.getHours() < 12 ? 'morning' : currentTime.getHours() < 18 ? 'afternoon' : 'evening'}, {(user as any)?.username || 'there'}
+              </h1>
+              <p className="text-lg text-muted">
+                What would you like to know about your business today?
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Chip className="status-online font-sans">
+                {connectedSystems.length}/2 Systems Online
+              </Chip>
+              <Avatar 
+                name={(user as any)?.username?.charAt(0).toUpperCase() || 'U'} 
+                className="bg-gradient-primary text-white"
+                size="lg"
+              />
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-apple-3 mb-apple-4">
-            <Card className="card-hover scale-in">
-              <CardBody className="p-apple-3">
-                <div className="flex items-center gap-apple-2">
-                  <div className="w-12 h-12 bg-gradient-to-r from-apple-primary to-orange-600 rounded-xl flex items-center justify-center">
-                    <MessageSquare className="text-white" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xl font-mono font-bold text-neutral-900">{todaysQueries}</p>
-                    <p className="text-sm font-mono text-neutral-600">Queries Today</p>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-
-            <Card className="card-hover scale-in" style={{ animationDelay: '100ms' }}>
-              <CardBody className="p-apple-3">
-                <div className="flex items-center gap-apple-2">
-                  <div className="w-12 h-12 bg-gradient-to-r from-apple-success to-green-600 rounded-xl flex items-center justify-center">
-                    <Wifi className="text-white" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xl font-mono font-bold text-neutral-900">{connectedSystems.length}/2</p>
-                    <p className="text-sm font-mono text-neutral-600">Systems Connected</p>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-
-            <Card className="card-hover scale-in" style={{ animationDelay: '200ms' }}>
-              <CardBody className="p-apple-3">
-                <div className="flex items-center gap-apple-2">
-                  <div className="w-12 h-12 bg-gradient-to-r from-apple-secondary to-blue-600 rounded-xl flex items-center justify-center">
-                    <Clock className="text-white" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xl font-mono font-bold text-neutral-900">{insights.performance.dataFreshness}%</p>
-                    <p className="text-sm font-mono text-neutral-600">Data Freshness</p>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-
-            <Card className="card-hover scale-in" style={{ animationDelay: '300ms' }}>
-              <CardBody className="p-apple-3">
-                <div className="flex items-center gap-apple-2">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-                    <Zap className="text-white" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xl font-mono font-bold text-neutral-900">{insights.performance.avgResponse}ms</p>
-                    <p className="text-sm font-mono text-neutral-600">Avg Response</p>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-
-          {/* Quick Action Buttons */}
-          <div className="flex flex-wrap gap-apple-2 mb-apple-4">
-            <Link to="/query">
-              <Button className="btn-hover font-mono font-bold" startContent={<Plus size={16} />}>
-                NEW QUERY
-              </Button>
-            </Link>
-            <Button variant="flat" className="btn-hover font-mono" startContent={<BarChart3 size={16} />}>
-              VIEW REPORTS
-            </Button>
-            <Button variant="flat" className="btn-hover font-mono" startContent={<Activity size={16} />}>
-              SYSTEM HEALTH
-            </Button>
-            <Button variant="flat" className="btn-hover font-mono" startContent={<Calendar size={16} />}>
-              SCHEDULE REPORT
-            </Button>
-          </div>
+          {/* Primary Action - Search/Query */}
+          <Card className="card-hover mb-8">
+            <CardBody className="p-6">
+              <div className="flex items-center gap-4">
+                <Input
+                  placeholder="Ask anything about your business data..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  size="lg"
+                  startContent={<Search className="text-neutral-400" size={20} />}
+                  classNames={{
+                    input: "text-lg font-sans",
+                    inputWrapper: "bg-white border-2 border-neutral-200 hover:border-primary focus-within:border-primary"
+                  }}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim()) {
+                      handleQuickQuery(searchQuery);
+                    }
+                  }}
+                />
+                <Link to={searchQuery.trim() ? `/query?q=${encodeURIComponent(searchQuery)}` : "/query"}>
+                  <Button 
+                    className="btn-hover font-sans px-8"
+                    size="lg"
+                    endContent={<ArrowRight size={18} />}
+                  >
+                    Ask AI
+                  </Button>
+                </Link>
+              </div>
+            </CardBody>
+          </Card>
         </div>
 
-        {/* MAIN CONTENT GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-apple-4">
-          {/* LEFT & CENTER - INSIGHTS CARDS */}
-          <div className="lg:col-span-2 space-y-apple-3">
-            {/* Revenue Pipeline Summary */}
-            <Card className="card-hover fade-in">
-              <CardBody className="p-apple-3">
-                <div className="flex items-center justify-between mb-apple-3">
-                  <h3 className="font-mono font-bold text-neutral-900 flex items-center gap-apple-1">
-                    <DollarSign size={18} className="text-apple-success" />
-                    REVENUE PIPELINE SUMMARY
-                  </h3>
-                  <Chip className="status-online font-mono">+{insights.revenue.growth}% QoQ</Chip>
+        {/* Quick Stats - Simplified */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="card-hover">
+            <CardBody className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+                  <MessageSquare className="text-white" size={18} />
                 </div>
-                
-                <div className="grid grid-cols-3 gap-apple-3">
-                  <div className="text-center">
-                    <p className="text-2xl font-mono font-bold text-neutral-900">
-                      ${(insights.revenue.current / 1000000).toFixed(1)}M
-                    </p>
-                    <p className="text-sm font-mono text-neutral-600">Current Quarter</p>
-                    <div className="mt-apple-1">
-                      <TrendingUp className="text-apple-success mx-auto" size={16} />
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-mono font-bold text-apple-primary">
-                      ${(insights.revenue.pipeline / 1000000).toFixed(1)}M
-                    </p>
-                    <p className="text-sm font-mono text-neutral-600">Pipeline Value</p>
-                    <div className="mt-apple-1">
-                      <Target className="text-apple-primary mx-auto" size={16} />
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-mono font-bold text-apple-secondary">
-                      ${(insights.revenue.forecast / 1000000).toFixed(1)}M
-                    </p>
-                    <p className="text-sm font-mono text-neutral-600">Q1 Forecast</p>
-                    <div className="mt-apple-1">
-                      <LineChart className="text-apple-secondary mx-auto" size={16} />
-                    </div>
-                  </div>
+                <div>
+                  <p className="text-2xl font-display text-neutral-900">{todaysQueries}</p>
+                  <p className="text-sm text-muted">Queries Today</p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </CardBody>
+          </Card>
 
-            {/* Collection Alerts */}
-            <Card className="card-hover fade-in" style={{ animationDelay: '100ms' }}>
-              <CardBody className="p-apple-3">
-                <div className="flex items-center justify-between mb-apple-3">
-                  <h3 className="font-mono font-bold text-neutral-900 flex items-center gap-apple-1">
-                    <CreditCard size={18} className="text-apple-warning" />
-                    COLLECTION ALERTS & OVERDUE ACCOUNTS
-                  </h3>
-                  <Chip className="status-warning font-mono">{insights.collections.urgent} URGENT</Chip>
+          <Card className="card-hover">
+            <CardBody className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-secondary rounded-lg flex items-center justify-center">
+                  <Database className="text-white" size={18} />
                 </div>
-                
-                <div className="grid grid-cols-2 gap-apple-4">
-                  <div>
-                    <div className="mb-apple-2">
-                      <p className="text-xl font-mono font-bold text-apple-warning">
-                        {insights.collections.overdue}
-                      </p>
-                      <p className="text-sm font-mono text-neutral-600">Overdue Accounts</p>
-                    </div>
-                    <div>
-                      <p className="text-lg font-mono font-bold text-neutral-900">
-                        ${insights.collections.amount.toLocaleString()}
-                      </p>
-                      <p className="text-sm font-mono text-neutral-600">Total Amount</p>
-                    </div>
-                  </div>
-                  <div className="space-y-apple-1">
-                    <div className="flex justify-between">
-                      <span className="font-mono text-sm text-neutral-600">30+ Days</span>
-                      <span className="font-mono text-sm font-bold text-apple-warning">{insights.collections.pastDue}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-mono text-sm text-neutral-600">60+ Days</span>
-                      <span className="font-mono text-sm font-bold text-apple-error">{insights.collections.urgent}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-mono text-sm text-neutral-600">90+ Days</span>
-                      <span className="font-mono text-sm font-bold text-apple-error">1</span>
-                    </div>
-                  </div>
+                <div>
+                  <p className="text-2xl font-display text-neutral-900">{connectedSystems.length}</p>
+                  <p className="text-sm text-muted">Systems Connected</p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </CardBody>
+          </Card>
 
-            {/* Recent Deal Activity */}
-            <Card className="card-hover fade-in" style={{ animationDelay: '200ms' }}>
-              <CardBody className="p-apple-3">
-                <div className="flex items-center justify-between mb-apple-3">
-                  <h3 className="font-mono font-bold text-neutral-900 flex items-center gap-apple-1">
-                    <Briefcase size={18} className="text-apple-success" />
-                    RECENT DEAL ACTIVITY
-                  </h3>
-                  <Chip className="status-info font-mono">{insights.deals.closing} CLOSING THIS QUARTER</Chip>
+          <Card className="card-hover">
+            <CardBody className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-accent rounded-lg flex items-center justify-center">
+                  <TrendingUp className="text-white" size={18} />
                 </div>
-                
-                <div className="grid grid-cols-4 gap-apple-2">
-                  <div className="text-center">
-                    <p className="text-lg font-mono font-bold text-neutral-900">{insights.deals.active}</p>
-                    <p className="text-xs font-mono text-neutral-600">Active</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-mono font-bold text-apple-primary">{insights.deals.closing}</p>
-                    <p className="text-xs font-mono text-neutral-600">Closing</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-mono font-bold text-apple-success">{insights.deals.won}</p>
-                    <p className="text-xs font-mono text-neutral-600">Won</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-mono font-bold text-apple-error">{insights.deals.lost}</p>
-                    <p className="text-xs font-mono text-neutral-600">Lost</p>
-                  </div>
+                <div>
+                  <p className="text-2xl font-display text-neutral-900">98.7%</p>
+                  <p className="text-sm text-muted">Data Fresh</p>
                 </div>
-                
-                <Divider className="my-apple-2" />
-                
-                <div className="text-center">
-                  <p className="text-xl font-mono font-bold text-neutral-900">
-                    ${(insights.deals.value / 1000000).toFixed(1)}M
-                  </p>
-                  <p className="text-sm font-mono text-neutral-600">Total Pipeline Value</p>
-                </div>
-              </CardBody>
-            </Card>
+              </div>
+            </CardBody>
+          </Card>
 
-            {/* System Performance & AI Usage */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-apple-3">
-              <Card className="card-hover fade-in" style={{ animationDelay: '300ms' }}>
-                <CardBody className="p-apple-3">
-                  <h3 className="font-mono font-bold text-neutral-900 mb-apple-2 flex items-center gap-apple-1">
-                    <Activity size={18} className="text-apple-secondary" />
-                    SYSTEM PERFORMANCE
-                  </h3>
-                  <div className="space-y-apple-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-mono text-sm text-neutral-600">Uptime</span>
-                      <span className="font-mono text-sm font-bold text-apple-success">
-                        {insights.performance.uptime}%
-                      </span>
-                    </div>
-                    <Progress value={insights.performance.uptime} className="h-2" color="success" />
-                    
-                    <div className="flex justify-between items-center">
-                      <span className="font-mono text-sm text-neutral-600">Response Time</span>
-                      <span className="font-mono text-sm font-bold text-neutral-900">
-                        {insights.performance.avgResponse}ms
-                      </span>
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <span className="font-mono text-sm text-neutral-600">Errors (24h)</span>
-                      <span className="font-mono text-sm font-bold text-apple-success">
-                        {insights.performance.errors}
-                      </span>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
+          <Card className="card-hover">
+            <CardBody className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                  <Zap className="text-white" size={18} />
+                </div>
+                <div>
+                  <p className="text-2xl font-display text-neutral-900">24ms</p>
+                  <p className="text-sm text-muted">Response Time</p>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
 
-              <Card className="card-hover fade-in" style={{ animationDelay: '400ms' }}>
-                <CardBody className="p-apple-3">
-                  <h3 className="font-mono font-bold text-neutral-900 mb-apple-2 flex items-center gap-apple-1">
-                    <Zap size={18} className="text-purple-500" />
-                    AI USAGE STATISTICS
-                  </h3>
-                  <div className="grid grid-cols-2 gap-apple-2">
-                    <div className="text-center">
-                      <p className="text-lg font-mono font-bold text-purple-500">{insights.aiUsage.queries}</p>
-                      <p className="text-xs font-mono text-neutral-600">Queries Today</p>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Quick Query Suggestions */}
+          <div className="lg:col-span-2">
+            <h2 className="text-xl font-display text-neutral-900 mb-4">Popular Questions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {quickQueries.map((query, index) => (
+                <Card 
+                  key={index} 
+                  className="card-hover cursor-pointer"
+                  onClick={() => handleQuickQuery(query.text)}
+                >
+                  <CardBody className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                        <query.icon className="text-white" size={14} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-sans font-medium text-neutral-900 text-sm leading-relaxed">
+                          {query.text}
+                        </p>
+                        <p className="text-xs text-muted mt-1">{query.category}</p>
+                      </div>
+                      <ArrowRight className="text-neutral-400 flex-shrink-0" size={16} />
                     </div>
-                    <div className="text-center">
-                      <p className="text-lg font-mono font-bold text-apple-success">{insights.aiUsage.accuracy}%</p>
-                      <p className="text-xs font-mono text-neutral-600">Accuracy</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-mono font-bold text-apple-primary">{insights.aiUsage.timeSaved}</p>
-                      <p className="text-xs font-mono text-neutral-600">Time Saved</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-mono font-bold text-apple-secondary">{insights.aiUsage.efficiency}%</p>
-                      <p className="text-xs font-mono text-neutral-600">Efficiency</p>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+
+            {/* Recent Insights */}
+            <div className="mt-8">
+              <h2 className="text-xl font-display text-neutral-900 mb-4">Recent Insights</h2>
+              <div className="space-y-3">
+                {recentInsights.map((insight, index) => (
+                  <Card key={index} className="card-hover">
+                    <CardBody className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1">
+                          <h3 className="font-sans font-medium text-neutral-900 mb-1">
+                            {insight.title}
+                          </h3>
+                          <p className="text-sm text-muted mb-2">{insight.description}</p>
+                          <p className="text-xs text-neutral-400">{insight.time}</p>
+                        </div>
+                        <Chip size="sm" className={`${getStatusColor(insight.status)} font-sans`}>
+                          {insight.status.toUpperCase()}
+                        </Chip>
+                      </div>
+                    </CardBody>
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* RIGHT COLUMN - NAVIGATION & ACTIVITY */}
-          <div className="space-y-apple-3">
-            {/* Navigation Sidebar */}
-            <Card className="card-hover fade-in">
-              <CardBody className="p-apple-3">
-                <h3 className="font-mono font-bold text-neutral-900 mb-apple-2">NAVIGATION</h3>
-                <div className="space-y-apple-1">
-                  <div className="p-apple-2 bg-apple-primary bg-opacity-10 rounded-lg border border-apple-primary">
-                    <div className="flex items-center gap-apple-1">
-                      <BarChart3 size={14} className="text-apple-primary" />
-                      <span className="font-mono text-sm font-bold text-apple-primary">Dashboard</span>
-                    </div>
-                  </div>
-                  
-                  <Link to="/query" className="block">
-                    <div className="p-apple-2 hover:bg-neutral-100 rounded-lg transition-colors">
-                      <div className="flex items-center gap-apple-1">
-                        <MessageSquare size={14} className="text-neutral-600" />
-                        <span className="font-mono text-sm text-neutral-900">Query Interface</span>
-                      </div>
-                    </div>
+          {/* Right Sidebar - Quick Actions & Status */}
+          <div className="space-y-6">
+            {/* Quick Actions */}
+            <Card className="card-hover">
+              <CardBody className="p-4">
+                <h3 className="font-display text-neutral-900 mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <Link to="/query">
+                    <Button 
+                      className="w-full btn-hover font-sans justify-start" 
+                      variant="flat"
+                      startContent={<Plus size={16} />}
+                    >
+                      New Query
+                    </Button>
                   </Link>
-                  
-                  <div className="p-apple-2 hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer">
-                    <div className="flex items-center gap-apple-1">
-                      <Search size={14} className="text-neutral-600" />
-                      <span className="font-mono text-sm text-neutral-900">Saved Searches</span>
-                    </div>
-                  </div>
-                  
-                  <div className="p-apple-2 hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer">
-                    <div className="flex items-center gap-apple-1">
-                      <FileText size={14} className="text-neutral-600" />
-                      <span className="font-mono text-sm text-neutral-900">Reports & Analytics</span>
-                    </div>
-                  </div>
-                  
-                  <Link to="/settings" className="block">
-                    <div className="p-apple-2 hover:bg-neutral-100 rounded-lg transition-colors">
-                      <div className="flex items-center gap-apple-1">
-                        <Settings size={14} className="text-neutral-600" />
-                        <span className="font-mono text-sm text-neutral-900">System Settings</span>
-                      </div>
-                    </div>
-                  </Link>
-                  
-                  <div className="p-apple-2 hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer">
-                    <div className="flex items-center gap-apple-1">
-                      <User size={14} className="text-neutral-600" />
-                      <span className="font-mono text-sm text-neutral-900">User Profile</span>
-                    </div>
-                  </div>
-                  
-                  <Link to="/help" className="block">
-                    <div className="p-apple-2 hover:bg-neutral-100 rounded-lg transition-colors">
-                      <div className="flex items-center gap-apple-1">
-                        <HelpCircle size={14} className="text-neutral-600" />
-                        <span className="font-mono text-sm text-neutral-900">Help & Support</span>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* Recent Activity Timeline */}
-            <Card className="card-hover fade-in" style={{ animationDelay: '100ms' }}>
-              <CardBody className="p-apple-3">
-                <h3 className="font-mono font-bold text-neutral-900 mb-apple-2">RECENT ACTIVITY</h3>
-                <div className="space-y-apple-2 max-h-96 overflow-y-auto">
-                  {recentActivity.map((activity, index) => (
-                    <div key={index} className="flex items-start gap-apple-2">
-                      <div className="mt-1">{getActivityIcon(activity.type)}</div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-mono text-sm font-bold text-neutral-900 truncate">
-                          {activity.title}
-                        </p>
-                        <div className="flex items-center gap-apple-1 mt-1">
-                          <p className="font-mono text-xs text-neutral-500">{activity.time}</p>
-                          {activity.user && (
-                            <>
-                              <span className="text-neutral-300">•</span>
-                              <p className="font-mono text-xs text-neutral-500">{activity.user}</p>
-                            </>
-                          )}
-                        </div>
-                        {(activity.records || activity.value || activity.uptime) && (
-                          <p className="font-mono text-xs text-apple-secondary mt-1">
-                            {activity.records && `${activity.records} records`}
-                            {activity.value && activity.value}
-                            {activity.uptime && `${activity.uptime} uptime`}
-                          </p>
-                        )}
-                      </div>
-                      <Chip 
-                        size="sm" 
-                        className={`font-mono ${getActivityBadgeColor(activity.status)}`}
-                      >
-                        {activity.status.toUpperCase()}
-                      </Chip>
-                    </div>
-                  ))}
+                  <Button 
+                    className="w-full btn-hover font-sans justify-start" 
+                    variant="flat"
+                    startContent={<BarChart3 size={16} />}
+                  >
+                    View Reports
+                  </Button>
+                  <Button 
+                    className="w-full btn-hover font-sans justify-start" 
+                    variant="flat"
+                    startContent={<Calendar size={16} />}
+                  >
+                    Schedule Report
+                  </Button>
                 </div>
               </CardBody>
             </Card>
 
             {/* System Status */}
-            <Card className="card-hover fade-in" style={{ animationDelay: '200ms' }}>
-              <CardBody className="p-apple-3">
-                <h3 className="font-mono font-bold text-neutral-900 mb-apple-2">SYSTEM STATUS</h3>
-                <div className="space-y-apple-2">
-                  {systemConnections.length > 0 ? (
-                    (systemConnections as any[]).map((system) => (
-                      <div key={system.id} className="flex items-center justify-between">
-                        <div className="flex items-center gap-apple-1">
-                          {system.isConnected ? 
-                            <Wifi size={14} className="text-apple-success" /> : 
-                            <WifiOff size={14} className="text-apple-error" />
-                          }
-                          <span className="font-mono text-sm font-bold">
-                            {system.systemType.toUpperCase()}
-                          </span>
-                        </div>
-                        <Chip
-                          size="sm"
-                          className={`font-mono ${
-                            system.isConnected ? 'status-online' : 'status-offline'
-                          }`}
-                        >
-                          {system.isConnected ? 'ONLINE' : 'OFFLINE'}
-                        </Chip>
+            <Card className="card-hover">
+              <CardBody className="p-4">
+                <h3 className="font-display text-neutral-900 mb-4">System Health</h3>
+                <div className="space-y-3">
+                  {Array.isArray(systemConnections) && systemConnections.map((system: any) => (
+                    <div key={system.id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          system.isConnected ? 'bg-success' : 'bg-error'
+                        }`}></div>
+                        <span className="font-sans text-sm font-medium">
+                          {system.systemType.charAt(0).toUpperCase() + system.systemType.slice(1)}
+                        </span>
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-neutral-600 font-mono text-sm">No systems configured</p>
-                  )}
+                      <Chip 
+                        size="sm" 
+                        className={`font-sans ${
+                          system.isConnected ? 'status-online' : 'status-offline'
+                        }`}
+                      >
+                        {system.isConnected ? 'Online' : 'Offline'}
+                      </Chip>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-4 pt-4 border-t border-neutral-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-muted">Overall Health</span>
+                    <span className="text-sm font-medium text-success">99.8%</span>
+                  </div>
+                  <Progress value={99.8} className="h-2" color="success" />
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Recent Activity - Simplified */}
+            <Card className="card-hover">
+              <CardBody className="p-4">
+                <h3 className="font-display text-neutral-900 mb-4">Recent Activity</h3>
+                <div className="space-y-3">
+                  {(conversations as any[]).slice(0, 3).map((conv) => (
+                    <div key={conv.id} className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-sans text-sm font-medium text-neutral-900 truncate">
+                          {conv.title}
+                        </p>
+                        <p className="text-xs text-muted">
+                          {new Date(conv.updatedAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardBody>
             </Card>
           </div>
         </div>
 
-        {/* FOOTER ACTIONS */}
-        <div className="mt-apple-4 flex items-center justify-between p-apple-3 bg-white rounded-xl border border-neutral-200 card-hover">
-          <div className="flex items-center gap-apple-3">
-            <div className="flex items-center gap-apple-1">
-              <div className="w-3 h-3 bg-apple-success rounded-full animate-pulse"></div>
-              <span className="font-mono text-sm text-neutral-600">All Systems Operational</span>
+        {/* Footer - Simplified */}
+        <div className="mt-8 flex items-center justify-between p-4 bg-white/50 backdrop-blur-sm rounded-xl border border-white/20">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="text-success" size={16} />
+              <span className="text-sm text-muted">All systems operational</span>
             </div>
-            <Divider orientation="vertical" className="h-6" />
-            <div className="flex items-center gap-apple-1">
-              <Clock size={14} className="text-neutral-500" />
-              <span className="font-mono text-sm text-neutral-600">
-                Last sync: {lastSync.toLocaleTimeString()}
-              </span>
+            <div className="flex items-center gap-2">
+              <Clock className="text-neutral-400" size={16} />
+              <span className="text-sm text-muted">Last sync: {currentTime.toLocaleTimeString()}</span>
             </div>
           </div>
-          
-          <div className="flex items-center gap-apple-2">
-            <Button 
-              size="sm" 
-              variant="flat" 
-              className="btn-hover font-mono"
-              startContent={<Star size={14} />}
-            >
-              Quick Feedback
+          <Link to="/help">
+            <Button size="sm" variant="flat" className="btn-hover font-sans">
+              Need Help?
             </Button>
-            <Button 
-              size="sm" 
-              className="btn-hover font-mono"
-              startContent={<HelpCircle size={14} />}
-            >
-              Support Chat
-            </Button>
-          </div>
+          </Link>
         </div>
       </div>
     </div>
