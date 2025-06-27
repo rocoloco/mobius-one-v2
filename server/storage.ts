@@ -5,6 +5,8 @@ import {
   type Message, type InsertMessage,
   type SystemConnection, type InsertSystemConnection
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -30,136 +32,103 @@ export interface IStorage {
   updateSystemConnection(id: number, updates: Partial<SystemConnection>): Promise<SystemConnection | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private conversations: Map<number, Conversation>;
-  private messages: Map<number, Message>;
-  private systemConnections: Map<number, SystemConnection>;
-  private currentUserId: number;
-  private currentConversationId: number;
-  private currentMessageId: number;
-  private currentConnectionId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.conversations = new Map();
-    this.messages = new Map();
-    this.systemConnections = new Map();
-    this.currentUserId = 1;
-    this.currentConversationId = 1;
-    this.currentMessageId = 1;
-    this.currentConnectionId = 1;
-
-    // Create default user
-    this.createUser({
-      username: "johndoe",
-      password: "password",
-      name: "John Doe",
-      role: "Sales Manager",
-      initials: "JD"
-    });
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { 
-      ...insertUser, 
-      id,
-    };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   async getConversation(id: number): Promise<Conversation | undefined> {
-    return this.conversations.get(id);
+    const [conversation] = await db.select().from(conversations).where(eq(conversations.id, id));
+    return conversation || undefined;
   }
 
   async getConversationsByUserId(userId: number): Promise<Conversation[]> {
-    return Array.from(this.conversations.values())
-      .filter(conv => conv.userId === userId)
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    return await db.select().from(conversations).where(eq(conversations.userId, userId));
   }
 
   async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
-    const id = this.currentConversationId++;
-    const now = new Date();
-    const conversation: Conversation = {
-      ...insertConversation,
-      id,
-      createdAt: now,
-      updatedAt: now,
-    };
-    this.conversations.set(id, conversation);
+    const [conversation] = await db
+      .insert(conversations)
+      .values(insertConversation)
+      .returning();
     return conversation;
   }
 
   async updateConversation(id: number, updates: Partial<Conversation>): Promise<Conversation | undefined> {
-    const conversation = this.conversations.get(id);
-    if (!conversation) return undefined;
-    
-    const updated = { ...conversation, ...updates, updatedAt: new Date() };
-    this.conversations.set(id, updated);
-    return updated;
+    const [conversation] = await db
+      .update(conversations)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(conversations.id, id))
+      .returning();
+    return conversation || undefined;
   }
 
   async getMessage(id: number): Promise<Message | undefined> {
-    return this.messages.get(id);
+    const [message] = await db.select().from(messages).where(eq(messages.id, id));
+    return message || undefined;
   }
 
   async getMessagesByConversationId(conversationId: number): Promise<Message[]> {
-    return Array.from(this.messages.values())
-      .filter(msg => msg.conversationId === conversationId)
-      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    return await db
+      .select()
+      .from(messages)
+      .where(eq(messages.conversationId, conversationId))
+      .orderBy(messages.createdAt);
   }
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
-    const id = this.currentMessageId++;
-    const message: Message = {
-      ...insertMessage,
-      id,
-      createdAt: new Date(),
-    };
-    this.messages.set(id, message);
+    const [message] = await db
+      .insert(messages)
+      .values(insertMessage)
+      .returning();
     return message;
   }
 
   async getSystemConnection(userId: number, systemType: string): Promise<SystemConnection | undefined> {
-    return Array.from(this.systemConnections.values())
-      .find(conn => conn.userId === userId && conn.systemType === systemType);
+    const [connection] = await db
+      .select()
+      .from(systemConnections)
+      .where(and(eq(systemConnections.userId, userId), eq(systemConnections.systemType, systemType)));
+    return connection || undefined;
   }
 
   async getSystemConnectionsByUserId(userId: number): Promise<SystemConnection[]> {
-    return Array.from(this.systemConnections.values())
-      .filter(conn => conn.userId === userId);
+    return await db
+      .select()
+      .from(systemConnections)
+      .where(eq(systemConnections.userId, userId));
   }
 
   async createSystemConnection(insertConnection: InsertSystemConnection): Promise<SystemConnection> {
-    const id = this.currentConnectionId++;
-    const connection: SystemConnection = {
-      ...insertConnection,
-      id,
-      lastSync: new Date(),
-    };
-    this.systemConnections.set(id, connection);
+    const [connection] = await db
+      .insert(systemConnections)
+      .values(insertConnection)
+      .returning();
     return connection;
   }
 
   async updateSystemConnection(id: number, updates: Partial<SystemConnection>): Promise<SystemConnection | undefined> {
-    const connection = this.systemConnections.get(id);
-    if (!connection) return undefined;
-    
-    const updated = { ...connection, ...updates };
-    this.systemConnections.set(id, updated);
-    return updated;
+    const [connection] = await db
+      .update(systemConnections)
+      .set(updates)
+      .where(eq(systemConnections.id, id))
+      .returning();
+    return connection || undefined;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

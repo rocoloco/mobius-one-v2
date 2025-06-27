@@ -98,6 +98,8 @@ This is a full-stack business AI assistant application that integrates with Sale
 ```
 Changelog:
 - June 27, 2025. Initial setup
+- June 27, 2025. Added PostgreSQL database with Drizzle ORM
+- June 27, 2025. Implemented retro UI theme with terminal aesthetics
 ```
 
 ## User Preferences
