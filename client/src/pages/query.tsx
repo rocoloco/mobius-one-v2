@@ -418,11 +418,11 @@ export default function QueryPage() {
             {messages.length === 0 ? (
               <div className="text-center py-12">
                 <div className="terminal-glass p-8 mb-6 inline-block">
-                  <Zap className="text-terminal-text mx-auto mb-4" size={32} />
-                  <h2 className="text-xl font-display text-terminal-text mb-2">
+                  <Zap className="text-terminal-accent mx-auto mb-4" size={32} style={{ color: '#22D3EE', filter: 'drop-shadow(0 0 8px #22D3EE)' }} />
+                  <h2 className="text-xl font-mono terminal-title mb-2">
                     MOBIUS ONE AI TERMINAL
                   </h2>
-                  <p className="text-terminal-dim font-mono text-sm">
+                  <p className="terminal-subtitle font-mono text-sm">
                     Ask questions across your business systems in natural language
                   </p>
                 </div>
