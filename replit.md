@@ -8,10 +8,10 @@ This is a full-stack business AI assistant application that integrates with Sale
 
 ### Frontend Architecture
 - **React** with TypeScript for the UI layer
+- **React Router** for multi-page navigation and routing
 - **Vite** for build tooling and development server
-- **TailwindCSS** for styling with custom Salesforce-inspired color scheme
-- **shadcn/ui** component library for consistent UI components
-- **Wouter** for client-side routing
+- **TailwindCSS** for styling with custom retro-inspired color scheme
+- **HeroUI** component library with retro theme enhancements
 - **TanStack Query** for server state management and caching
 
 ### Backend Architecture
@@ -29,17 +29,25 @@ This is a full-stack business AI assistant application that integrates with Sale
 
 ## Key Components
 
+### Multi-Page Application Architecture
+- **Landing Page**: Value proposition and onboarding experience
+- **Dashboard**: System status and activity overview with real-time metrics
+- **Query Interface**: Main conversational AI interface with iOS-style chat
+- **Settings**: System connections and user preferences management
+- **History**: Past sessions with search, filter, and export capabilities
+- **Help**: Documentation, examples, and FAQ section
+
+### Navigation System
+- Left sidebar navigation with collapsible mobile support
+- Breadcrumb navigation for deep sections
+- Quick action floating button for new queries
+- User profile integration in sidebar
+
 ### Chat System with iOS UX Patterns
 - iOS Messages-style conversation interface with bubble logic
 - Apple's typing indicators and message status patterns
 - Progressive disclosure for complex data visualization
 - Retro terminal aesthetic with modern usability standards
-
-### Enhanced Navigation Architecture
-- iOS-style navigation hierarchies with clear information structure
-- Apple's interaction patterns with retro visual treatments
-- Focus management and keyboard navigation (Apple accessibility standards)
-- Touch target sizing following Apple's 44px minimum guidelines
 
 ### External Integrations
 - **Salesforce Service**: CRM data access (opportunities, accounts, leads)
@@ -113,6 +121,12 @@ Changelog:
   * Integrated iOS navigation hierarchies with retro styling
   * Added Apple accessibility standards (44px touch targets, focus management)
   * Maintained retro visual identity while improving usability
+- June 27, 2025. Restructured into multi-page application:
+  * Migrated from Wouter to React Router for robust routing
+  * Created 6 main pages: Landing, Dashboard, Query, History, Settings, Help
+  * Implemented collapsible sidebar navigation with system status
+  * Added breadcrumb navigation and quick action floating button
+  * Enhanced user experience with proper page transitions and loading states
 ```
 
 ## User Preferences
