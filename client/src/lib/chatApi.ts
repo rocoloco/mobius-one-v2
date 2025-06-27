@@ -26,7 +26,10 @@ export const chatApi = {
   },
 
   async createConversation(title: string): Promise<Conversation> {
-    const response = await apiRequest("POST", "/api/conversations", { title });
+    const response = await apiRequest("POST", "/api/conversations", { 
+      title,
+      userId: 1 // Default user for now
+    });
     return response.json();
   },
 
