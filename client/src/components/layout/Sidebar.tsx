@@ -9,8 +9,6 @@ import {
 } from "@heroui/react";
 import { 
   Home,
-  BarChart3,
-  MessageSquare,
   Settings,
   History,
   HelpCircle,
@@ -45,8 +43,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
   });
 
   const navigationItems = [
-    { path: '/', label: 'Dashboard', icon: BarChart3 },
-    { path: '/query', label: 'Query', icon: MessageSquare },
+    { path: '/', label: 'Home', icon: Home },
     { path: '/history', label: 'History', icon: History },
     { path: '/settings', label: 'Settings', icon: Settings },
     { path: '/help', label: 'Help', icon: HelpCircle }
@@ -57,22 +54,22 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
     : [];
 
   return (
-    <div className={`h-full bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ${
+    <div className={`h-full bg-background border-r border-border flex flex-col transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-64'
     } ${className}`}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                <Terminal className="text-white" size={16} />
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <Home className="text-primary-foreground" size={16} />
               </div>
               <div>
-                <h2 className="font-mono font-bold text-lg text-gray-900">
-                  AI TERMINAL
+                <h2 className="font-semibold text-lg text-foreground">
+                  Mobius One
                 </h2>
-                <p className="text-xs text-gray-500 font-mono">v2.0</p>
+                <p className="text-xs text-muted-foreground">Business AI</p>
               </div>
             </div>
           )}
@@ -89,73 +86,45 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-2">
         {navigationItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
           
           return (
-            <Button
+            <button
               key={item.path}
-              variant={isActive ? "flat" : "light"}
-              color={isActive ? "primary" : "default"}
-              className={`w-full justify-start font-mono transition-all duration-150 ${
-                isCollapsed ? 'px-0' : 'px-3'
-              } ${isActive ? 'bg-gradient-to-r from-orange-100 to-red-100 text-orange-800' : ''}`}
+              className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-150 ${
+                isActive 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+              }`}
               onClick={() => navigate(item.path)}
-              startContent={<Icon size={18} />}
-              style={{ minHeight: '44px' }}
             >
-              {!isCollapsed && item.label.toUpperCase()}
-            </Button>
+              <Icon size={18} />
+              {!isCollapsed && <span className="font-medium">{item.label}</span>}
+            </button>
           );
         })}
-      </div>
+      </nav>
 
-      {/* System Status */}
-      {!isCollapsed && (
-        <div className="p-4 border-t border-gray-200">
-          <Card className="bg-gray-50 border border-gray-200">
-            <CardBody className="p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono font-bold text-gray-700">
-                  SYSTEM STATUS
-                </span>
-                <Chip 
-                  size="sm"
-                  color={connectedSystems.length > 0 ? "success" : "warning"}
-                  variant="flat"
-                  className="font-mono"
-                >
-                  {connectedSystems.length > 0 ? "ONLINE" : "OFFLINE"}
-                </Chip>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Zap className="text-gray-500" size={14} />
-                <span className="text-xs font-mono text-gray-600">
-                  {connectedSystems.length}/{Array.isArray(systemConnections) ? systemConnections.length : 0} systems connected
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
-      )}
+
 
       {/* User Profile */}
       {!isCollapsed && user && (
-        <div className="p-4 border-t border-gray-200 space-y-3">
+        <div className="p-4 border-t border-border space-y-3">
           <div className="flex items-center space-x-3">
             <Avatar
               size="sm"
-              name={(user as any).username?.substring(0, 2).toUpperCase() || "U"}
-              className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-mono font-bold"
+              name={(user as any)?.username?.substring(0, 2).toUpperCase() || "U"}
+              className="bg-primary text-primary-foreground"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-mono font-bold text-gray-900 truncate">
-                {(user as any).username || "User"}
+              <p className="text-sm font-medium text-foreground truncate">
+                {(user as any)?.username || "User"}
               </p>
-              <p className="text-xs text-gray-500 font-mono">
-                ADMIN
+              <p className="text-xs text-muted-foreground">
+                Business User
               </p>
             </div>
           </div>
@@ -163,14 +132,13 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
           <Button
             size="sm"
             variant="bordered"
-            className="w-full font-mono text-xs border-gray-300"
+            className="w-full text-xs"
             onClick={() => {
-              // Set logout flag and redirect to landing page
               localStorage.setItem('logout', 'true');
               window.location.href = '/';
             }}
           >
-            SIGN OUT
+            Sign Out
           </Button>
         </div>
       )}
