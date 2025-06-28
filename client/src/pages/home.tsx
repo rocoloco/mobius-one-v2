@@ -102,7 +102,7 @@ export default function HomePage() {
                 </p>
                 <p className="flex items-center gap-2 text-base">
                   <span>⚠️</span>
-                  <span><strong className="text-amber-700">3 high-priority overdue accounts</strong> need attention ($450K)</span>
+                  <span><strong className="text-primary">3 high-priority overdue accounts</strong> need attention ($450K)</span>
                 </p>
               </div>
             </div>

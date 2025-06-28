@@ -19,7 +19,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="h-screen flex bg-gradient-to-br from-orange-50 to-red-50">
+    <div className="h-screen flex bg-gradient-to-br from-slate-50/50 to-white">
       {/* Sidebar */}
       <Sidebar 
         isCollapsed={sidebarCollapsed}
@@ -41,7 +41,7 @@ export default function Layout() {
           <Button
             color="primary"
             isIconOnly
-            className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg bg-gradient-to-r from-orange-500 to-red-500"
+            className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
             onClick={handleNewQuery}
           >
             <Plus size={24} />
