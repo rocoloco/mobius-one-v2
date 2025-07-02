@@ -1,0 +1,481 @@
+# Replit Agent Prompt: Complete Settings Page Redesign
+
+## **Mission: Transform Settings into Steve Jobs-Level Experience**
+
+You need to completely redesign the Mobius One Settings page following Steve Jobs' design philosophy: radical simplification, outcome-focused settings, and emotional design that makes users feel empowered, not overwhelmed.
+
+---
+
+## **REMOVE These Elements Completely**
+
+### **❌ Eliminate**
+- Duplicate system entries (why is Salesforce listed twice?)
+- "Test" and "Configure" buttons (too technical)
+- Tab navigation at top (keep it simple)
+- Technical language like "System Connections"
+- Generic database icons
+
+---
+
+## **NEW Settings Page Structure**
+
+### **Page Header**
+```jsx
+<div className="settings-header">
+  <h1 style={{
+    fontFamily: 'Poppins, sans-serif',
+    fontWeight: 600,
+    fontSize: '2rem',
+    color: '#061A40',
+    marginBottom: '8px'
+  }}>
+    Expand Mobius Intelligence
+  </h1>
+  <p style={{
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '1.1rem',
+    color: '#4A5568',
+    marginBottom: '32px'
+  }}>
+    The more systems I can access, the better insights I can provide
+  </p>
+</div>
+```
+
+### **Section 1: Intelligence Sources (Enhanced)**
+```jsx
+<div className="intelligence-section">
+  <h2 style={{
+    fontFamily: 'Poppins, sans-serif',
+    fontWeight: 600,
+    color: '#061A40',
+    fontSize: '1.5rem',
+    marginBottom: '16px'
+  }}>
+    ✅ Active Intelligence Sources
+  </h2>
+  
+  {/* Connected System Cards */}
+  <div className="intelligence-card" style={{
+    background: 'linear-gradient(135deg, #FAFBFC 0%, rgba(193, 237, 204, 0.1) 100%)',
+    border: '2px solid #C1EDCC',
+    borderRadius: '12px',
+    padding: '24px',
+    marginBottom: '16px'
+  }}>
+    <div style={{display: 'flex', alignItems: 'center', marginBottom: '12px'}}>
+      <div style={{
+        fontSize: '2rem',
+        marginRight: '16px'
+      }}>💼</div>
+      <div>
+        <h3 style={{
+          fontFamily: 'Poppins, sans-serif',
+          fontWeight: 600,
+          color: '#061A40',
+          fontSize: '1.25rem',
+          margin: 0
+        }}>Sales Intelligence</h3>
+        <p style={{
+          fontFamily: 'Inter, sans-serif',
+          color: '#718096',
+          fontSize: '0.9rem',
+          margin: 0
+        }}>Connected via Salesforce</p>
+      </div>
+    </div>
+    
+    <p style={{
+      fontFamily: 'Inter, sans-serif',
+      color: '#4A5568',
+      marginBottom: '12px'
+    }}>I can help you with:</p>
+    
+    <ul style={{
+      fontFamily: 'Inter, sans-serif',
+      color: '#4A5568',
+      lineHeight: 1.6,
+      marginBottom: '16px'
+    }}>
+      <li>Revenue forecasting and pipeline health</li>
+      <li>Customer relationship insights</li>
+      <li>Deal progression and win rates</li>
+    </ul>
+    
+    <div className="recent-insight" style={{
+      background: 'rgba(4, 139, 168, 0.1)',
+      color: '#048BA8',
+      padding: '8px 12px',
+      borderRadius: '6px',
+      fontSize: '14px',
+      fontStyle: 'italic'
+    }}>
+      Recent insight: "Q4 pipeline is 18% ahead of target"
+    </div>
+  </div>
+
+  {/* NetSuite Card */}
+  <div className="intelligence-card" style={{
+    background: 'linear-gradient(135deg, #FAFBFC 0%, rgba(193, 237, 204, 0.1) 100%)',
+    border: '2px solid #C1EDCC',
+    borderRadius: '12px',
+    padding: '24px',
+    marginBottom: '32px'
+  }}>
+    <div style={{display: 'flex', alignItems: 'center', marginBottom: '12px'}}>
+      <div style={{
+        fontSize: '2rem',
+        marginRight: '16px'
+      }}>💰</div>
+      <div>
+        <h3 style={{
+          fontFamily: 'Poppins, sans-serif',
+          fontWeight: 600,
+          color: '#061A40',
+          fontSize: '1.25rem',
+          margin: 0
+        }}>Financial Intelligence</h3>
+        <p style={{
+          fontFamily: 'Inter, sans-serif',
+          color: '#718096',
+          fontSize: '0.9rem',
+          margin: 0
+        }}>Connected via NetSuite</p>
+      </div>
+    </div>
+    
+    <p style={{
+      fontFamily: 'Inter, sans-serif',
+      color: '#4A5568',
+      marginBottom: '12px'
+    }}>I can help you with:</p>
+    
+    <ul style={{
+      fontFamily: 'Inter, sans-serif',
+      color: '#4A5568',
+      lineHeight: 1.6,
+      marginBottom: '16px'
+    }}>
+      <li>Cash flow analysis and projections</li>
+      <li>Invoice tracking and collections</li>
+      <li>Revenue recognition and reporting</li>
+    </ul>
+    
+    <div className="recent-insight" style={{
+      background: 'rgba(4, 139, 168, 0.1)',
+      color: '#048BA8',
+      padding: '8px 12px',
+      borderRadius: '6px',
+      fontSize: '14px',
+      fontStyle: 'italic'
+    }}>
+      Recent insight: "3 high-priority accounts need attention"
+    </div>
+  </div>
+
+  {/* Add New Intelligence */}
+  <div className="expand-section" style={{
+    background: 'rgba(4, 139, 168, 0.05)',
+    border: '2px dashed #048BA8',
+    borderRadius: '12px',
+    padding: '24px',
+    textAlign: 'center'
+  }}>
+    <h3 style={{
+      fontFamily: 'Poppins, sans-serif',
+      fontWeight: 600,
+      color: '#048BA8',
+      fontSize: '1.25rem',
+      marginBottom: '12px'
+    }}>🔮 Expand My Knowledge</h3>
+    
+    <p style={{
+      fontFamily: 'Inter, sans-serif',
+      color: '#4A5568',
+      marginBottom: '20px'
+    }}>What other business systems do you use?</p>
+    
+    <button style={{
+      background: 'linear-gradient(135deg, #048BA8 0%, #037A96 100%)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      padding: '12px 24px',
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: 600,
+      cursor: 'pointer',
+      transition: 'all 0.2s ease'
+    }}>
+      Browse 170+ Integrations
+    </button>
+  </div>
+</div>
+```
+
+### **Section 2: NEW - Notifications & Updates**
+```jsx
+<div className="notifications-section" style={{marginTop: '48px'}}>
+  <h2 style={{
+    fontFamily: 'Poppins, sans-serif',
+    fontWeight: 600,
+    color: '#061A40',
+    fontSize: '1.5rem',
+    marginBottom: '16px'
+  }}>
+    🔔 Notifications & Updates
+  </h2>
+  <p style={{
+    fontFamily: 'Inter, sans-serif',
+    color: '#4A5568',
+    marginBottom: '24px'
+  }}>How should I keep you informed about your business?</p>
+
+  <div className="notification-options">
+    <label style={{
+      display: 'flex',
+      alignItems: 'center',
+      padding: '16px',
+      border: '2px solid #E2E8F0',
+      borderRadius: '8px',
+      marginBottom: '12px',
+      cursor: 'pointer',
+      fontFamily: 'Inter, sans-serif'
+    }}>
+      <input type="radio" name="notifications" value="smart" defaultChecked style={{marginRight: '12px'}} />
+      <div>
+        <strong style={{color: '#061A40'}}>Smart notifications (Recommended)</strong>
+        <br />
+        <span style={{color: '#718096', fontSize: '0.9rem'}}>Alert me to urgent issues and weekly insights</span>
+      </div>
+    </label>
+
+    <label style={{
+      display: 'flex',
+      alignItems: 'center',
+      padding: '16px',
+      border: '2px solid #E2E8F0',
+      borderRadius: '8px',
+      marginBottom: '12px',
+      cursor: 'pointer',
+      fontFamily: 'Inter, sans-serif'
+    }}>
+      <input type="radio" name="notifications" value="daily" style={{marginRight: '12px'}} />
+      <div>
+        <strong style={{color: '#061A40'}}>Daily briefings</strong>
+        <br />
+        <span style={{color: '#718096', fontSize: '0.9rem'}}>Morning summary of key business metrics</span>
+      </div>
+    </label>
+
+    <label style={{
+      display: 'flex',
+      alignItems: 'center',
+      padding: '16px',
+      border: '2px solid #E2E8F0',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontFamily: 'Inter, sans-serif'
+    }}>
+      <input type="radio" name="notifications" value="manual" style={{marginRight: '12px'}} />
+      <div>
+        <strong style={{color: '#061A40'}}>On-demand only</strong>
+        <br />
+        <span style={{color: '#718096', fontSize: '0.9rem'}}>I'll check in with you manually</span>
+      </div>
+    </label>
+  </div>
+</div>
+```
+
+### **Section 3: NEW - Privacy & Data**
+```jsx
+<div className="privacy-section" style={{marginTop: '48px'}}>
+  <h2 style={{
+    fontFamily: 'Poppins, sans-serif',
+    fontWeight: 600,
+    color: '#061A40',
+    fontSize: '1.5rem',
+    marginBottom: '16px'
+  }}>
+    🔒 Privacy & Data
+  </h2>
+  <p style={{
+    fontFamily: 'Inter, sans-serif',
+    color: '#4A5568',
+    marginBottom: '24px'
+  }}>Your data, your control</p>
+
+  <div className="privacy-controls">
+    <div style={{
+      padding: '20px',
+      border: '2px solid #E2E8F0',
+      borderRadius: '8px',
+      marginBottom: '16px'
+    }}>
+      <label style={{
+        display: 'block',
+        fontFamily: 'Inter, sans-serif',
+        fontWeight: 500,
+        color: '#061A40',
+        marginBottom: '8px'
+      }}>
+        Data scope:
+      </label>
+      <select style={{
+        width: '100%',
+        padding: '8px 12px',
+        border: '1px solid #E2E8F0',
+        borderRadius: '6px',
+        fontFamily: 'Inter, sans-serif'
+      }}>
+        <option>Full access (Recommended)</option>
+        <option>Limited scope</option>
+      </select>
+    </div>
+
+    <div style={{
+      padding: '20px',
+      border: '2px solid #E2E8F0',
+      borderRadius: '8px',
+      marginBottom: '16px'
+    }}>
+      <label style={{
+        display: 'block',
+        fontFamily: 'Inter, sans-serif',
+        fontWeight: 500,
+        color: '#061A40',
+        marginBottom: '8px'
+      }}>
+        Conversation history:
+      </label>
+      <select style={{
+        width: '100%',
+        padding: '8px 12px',
+        border: '1px solid #E2E8F0',
+        borderRadius: '6px',
+        fontFamily: 'Inter, sans-serif'
+      }}>
+        <option>Keep for 90 days</option>
+        <option>Keep for 30 days</option>
+        <option>Keep for 1 year</option>
+        <option>Keep forever</option>
+      </select>
+    </div>
+
+    <div style={{
+      padding: '20px',
+      border: '2px solid #E2E8F0',
+      borderRadius: '8px'
+    }}>
+      <label style={{
+        display: 'block',
+        fontFamily: 'Inter, sans-serif',
+        fontWeight: 500,
+        color: '#061A40',
+        marginBottom: '8px'
+      }}>
+        Team access:
+      </label>
+      <select style={{
+        width: '100%',
+        padding: '8px 12px',
+        border: '1px solid #E2E8F0',
+        borderRadius: '6px',
+        fontFamily: 'Inter, sans-serif'
+      }}>
+        <option>Only me</option>
+        <option>My team</option>
+        <option>Custom permissions</option>
+      </select>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+## **Design System Requirements**
+
+### **Typography**
+```css
+/* Import these fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Use throughout */
+--font-display: 'Poppins', sans-serif;
+--font-body: 'Inter', sans-serif;
+```
+
+### **Colors (Use exact hex codes)**
+```css
+--mobius-navy: #061A40;
+--mobius-teal: #048BA8;
+--mobius-sage: #C1EDCC;
+--background-warm: #FAFBFC;
+--text-primary: #061A40;
+--text-secondary: #4A5568;
+--text-light: #718096;
+--border-light: #E2E8F0;
+```
+
+### **Interactive States**
+```css
+/* Hover effects for buttons */
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(4, 139, 168, 0.3);
+}
+
+/* Focus states for form elements */
+input:focus, select:focus {
+  border-color: #048BA8;
+  box-shadow: 0 0 0 3px rgba(4, 139, 168, 0.1);
+  outline: none;
+}
+```
+
+---
+
+## **Mobile Responsiveness**
+
+### **Key Requirements**
+- All cards stack vertically on mobile
+- Touch-friendly button sizes (minimum 44px height)
+- Readable text on small screens
+- Form controls easy to tap
+
+---
+
+## **Success Criteria**
+
+After implementation, verify:
+- [ ] No duplicate systems shown
+- [ ] All technical "Test/Configure" buttons removed
+- [ ] Three clear sections: Intelligence, Notifications, Privacy
+- [ ] Mobius brand colors used throughout
+- [ ] Inter + Poppins fonts implemented
+- [ ] Cards show business value, not technical specs
+- [ ] Mobile interface works smoothly
+- [ ] Feels empowering, not administrative
+
+---
+
+## **The Steve Jobs Test**
+
+Ask yourself after building:
+1. **"Does this feel like expanding superpowers or managing infrastructure?"** → Should feel like superpowers
+2. **"Would a busy CEO understand the value immediately?"** → Should be obvious
+3. **"Does every element serve the user's business goals?"** → Remove anything that doesn't
+4. **"Does this match the Mobius 'one continuous surface' philosophy?"** → Should feel seamless
+
+---
+
+## **Final Notes**
+
+- Replace ALL existing settings page content with this new structure
+- Focus on business outcomes, not technical features
+- Make it feel like empowering your AI advisor, not configuring software
+- Use the exact colors and fonts specified
+- Test on mobile to ensure touch-friendly experience
+
+**Remember**: Steve Jobs would rather ship something with fewer options that works perfectly than something with many options that confuses users.

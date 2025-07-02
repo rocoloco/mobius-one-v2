@@ -1,21 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  Search, 
-  CheckCircle, 
-  AlertCircle,
-  Sparkles,
-  TrendingUp,
-  DollarSign,
-  Users,
-  BarChart3,
-  MessageSquare,
-  CreditCard,
-  ArrowRight
-} from "lucide-react";
 
 export default function SettingsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [notificationSetting, setNotificationSetting] = useState("smart");
+  const [dataScope, setDataScope] = useState("full");
+  const [conversationHistory, setConversationHistory] = useState("90days");
+  const [teamAccess, setTeamAccess] = useState("only_me");
 
   const { data: user } = useQuery({
     queryKey: ['/api/user'],
@@ -27,238 +17,498 @@ export default function SettingsPage() {
     enabled: true
   });
 
-  const getSystemCapabilities = (systemType: string) => {
-    const capabilities = {
-      salesforce: {
-        icon: <TrendingUp className="w-6 h-6" />,
-        title: "Sales Intelligence",
-        description: "Connected via Salesforce",
-        capabilities: [
-          "Revenue forecasting and pipeline health",
-          "Customer relationship insights", 
-          "Deal progression and win rates"
-        ],
-        recentInsight: "Q4 pipeline is 18% ahead of target"
-      },
-      netsuite: {
-        icon: <DollarSign className="w-6 h-6" />,
-        title: "Financial Intelligence",
-        description: "Connected via NetSuite", 
-        capabilities: [
-          "Cash flow analysis and projections",
-          "Invoice tracking and collections",
-          "Revenue recognition and reporting"
-        ],
-        recentInsight: "3 accounts need attention this week"
-      }
-    };
-    return capabilities[systemType as keyof typeof capabilities];
-  };
-
-  const availableIntegrations = [
-    { name: "HubSpot", category: "Marketing", benefit: "Marketing campaign insights", icon: <BarChart3 className="w-5 h-5" /> },
-    { name: "Zendesk", category: "Support", benefit: "Customer support intelligence", icon: <Users className="w-5 h-5" /> },
-    { name: "Slack", category: "Communication", benefit: "Team communication patterns", icon: <MessageSquare className="w-5 h-5" /> },
-    { name: "Stripe", category: "Payments", benefit: "Payment and subscription data", icon: <CreditCard className="w-5 h-5" /> }
-  ];
-
-  const connectedSystems = systemConnections.filter((conn: any) => conn.isActive);
+  const connectedSystems = (systemConnections as any[]).filter((conn: any) => conn.isActive);
 
   return (
-    <div className="min-h-screen" style={{background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)'}}>
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="space-y-6 mb-12">
-          <div className="flex items-center gap-3">
-            <Sparkles className="w-8 h-8" style={{color: '#048BA8'}} />
-            <h1 className="text-3xl font-brand" style={{color: '#061A40', lineHeight: '1.4'}}>
-              Expand Mobius Intelligence
-            </h1>
-          </div>
-          
-          <p className="text-lg font-body" style={{color: '#4A5568', lineHeight: '1.6'}}>
-            The more systems I can access, the better insights I can provide for your business decisions.
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)',
+      fontFamily: 'Inter, sans-serif'
+    }}>
+      <div style={{
+        maxWidth: '960px',
+        margin: '0 auto',
+        padding: '48px 24px'
+      }}>
+        {/* Page Header */}
+        <div style={{marginBottom: '48px'}}>
+          <h1 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            fontSize: '2rem',
+            color: '#061A40',
+            marginBottom: '8px',
+            margin: '0 0 8px 0'
+          }}>
+            Expand Mobius Intelligence
+          </h1>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '1.1rem',
+            color: '#4A5568',
+            margin: '0 0 32px 0',
+            lineHeight: '1.6'
+          }}>
+            The more systems I can access, the better insights I can provide
           </p>
         </div>
 
-        {/* Active Intelligence Sources */}
-        {connectedSystems.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-xl font-brand mb-6 flex items-center gap-2" style={{color: '#061A40'}}>
-              <CheckCircle className="w-5 h-5" style={{color: '#048BA8'}} />
-              Active Intelligence Sources
-            </h2>
-            
-            <div className="space-y-4">
-              {connectedSystems.map((system: any) => {
-                const capabilities = getSystemCapabilities(system.systemType);
-                if (!capabilities) return null;
+        {/* Section 1: Active Intelligence Sources */}
+        <div style={{marginBottom: '48px'}}>
+          <h2 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            color: '#061A40',
+            fontSize: '1.5rem',
+            marginBottom: '16px',
+            margin: '0 0 16px 0'
+          }}>
+            ✅ Active Intelligence Sources
+          </h2>
 
-                return (
-                  <div
-                    key={system.id}
-                    className="p-6 rounded-xl border-2 transition-all duration-200"
-                    style={{
-                      background: 'linear-gradient(135deg, #FAFBFC 0%, rgba(193, 237, 204, 0.1) 100%)',
-                      border: '2px solid #C1EDCC'
-                    }}
-                  >
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="p-2 rounded-lg" style={{background: 'rgba(4, 139, 168, 0.1)', color: '#048BA8'}}>
-                        {capabilities.icon}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-brand mb-1" style={{color: '#061A40'}}>
-                          {capabilities.title}
-                        </h3>
-                        <p className="text-sm font-body" style={{color: '#718096'}}>
-                          {capabilities.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mb-4">
-                      <p className="font-body font-medium mb-2" style={{color: '#4A5568'}}>
-                        I can help you with:
-                      </p>
-                      <ul className="space-y-1">
-                        {capabilities.capabilities.map((capability, index) => (
-                          <li key={index} className="flex items-start gap-2 font-body text-sm" style={{color: '#4A5568'}}>
-                            <span style={{color: '#048BA8'}}>•</span>
-                            {capability}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="pt-3" style={{borderTop: '1px solid rgba(4, 139, 168, 0.1)'}}>
-                      <div className="inline-flex items-center px-3 py-1 rounded-md text-sm font-body font-medium" 
-                           style={{background: 'rgba(4, 139, 168, 0.1)', color: '#048BA8'}}>
-                        Recent insight: "{capabilities.recentInsight}"
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+          {/* Salesforce Card */}
+          {connectedSystems.some((sys: any) => sys.systemType === 'salesforce') && (
+            <div style={{
+              background: 'linear-gradient(135deg, #FAFBFC 0%, rgba(193, 237, 204, 0.1) 100%)',
+              border: '2px solid #C1EDCC',
+              borderRadius: '12px',
+              padding: '24px',
+              marginBottom: '16px'
+            }}>
+              <div style={{display: 'flex', alignItems: 'center', marginBottom: '12px'}}>
+                <div style={{
+                  fontSize: '2rem',
+                  marginRight: '16px'
+                }}>💼</div>
+                <div>
+                  <h3 style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    fontWeight: 600,
+                    color: '#061A40',
+                    fontSize: '1.25rem',
+                    margin: 0
+                  }}>Sales Intelligence</h3>
+                  <p style={{
+                    fontFamily: 'Inter, sans-serif',
+                    color: '#718096',
+                    fontSize: '0.9rem',
+                    margin: 0
+                  }}>Connected via Salesforce</p>
+                </div>
+              </div>
+              
+              <p style={{
+                fontFamily: 'Inter, sans-serif',
+                color: '#4A5568',
+                marginBottom: '12px',
+                margin: '0 0 12px 0'
+              }}>I can help you with:</p>
+              
+              <ul style={{
+                fontFamily: 'Inter, sans-serif',
+                color: '#4A5568',
+                lineHeight: 1.6,
+                marginBottom: '16px',
+                margin: '0 0 16px 0',
+                paddingLeft: '20px'
+              }}>
+                <li>Revenue forecasting and pipeline health</li>
+                <li>Customer relationship insights</li>
+                <li>Deal progression and win rates</li>
+              </ul>
+              
+              <div style={{
+                background: 'rgba(4, 139, 168, 0.1)',
+                color: '#048BA8',
+                padding: '8px 12px',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontStyle: 'italic'
+              }}>
+                Recent insight: "Q4 pipeline is 18% ahead of target"
+              </div>
             </div>
+          )}
+
+          {/* NetSuite Card */}
+          {connectedSystems.some((sys: any) => sys.systemType === 'netsuite') && (
+            <div style={{
+              background: 'linear-gradient(135deg, #FAFBFC 0%, rgba(193, 237, 204, 0.1) 100%)',
+              border: '2px solid #C1EDCC',
+              borderRadius: '12px',
+              padding: '24px',
+              marginBottom: '32px'
+            }}>
+              <div style={{display: 'flex', alignItems: 'center', marginBottom: '12px'}}>
+                <div style={{
+                  fontSize: '2rem',
+                  marginRight: '16px'
+                }}>💰</div>
+                <div>
+                  <h3 style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    fontWeight: 600,
+                    color: '#061A40',
+                    fontSize: '1.25rem',
+                    margin: 0
+                  }}>Financial Intelligence</h3>
+                  <p style={{
+                    fontFamily: 'Inter, sans-serif',
+                    color: '#718096',
+                    fontSize: '0.9rem',
+                    margin: 0
+                  }}>Connected via NetSuite</p>
+                </div>
+              </div>
+              
+              <p style={{
+                fontFamily: 'Inter, sans-serif',
+                color: '#4A5568',
+                marginBottom: '12px',
+                margin: '0 0 12px 0'
+              }}>I can help you with:</p>
+              
+              <ul style={{
+                fontFamily: 'Inter, sans-serif',
+                color: '#4A5568',
+                lineHeight: 1.6,
+                marginBottom: '16px',
+                margin: '0 0 16px 0',
+                paddingLeft: '20px'
+              }}>
+                <li>Cash flow analysis and projections</li>
+                <li>Invoice tracking and collections</li>
+                <li>Revenue recognition and reporting</li>
+              </ul>
+              
+              <div style={{
+                background: 'rgba(4, 139, 168, 0.1)',
+                color: '#048BA8',
+                padding: '8px 12px',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontStyle: 'italic'
+              }}>
+                Recent insight: "3 high-priority accounts need attention"
+              </div>
+            </div>
+          )}
+
+          {/* Expand Knowledge Section */}
+          <div style={{
+            background: 'rgba(4, 139, 168, 0.05)',
+            border: '2px dashed #048BA8',
+            borderRadius: '12px',
+            padding: '24px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{
+              fontFamily: 'Poppins, sans-serif',
+              fontWeight: 600,
+              color: '#048BA8',
+              fontSize: '1.25rem',
+              marginBottom: '12px',
+              margin: '0 0 12px 0'
+            }}>🔮 Expand My Knowledge</h3>
+            
+            <p style={{
+              fontFamily: 'Inter, sans-serif',
+              color: '#4A5568',
+              marginBottom: '20px',
+              margin: '0 0 20px 0'
+            }}>What other business systems do you use?</p>
+            
+            <button 
+              style={{
+                background: 'linear-gradient(135deg, #048BA8 0%, #037A96 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '12px 24px',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontSize: '16px'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(4, 139, 168, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              Browse 170+ Integrations
+            </button>
           </div>
-        )}
+        </div>
 
-        {/* Expand Knowledge Section */}
-        <div className="mb-12">
-          <div className="p-6 rounded-xl border-2 text-center transition-all duration-200"
-               style={{
-                 background: 'rgba(4, 139, 168, 0.05)',
-                 border: '2px dashed #048BA8'
-               }}>
-            <Sparkles className="w-12 h-12 mx-auto mb-4" style={{color: '#048BA8'}} />
-            <h2 className="text-xl font-brand mb-3" style={{color: '#061A40'}}>
-              Expand My Knowledge
-            </h2>
-            <p className="font-body mb-6" style={{color: '#4A5568', lineHeight: '1.6'}}>
-              What other business systems do you use? The more I know, the smarter I become.
-            </p>
+        {/* Section 2: Notifications & Updates */}
+        <div style={{marginTop: '48px', marginBottom: '48px'}}>
+          <h2 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            color: '#061A40',
+            fontSize: '1.5rem',
+            marginBottom: '16px',
+            margin: '0 0 16px 0'
+          }}>
+            🔔 Notifications & Updates
+          </h2>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568',
+            marginBottom: '24px',
+            margin: '0 0 24px 0'
+          }}>How should I keep you informed about your business?</p>
 
-            {/* Search Integration */}
-            <div className="relative max-w-md mx-auto mb-6">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{color: '#718096'}} />
-              <input
-                type="text"
-                placeholder="Search 170+ integrations..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="font-body w-full pl-12 pr-4 py-3 rounded-xl transition-all duration-200"
+          <div>
+            <label style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              padding: '16px',
+              border: notificationSetting === 'smart' ? '2px solid #048BA8' : '2px solid #E2E8F0',
+              borderRadius: '8px',
+              marginBottom: '12px',
+              cursor: 'pointer',
+              fontFamily: 'Inter, sans-serif',
+              background: notificationSetting === 'smart' ? 'rgba(4, 139, 168, 0.05)' : 'white'
+            }}>
+              <input 
+                type="radio" 
+                name="notifications" 
+                value="smart"
+                checked={notificationSetting === 'smart'}
+                onChange={(e) => setNotificationSetting(e.target.value)}
+                style={{marginRight: '12px', marginTop: '2px'}} 
+              />
+              <div>
+                <div style={{color: '#061A40', fontWeight: 600, marginBottom: '4px'}}>Smart notifications (Recommended)</div>
+                <div style={{color: '#718096', fontSize: '0.9rem'}}>Alert me to urgent issues and weekly insights</div>
+              </div>
+            </label>
+
+            <label style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              padding: '16px',
+              border: notificationSetting === 'daily' ? '2px solid #048BA8' : '2px solid #E2E8F0',
+              borderRadius: '8px',
+              marginBottom: '12px',
+              cursor: 'pointer',
+              fontFamily: 'Inter, sans-serif',
+              background: notificationSetting === 'daily' ? 'rgba(4, 139, 168, 0.05)' : 'white'
+            }}>
+              <input 
+                type="radio" 
+                name="notifications" 
+                value="daily"
+                checked={notificationSetting === 'daily'}
+                onChange={(e) => setNotificationSetting(e.target.value)}
+                style={{marginRight: '12px', marginTop: '2px'}} 
+              />
+              <div>
+                <div style={{color: '#061A40', fontWeight: 600, marginBottom: '4px'}}>Daily briefings</div>
+                <div style={{color: '#718096', fontSize: '0.9rem'}}>Morning summary of key business metrics</div>
+              </div>
+            </label>
+
+            <label style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              padding: '16px',
+              border: notificationSetting === 'manual' ? '2px solid #048BA8' : '2px solid #E2E8F0',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontFamily: 'Inter, sans-serif',
+              background: notificationSetting === 'manual' ? 'rgba(4, 139, 168, 0.05)' : 'white'
+            }}>
+              <input 
+                type="radio" 
+                name="notifications" 
+                value="manual"
+                checked={notificationSetting === 'manual'}
+                onChange={(e) => setNotificationSetting(e.target.value)}
+                style={{marginRight: '12px', marginTop: '2px'}} 
+              />
+              <div>
+                <div style={{color: '#061A40', fontWeight: 600, marginBottom: '4px'}}>On-demand only</div>
+                <div style={{color: '#718096', fontSize: '0.9rem'}}>I'll check in with you manually</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        {/* Section 3: Privacy & Data */}
+        <div style={{marginTop: '48px'}}>
+          <h2 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            color: '#061A40',
+            fontSize: '1.5rem',
+            marginBottom: '16px',
+            margin: '0 0 16px 0'
+          }}>
+            🔒 Privacy & Data
+          </h2>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568',
+            marginBottom: '24px',
+            margin: '0 0 24px 0'
+          }}>Your data, your control</p>
+
+          <div>
+            <div style={{
+              padding: '20px',
+              border: '2px solid #E2E8F0',
+              borderRadius: '8px',
+              marginBottom: '16px',
+              background: 'white'
+            }}>
+              <label style={{
+                display: 'block',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 500,
+                color: '#061A40',
+                marginBottom: '8px'
+              }}>
+                Data scope:
+              </label>
+              <select 
+                value={dataScope}
+                onChange={(e) => setDataScope(e.target.value)}
                 style={{
-                  background: 'white',
-                  border: '2px solid #E2E8F0',
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '6px',
+                  fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
-                  color: '#1a202c'
+                  background: 'white'
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = '#048BA8';
                   e.target.style.boxShadow = '0 0 0 3px rgba(4, 139, 168, 0.1)';
+                  e.target.style.outline = 'none';
                 }}
                 onBlur={(e) => {
                   e.target.style.borderColor = '#E2E8F0';
                   e.target.style.boxShadow = 'none';
                 }}
-              />
+              >
+                <option value="full">Full access (Recommended)</option>
+                <option value="limited">Limited scope</option>
+              </select>
             </div>
 
-            {/* Popular Integrations */}
-            <div className="text-left">
-              <h3 className="font-brand font-medium mb-4" style={{color: '#048BA8'}}>
-                Popular additions:
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {availableIntegrations.map((integration, index) => (
-                  <button
-                    key={index}
-                    className="group flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 text-left"
-                    style={{
-                      background: 'white',
-                      border: '1px solid #E2E8F0'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#048BA8';
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(4, 139, 168, 0.15)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#E2E8F0';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    <div className="p-1 rounded" style={{color: '#048BA8'}}>
-                      {integration.icon}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-body font-medium text-sm" style={{color: '#061A40'}}>
-                        {integration.name}
-                      </div>
-                      <div className="font-body text-xs" style={{color: '#718096'}}>
-                        {integration.benefit}
-                      </div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" style={{color: '#048BA8'}} />
-                  </button>
-                ))}
-              </div>
+            <div style={{
+              padding: '20px',
+              border: '2px solid #E2E8F0',
+              borderRadius: '8px',
+              marginBottom: '16px',
+              background: 'white'
+            }}>
+              <label style={{
+                display: 'block',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 500,
+                color: '#061A40',
+                marginBottom: '8px'
+              }}>
+                Conversation history:
+              </label>
+              <select 
+                value={conversationHistory}
+                onChange={(e) => setConversationHistory(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '6px',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  background: 'white'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#048BA8';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(4, 139, 168, 0.1)';
+                  e.target.style.outline = 'none';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E2E8F0';
+                  e.target.style.boxShadow = 'none';
+                }}
+              >
+                <option value="30days">Keep for 30 days</option>
+                <option value="90days">Keep for 90 days</option>
+                <option value="1year">Keep for 1 year</option>
+                <option value="forever">Keep forever</option>
+              </select>
+            </div>
+
+            <div style={{
+              padding: '20px',
+              border: '2px solid #E2E8F0',
+              borderRadius: '8px',
+              background: 'white'
+            }}>
+              <label style={{
+                display: 'block',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 500,
+                color: '#061A40',
+                marginBottom: '8px'
+              }}>
+                Team access:
+              </label>
+              <select 
+                value={teamAccess}
+                onChange={(e) => setTeamAccess(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '6px',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  background: 'white'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#048BA8';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(4, 139, 168, 0.1)';
+                  e.target.style.outline = 'none';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E2E8F0';
+                  e.target.style.boxShadow = 'none';
+                }}
+              >
+                <option value="only_me">Only me</option>
+                <option value="my_team">My team</option>
+                <option value="custom">Custom permissions</option>
+              </select>
             </div>
           </div>
         </div>
 
-        {/* Connected Systems Issue Alert (only show if there's a problem) */}
-        {systemConnections.some((conn: any) => !conn.isActive) && (
-          <div className="mb-8">
-            <div className="flex items-start gap-4 p-4 rounded-xl" style={{background: 'rgba(245, 101, 101, 0.1)', border: '1px solid #F56565'}}>
-              <AlertCircle className="w-5 h-5 mt-0.5" style={{color: '#F56565'}} />
-              <div className="flex-1">
-                <h3 className="font-brand font-medium mb-1" style={{color: '#C53030'}}>
-                  Connection Issue
-                </h3>
-                <p className="font-body text-sm mb-3" style={{color: '#744210'}}>
-                  I haven't been able to access your latest data from some systems.
-                </p>
-                <div className="flex gap-2">
-                  <button className="px-4 py-2 text-sm font-body font-medium rounded-lg transition-colors"
-                          style={{background: '#F56565', color: 'white'}}>
-                    Fix Connection
-                  </button>
-                  <button className="px-4 py-2 text-sm font-body font-medium rounded-lg transition-colors"
-                          style={{background: 'white', color: '#F56565', border: '1px solid #F56565'}}>
-                    Get Help
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Encouraging Note */}
-        <div className="mt-12 p-6 rounded-xl" style={{background: 'rgba(193, 237, 204, 0.1)', borderLeft: '4px solid #048BA8'}}>
-          <p className="font-body" style={{color: '#061A40', lineHeight: '1.6', margin: 0}}>
+        <div style={{
+          marginTop: '48px',
+          padding: '24px',
+          borderRadius: '12px',
+          background: 'rgba(193, 237, 204, 0.1)',
+          borderLeft: '4px solid #048BA8'
+        }}>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#061A40',
+            lineHeight: '1.6',
+            margin: 0,
+            fontSize: '16px'
+          }}>
             💡 Each new connection makes our conversations smarter and more valuable. 
             I learn your business patterns and can provide increasingly personalized insights.
           </p>
