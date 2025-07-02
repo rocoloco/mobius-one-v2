@@ -1,62 +1,36 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { 
-  Search, Filter, Calendar, Download, Trash2, 
-  MessageSquare, Clock, Star, Archive, Eye,
-  ChevronDown, MoreHorizontal, ExternalLink
+  Search, 
+  MessageCircle,
+  Clock,
+  ArrowRight
 } from "lucide-react";
 
 export default function HistoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterBy, setFilterBy] = useState("all");
-  const [sortBy, setSortBy] = useState("recent");
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const navigate = useNavigate();
 
   const { data: conversations = [] } = useQuery({
-    queryKey: ['/api/conversations'],
+    queryKey: ["/api/conversations"],
     enabled: true
   });
 
   const { data: user } = useQuery({
-    queryKey: ['/api/user'],
+    queryKey: ["/api/user"],
     enabled: true
   });
 
-  const filteredConversations = (conversations as any[])
-    .filter(conv => {
-      if (searchQuery && !conv.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
-      }
-      if (filterBy === "starred") return conv.isStarred;
-      if (filterBy === "archived") return conv.isArchived;
-      if (filterBy === "recent") {
-        const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        return new Date(conv.updatedAt) > oneWeekAgo;
-      }
-      return true;
+  const filteredConversations = conversations
+    .filter((conv: any) => {
+      return conv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+             conv.preview?.toLowerCase().includes(searchQuery.toLowerCase());
     })
-    .sort((a, b) => {
-      if (sortBy === "recent") return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-      if (sortBy === "oldest") return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
-      if (sortBy === "alphabetical") return a.title.localeCompare(b.title);
-      return 0;
-    });
-
-  const handleSelectAll = () => {
-    if (selectedItems.length === filteredConversations.length) {
-      setSelectedItems([]);
-    } else {
-      setSelectedItems(filteredConversations.map(conv => conv.id));
-    }
-  };
-
-  const handleExportSelected = (format: 'pdf' | 'csv' | 'json') => {
-    console.log(`Exporting ${selectedItems.length} conversations as ${format}`);
-  };
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
   const getConversationPreview = (conv: any) => {
-    return conv.preview || "Click to view conversation details and continue the discussion...";
+    return conv.preview || "We discussed business insights and data analysis that can help inform your next decisions.";
   };
 
   const formatDate = (dateString: string) => {
@@ -64,46 +38,53 @@ export default function HistoryPage() {
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
     
-    if (diffInHours < 24) {
-      return `${Math.floor(diffInHours)} hours ago`;
-    } else if (diffInHours < 168) {
-      return `${Math.floor(diffInHours / 24)} days ago`;
-    } else {
-      return date.toLocaleDateString();
-    }
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${Math.floor(diffInHours)} hours ago`;
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)} days ago`;
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const handleContinueConversation = (conversationId: number) => {
+    navigate(`/query?conversation=${conversationId}`);
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="p-6">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-foreground mb-2">Conversation History</h1>
-          <p className="text-muted-foreground">
-            Review past conversations, export insights, and continue previous discussions
+    <div className="min-h-screen" style={{background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)'}}>
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        {/* Conversational Header */}
+        <div className="space-y-6 mb-12">
+          <h1 className="text-3xl font-brand" style={{color: '#061A40', lineHeight: '1.4'}}>
+            {getGreeting()}, {(user as any)?.username || "there"}
+          </h1>
+          
+          <p className="text-lg font-body" style={{color: '#4A5568', lineHeight: '1.6'}}>
+            Let's revisit our previous conversations. Pick up where we left off or explore the insights we've discovered together.
           </p>
         </div>
 
-        {/* Controls */}
-        <div className="card p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        {/* Search */}
+        {conversations.length > 3 && (
+          <div className="mb-8">
+            <div className="relative max-w-md">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{color: '#718096'}} />
               <input
                 type="text"
-                placeholder="Search conversations..."
+                placeholder="Search our conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input-modern pl-10 w-full font-body"
+                className="font-body w-full pl-12 pr-4 py-4 rounded-xl transition-all duration-200"
                 style={{
                   background: 'white',
-                  border: '1px solid #E2E8F0',
-                  borderRadius: '8px',
-                  padding: '12px 12px 12px 40px',
-                  fontSize: '14px',
-                  color: '#1a202c',
-                  transition: 'all 0.2s ease'
+                  border: '2px solid #E2E8F0',
+                  fontSize: '16px',
+                  color: '#1a202c'
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = '#048BA8';
@@ -115,233 +96,111 @@ export default function HistoryPage() {
                 }}
               />
             </div>
-
-            {/* Filters */}
-            <div className="flex gap-3">
-              <select 
-                className="input-modern min-w-[120px]"
-                value={filterBy}
-                onChange={(e) => setFilterBy(e.target.value)}
-              >
-                <option value="all">All</option>
-                <option value="recent">This Week</option>
-                <option value="starred">Starred</option>
-                <option value="archived">Archived</option>
-              </select>
-
-              <select 
-                className="input-modern min-w-[120px]"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="recent">Most Recent</option>
-                <option value="oldest">Oldest First</option>
-                <option value="alphabetical">A-Z</option>
-              </select>
-            </div>
           </div>
+        )}
 
-          {/* Bulk Actions */}
-          {selectedItems.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-border">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  {selectedItems.length} conversation{selectedItems.length !== 1 ? 's' : ''} selected
-                </span>
-                <div className="flex gap-2">
-                  <button 
-                    className="btn-secondary text-sm"
-                    onClick={() => handleExportSelected('pdf')}
-                  >
-                    <Download className="h-4 w-4" />
-                    Export PDF
-                  </button>
-                  <button 
-                    className="btn-secondary text-sm"
-                    onClick={() => handleExportSelected('csv')}
-                  >
-                    <Download className="h-4 w-4" />
-                    Export CSV
-                  </button>
-                  <button className="btn-secondary text-sm text-destructive">
-                    <Archive className="h-4 w-4" />
-                    Archive
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="card p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-semibold text-foreground">{conversations.length}</p>
-                <p className="text-sm text-muted-foreground">Total Conversations</p>
-              </div>
-              <MessageSquare className="h-8 w-8 text-muted-foreground" />
-            </div>
-          </div>
-
-          <div className="card p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-semibold text-foreground">
-                  {conversations.filter((c: any) => {
-                    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-                    return new Date(c.updatedAt) > oneWeekAgo;
-                  }).length}
-                </p>
-                <p className="text-sm text-muted-foreground">This Week</p>
-              </div>
-              <Calendar className="h-8 w-8 text-muted-foreground" />
-            </div>
-          </div>
-
-          <div className="card p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-semibold text-foreground">
-                  {conversations.filter((c: any) => c.isStarred).length}
-                </p>
-                <p className="text-sm text-muted-foreground">Starred</p>
-              </div>
-              <Star className="h-8 w-8 text-muted-foreground" />
-            </div>
-          </div>
-
-          <div className="card p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-semibold text-foreground">
-                  {Math.round(conversations.length * 0.92)}
-                </p>
-                <p className="text-sm text-muted-foreground">Avg. Accuracy</p>
-              </div>
-              <Eye className="h-8 w-8 text-muted-foreground" />
-            </div>
-          </div>
-        </div>
-
-        {/* Conversation List */}
-        <div className="space-y-4">
-          {/* Select All */}
-          <div className="flex items-center gap-3 px-2">
-            <input
-              type="checkbox"
-              checked={selectedItems.length === filteredConversations.length && filteredConversations.length > 0}
-              onChange={handleSelectAll}
-              className="rounded border-border"
-            />
-            <span className="text-sm text-muted-foreground">
-              Select all ({filteredConversations.length} conversations)
-            </span>
-          </div>
-
+        {/* Conversation Memory */}
+        <div className="space-y-6">
           {filteredConversations.length === 0 ? (
-            <div className="card p-12 text-center">
-              <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-semibold text-foreground mb-2">No conversations found</h3>
-              <p className="text-muted-foreground mb-4">
-                {searchQuery ? 'Try adjusting your search terms' : 'Start a new conversation to see it here'}
+            <div className="text-center py-16">
+              <MessageCircle className="w-16 h-16 mx-auto mb-6" style={{color: '#CBD5E0'}} />
+              <h3 className="text-xl font-brand mb-3" style={{color: '#061A40'}}>
+                Ready for our first conversation?
+              </h3>
+              <p className="font-body mb-8" style={{color: '#718096', maxWidth: '400px', margin: '0 auto'}}>
+                Start a new conversation and we'll explore your business data together. 
+                Our discussions will appear here for easy reference.
               </p>
-              <Link to="/query">
-                <button className="btn-primary">Start New Conversation</button>
-              </Link>
+              <button
+                onClick={() => navigate('/query')}
+                className="px-8 py-4 font-body font-semibold text-white rounded-xl transition-all duration-200"
+                style={{
+                  background: 'linear-gradient(135deg, #048BA8 0%, #037A96 100%)',
+                  transform: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(4, 139, 168, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                Start Our First Conversation
+              </button>
             </div>
           ) : (
-            filteredConversations.map((conversation) => (
-              <div key={conversation.id} className="card p-6">
-                <div className="flex items-start gap-4">
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.includes(conversation.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedItems([...selectedItems, conversation.id]);
-                      } else {
-                        setSelectedItems(selectedItems.filter(id => id !== conversation.id));
-                      }
-                    }}
-                    className="mt-1 rounded border-border"
-                  />
+            <>
+              {searchQuery && (
+                <p className="font-body text-sm mb-6" style={{color: '#718096'}}>
+                  {filteredConversations.length} conversation{filteredConversations.length !== 1 ? 's' : ''} found
+                </p>
+              )}
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-semibold text-foreground hover:text-primary cursor-pointer">
-                          <Link to={`/query?conversation=${conversation.id}`}>
-                            {conversation.title}
-                          </Link>
+              <div className="space-y-4">
+                {filteredConversations.map((conversation: any) => (
+                  <div
+                    key={conversation.id}
+                    className="group bg-white rounded-xl p-6 border cursor-pointer transition-all duration-200"
+                    style={{
+                      border: '1px solid #E2E8F0',
+                      transform: 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(4, 139, 168, 0.1)';
+                      e.currentTarget.style.borderColor = '#048BA8';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                      e.currentTarget.style.borderColor = '#E2E8F0';
+                    }}
+                    onClick={() => handleContinueConversation(conversation.id)}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-brand mb-2 pr-4" style={{color: '#061A40', lineHeight: '1.4'}}>
+                          {conversation.title}
                         </h3>
-                        <div className="flex items-center gap-1">
-                          {conversation.isStarred && (
-                            <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                          )}
-                          {conversation.isArchived && (
-                            <Archive className="h-4 w-4 text-muted-foreground" />
-                          )}
+                        <div className="flex items-center gap-3 text-sm font-body" style={{color: '#718096'}}>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {formatDate(conversation.updatedAt)}
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {formatDate(conversation.updatedAt)}
-                        </span>
-                        <button className="btn-ghost p-1">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </button>
-                      </div>
+                      <ArrowRight 
+                        className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" 
+                        style={{color: '#048BA8'}} 
+                      />
                     </div>
-
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                    
+                    <p className="font-body leading-relaxed" style={{color: '#4A5568', lineHeight: '1.6'}}>
                       {getConversationPreview(conversation)}
                     </p>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>{conversation.messageCount || 0} messages</span>
-                        <span>94% avg. confidence</span>
-                        <span>Salesforce, NetSuite</span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <button className="btn-ghost text-xs p-1">
-                          <Star className="h-3 w-3" />
-                          Star
-                        </button>
-                        <button className="btn-ghost text-xs p-1">
-                          <Download className="h-3 w-3" />
-                          Export
-                        </button>
-                        <Link to={`/query?conversation=${conversation.id}`}>
-                          <button className="btn-secondary text-xs">
-                            <Eye className="h-3 w-3" />
-                            Continue
-                          </button>
-                        </Link>
-                      </div>
+                    
+                    <div className="mt-4 pt-4" style={{borderTop: '1px solid #F7FAFC'}}>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-body font-medium" 
+                            style={{background: 'rgba(4, 139, 168, 0.1)', color: '#048BA8'}}>
+                        Continue conversation
+                      </span>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))
+            </>
           )}
         </div>
 
-        {/* Pagination */}
-        {filteredConversations.length > 20 && (
-          <div className="flex items-center justify-center mt-8">
-            <div className="flex items-center gap-2">
-              <button className="btn-secondary">Previous</button>
-              <span className="text-sm text-muted-foreground px-4">
-                Page 1 of {Math.ceil(filteredConversations.length / 20)}
-              </span>
-              <button className="btn-secondary">Next</button>
-            </div>
+        {/* Encouraging Note */}
+        {filteredConversations.length > 0 && (
+          <div className="mt-12 p-6 rounded-xl" style={{background: 'rgba(193, 237, 204, 0.1)', borderLeft: '4px solid #048BA8'}}>
+            <p className="font-body" style={{color: '#061A40', lineHeight: '1.6', margin: 0}}>
+              💡 Each conversation builds on our shared understanding of your business. 
+              The more we discuss, the more personalized and valuable our insights become.
+            </p>
           </div>
         )}
       </div>
