@@ -87,7 +87,7 @@ export default function HomePage() {
       <div className="max-w-3xl mx-auto px-6 py-12">
         {/* Conversational Welcome */}
         <div className="space-y-8 mb-16">
-          <h1 className="text-2xl font-medium leading-relaxed" style={{color: '#061A40'}}>
+          <h1 className="text-2xl font-brand leading-relaxed" style={{color: '#061A40'}}>
             {getGreeting()}, {(user as any)?.username || "there"}
           </h1>
           
@@ -96,13 +96,13 @@ export default function HomePage() {
             borderLeft: '4px solid #048BA8',
             borderRadius: '0 8px 8px 0'
           }}>
-            <p style={{color: '#061A40', margin: 0, lineHeight: '1.6'}}>
+            <p className="font-body" style={{color: '#061A40', margin: 0, lineHeight: '1.6'}}>
               I've analyzed your latest business data and found 18.3% revenue growth this quarter. 
               I also noticed 3 high-priority accounts that need attention.
             </p>
           </div>
           
-          <p style={{color: '#4A5568', fontSize: '16px', marginBottom: '32px'}}>
+          <p className="font-body" style={{color: '#4A5568', fontSize: '16px', marginBottom: '32px'}}>
             What would you like to explore?
           </p>
         </div>
@@ -153,7 +153,7 @@ export default function HomePage() {
                 <button
                   onClick={handleSendMessage}
                   disabled={!message.trim() || sendMessageMutation.isPending}
-                  className="px-6 py-3 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 text-white font-body font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     background: 'linear-gradient(135deg, #048BA8 0%, #037A96 100%)',
                     border: 'none'
@@ -187,7 +187,7 @@ export default function HomePage() {
 
           {/* Dynamic Suggestions */}
           <div className="space-y-4 animate-in fade-in duration-500">
-            <h3 className="text-sm font-semibold flex items-center gap-2" style={{color: '#048BA8'}}>
+            <h3 className="text-sm font-body font-semibold flex items-center gap-2" style={{color: '#048BA8'}}>
               <span>💡</span>
               <span>You might want to ask:</span>
             </h3>
@@ -210,7 +210,7 @@ export default function HomePage() {
                     e.currentTarget.style.background = 'rgba(4, 139, 168, 0.05)';
                   }}
                 >
-                  <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block leading-relaxed">
+                  <span className="font-body group-hover:translate-x-1 transition-transform duration-200 inline-block leading-relaxed">
                     {question}
                   </span>
                 </button>

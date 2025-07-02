@@ -75,7 +75,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="font-semibold text-lg text-white truncate">
+                <h2 className="font-brand text-lg text-white truncate">
                   Mobius One
                 </h2>
               </div>
