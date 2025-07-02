@@ -19,7 +19,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="h-screen flex bg-gradient-to-br from-slate-50/50 to-white">
+    <div className="h-screen flex" style={{background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)'}}>
       {/* Sidebar */}
       <Sidebar 
         isCollapsed={sidebarCollapsed}

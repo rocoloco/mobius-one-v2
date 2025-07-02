@@ -54,22 +54,31 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
     : [];
 
   return (
-    <div className={`h-full bg-background border-r border-border flex flex-col transition-all duration-300 ${
+    <div className={`h-full flex flex-col transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-64'
-    } ${className}`}>
+    } ${className}`}
+    style={{
+      background: 'linear-gradient(180deg, #061A40 0%, #04496B 100%)',
+      borderRight: '1px solid rgba(4, 139, 168, 0.2)'
+    }}>
       {/* Header */}
-      <div className="p-4 border-b border-border">
+      <div className="p-4" style={{borderBottom: '1px solid rgba(4, 139, 168, 0.2)'}}>
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Home className="text-primary-foreground" size={16} />
+              <div className="w-8 h-8 flex items-center justify-center">
+                <img 
+                  src="/attached_assets/Icon for light background_1751425597822.png" 
+                  alt="Mobius Logo" 
+                  className="w-8 h-8"
+                  style={{filter: 'brightness(0) invert(1)'}}
+                />
               </div>
               <div>
-                <h2 className="font-semibold text-lg text-foreground">
+                <h2 className="font-semibold text-lg text-white">
                   Mobius One
                 </h2>
-                <p className="text-xs text-muted-foreground">Business AI</p>
+                <p className="text-xs text-gray-200">Business AI</p>
               </div>
             </div>
           )}
@@ -78,7 +87,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
             variant="flat"
             size="sm"
             onClick={onToggleCollapse}
-            className="ml-auto"
+            className="text-white hover:bg-white/10 ml-auto"
           >
             {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </Button>
@@ -96,9 +105,23 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
               key={item.path}
               className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-150 ${
                 isActive 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? 'text-white border-l-3 border-l-4' 
+                  : 'text-gray-200 hover:text-white'
               }`}
+              style={isActive ? {
+                background: 'rgba(4, 139, 168, 0.2)',
+                borderLeft: '3px solid #048BA8'
+              } : {}}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.background = 'rgba(4, 139, 168, 0.1)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.background = '';
+                }
+              }}
               onClick={() => navigate(item.path)}
             >
               <Icon size={18} />
@@ -112,18 +135,18 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
 
       {/* User Profile */}
       {!isCollapsed && user && (
-        <div className="p-4 border-t border-border space-y-3">
+        <div className="p-4 space-y-3" style={{borderTop: '1px solid rgba(4, 139, 168, 0.2)'}}>
           <div className="flex items-center space-x-3">
             <Avatar
               size="sm"
               name={(user as any)?.username?.substring(0, 2).toUpperCase() || "U"}
-              className="bg-primary text-primary-foreground"
+              className="bg-teal-500 text-white"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
+              <p className="text-sm font-medium text-white truncate">
                 {(user as any)?.username || "User"}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-200">
                 Business User
               </p>
             </div>
