@@ -604,3 +604,18 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Fix for unwanted sidebar input components */
+[data-sidebar="input"] {
+  display: none !important;
+}
+
+/* Hide any stray sidebar search inputs that might be interfering */
+.sidebar [placeholder*="Search"] {
+  display: none !important;
+}
+
+/* Ensure only intended inputs are visible */
+input[placeholder="Search conversations..."]:not(.visible-input) {
+  display: none !important;
+}
