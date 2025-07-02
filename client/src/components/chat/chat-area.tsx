@@ -101,11 +101,11 @@ export default function ChatArea({ conversationId, onConversationUpdate }: ChatA
               <Brain className="text-white" size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-sf-text">AI Business Assistant</h2>
+              <h2 className="text-lg font-semibold text-sf-text">Mobius Business Intelligence</h2>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-sf-success rounded-full animate-pulse" />
                 <span className="text-sm text-gray-500">
-                  {isTyping ? "Thinking..." : "Online • Ready to assist"}
+                  {isTyping ? "Mobius is thinking..." : "Online • Ready to assist"}
                 </span>
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function ChatArea({ conversationId, onConversationUpdate }: ChatA
               <div className="flex-1">
                 <div className="bg-gray-50 rounded-lg p-4 max-w-2xl">
                   <p className="text-sf-text mb-2">
-                    👋 Welcome to your Business AI Assistant! I'm here to help you interact with your 
+                    👋 Welcome to Mobius! I'm here to help you get insights from your 
                     Salesforce CRM and NetSuite ERP systems through natural conversation.
                   </p>
                   <p className="text-sm text-gray-600">Try asking me things like:</p>
@@ -155,7 +155,7 @@ export default function ChatArea({ conversationId, onConversationUpdate }: ChatA
                   </ul>
                 </div>
                 <div className="flex items-center space-x-2 mt-2">
-                  <span className="text-xs text-gray-400">AI Assistant</span>
+                  <span className="text-xs text-gray-400">Mobius</span>
                   <span className="text-xs text-gray-400">•</span>
                   <span className="text-xs text-gray-400">Just now</span>
                 </div>

@@ -1,0 +1,286 @@
+# Replit Agent Prompt: Replace "Query" with Conversational Language
+
+## **Mission: Remove All Technical "Query" Language**
+
+You need to find and replace ALL instances of "Query" and related technical database language throughout the entire Mobius One application with natural, conversational language that feels human and approachable.
+
+---
+
+## **Global Find & Replace Rules**
+
+### **Primary Replacements**
+```
+❌ "Query" → ✅ "Ask" or "Question"
+❌ "New Query" → ✅ "New Conversation"
+❌ "Query Session" → ✅ "Conversation"
+❌ "Submit Query" → ✅ "Ask AI"
+❌ "Query Examples" → ✅ "Questions to Try"
+❌ "Query History" → ✅ "Conversation History"
+❌ "Popular Queries" → ✅ "Popular Questions"
+❌ "Try querying" → ✅ "Try asking"
+❌ "Enter query" → ✅ "Ask anything"
+❌ "Search queries" → ✅ "Search conversations"
+```
+
+### **Button Text Updates**
+```
+❌ [Query] → ✅ [Ask Mobius]
+❌ [Submit Query] → ✅ [Ask Mobius]
+❌ [New Query] → ✅ [New Conversation]
+❌ [Run Query] → ✅ [Ask Mobius]
+❌ [Ask AI] → ✅ [Ask Mobius]
+```
+
+### **Placeholder Text Updates**
+```
+❌ "Enter your query here..." → ✅ "Ask anything about your business..."
+❌ "Type your query..." → ✅ "What would you like to know?"
+❌ "Search queries..." → ✅ "Search conversations..."
+```
+
+### **Navigation & UI Updates**
+```
+❌ "Query Center" → ✅ "Ask Mobius" or "Conversation"
+❌ "Query Builder" → ✅ "Ask Mobius"
+❌ "Query Results" → ✅ "Insights" or "Results"
+❌ "Query Performance" → ✅ "Response Time"
+❌ "Ask AI" → ✅ "Ask Mobius"
+```
+
+---
+
+## **Specific File/Component Updates**
+
+### **Main Interface**
+- Change main input placeholder from query language to conversational
+- Update all button text from "Query" to "Ask Mobius"
+- Replace any "query" references in help text
+- Change any generic "AI" references to "Mobius"
+
+### **History Page**
+- "Query History" → "Conversation History"
+- "New Query Session" → "New Conversation"
+- "0 queries" → "0 conversations"
+- Any query-related metrics or descriptions
+
+### **Help Center**
+- "Query Examples" → "Questions to Try"
+- "Sample Queries" → "Example Questions"
+- Any instructional text about "querying"
+
+### **Settings Page**
+- "Query Settings" → "Conversation Settings" (if exists)
+- Any technical query-related configurations
+
+### **Error Messages**
+```
+❌ "Query failed" → ✅ "I couldn't find an answer"
+❌ "Invalid query" → ✅ "I didn't understand that question"
+❌ "Query timeout" → ✅ "This is taking longer than expected"
+```
+
+### **Notifications/Alerts**
+```
+❌ "New query available" → ✅ "Ready for your next question"
+❌ "Query completed" → ✅ "Here's what I found"
+```
+
+---
+
+## **Conversational Language Guidelines**
+
+### **Tone & Voice**
+- Use **first person** ("I can help you with..." not "System can process...")
+- Use **natural language** ("What would you like to know?" not "Enter query parameters")
+- Use **business language** ("Ask about your customers" not "Query customer database")
+
+### **Action-Oriented Language**
+```
+✅ "Ask about your revenue"
+✅ "Get insights on customers"
+✅ "Discover what's happening with..."
+✅ "Find out which customers..."
+✅ "Show me my business data"
+
+❌ "Execute revenue query"
+❌ "Process customer data request"
+❌ "Run analytics query"
+```
+
+### **Help Text Updates**
+```
+❌ "Use natural language queries to access your data"
+✅ "Ask me anything about your business in plain English"
+
+❌ "Query your connected systems"
+✅ "Get insights from all your business systems"
+
+❌ "Build complex queries easily"
+✅ "Ask complex business questions naturally"
+```
+
+---
+
+## **User-Facing Text Examples**
+
+### **Main Interface Text**
+```jsx
+// Main greeting area
+<p>What insights do you need from your business?</p>
+
+// Input placeholder
+<input placeholder="Ask anything about your business..." />
+
+// Button text
+<button>Ask Mobius</button>
+
+// Try asking section
+<h3>💡 Try asking:</h3>
+<ul>
+  <li>"Which customers haven't paid but are using our services?"</li>
+  <li>"Show me revenue vs target this quarter"</li>
+  <li>"What deals closed but aren't invoiced yet?"</li>
+</ul>
+```
+
+### **History Page Text**
+```jsx
+// Page title
+<h1>Conversation History</h1>
+
+// Description
+<p>Review past conversations, export insights, and continue previous discussions</p>
+
+// Search placeholder
+<input placeholder="Search conversations..." />
+
+// Metrics
+<div>5 Total Conversations</div>
+<div>5 This Week</div>
+
+// Individual items
+<h3>New Conversation</h3>
+<p>Click to view conversation details and continue the discussion...</p>
+```
+
+### **Help Center Text**
+```jsx
+// Section titles
+<h2>Questions to Try</h2>
+<h2>Example Questions</h2>
+<h2>Popular Questions</h2>
+
+// Instructions
+<p>Try asking any of these questions to get started:</p>
+<p>Copy any question and ask Mobius for instant insights</p>
+```
+
+---
+
+## **Technical Implementation Notes**
+
+### **Search & Replace Strategy**
+1. **Global search** for "query", "Query", "QUERY" (case-sensitive)
+2. **Context check** each instance to ensure proper replacement
+3. **Test all functionality** after changes to ensure nothing breaks
+4. **Update any constants** or configuration variables
+
+### **Database/API Considerations**
+- Keep technical variable names as-is in code (e.g., `queryId` can stay)
+- Only change **user-facing text** and **UI labels**
+- Ensure API responses use new language
+
+### **Component Props/Variables**
+```javascript
+// Keep technical names in code
+const [queryResults, setQueryResults] = useState();
+
+// But change user-facing labels
+<button>{isLoading ? 'Thinking...' : 'Ask Mobius'}</button>
+```
+
+---
+
+## **Quality Assurance Checklist**
+
+After implementation, verify:
+- [ ] No instances of "Query" in any user-facing text
+- [ ] All buttons use "Ask Mobius" or conversational language
+- [ ] History page uses "Conversation" terminology
+- [ ] Help Center uses "Questions" instead of "Queries"
+- [ ] Error messages sound human and helpful
+- [ ] Placeholder text is conversational
+- [ ] Navigation items use natural language
+- [ ] All functionality still works properly
+
+---
+
+## **Special Cases to Handle**
+
+### **Preserve These Technical Terms**
+- Keep "SQL query" in developer documentation (hidden from users)
+- Keep variable names like `queryId` in code
+- Keep API endpoint names (internal technical references)
+
+### **Context-Specific Replacements**
+```
+In user documentation: "Query" → "Question"
+In conversation flow: "Query" → "Ask"
+In historical context: "Query" → "Conversation"
+In action buttons: "Query" → "Ask Mobius"
+In search contexts: "Query" → "Search"
+```
+
+---
+
+## **Testing Requirements**
+
+### **User Experience Test**
+After changes, the application should feel like:
+- ✅ Talking to a business advisor
+- ✅ Having a natural conversation
+- ✅ Getting insights, not running queries
+- ✅ Using business intelligence, not database software
+
+### **Functionality Test**
+Ensure all features work exactly the same:
+- Chat interface functions properly
+- History page displays correctly
+- Search functionality works
+- All buttons and links function
+- No broken references or missing text
+
+---
+
+## **The Steve Jobs Standard**
+
+After this update, a non-technical business user should never feel like they're:
+- Operating database software
+- Running technical queries
+- Using developer tools
+- Learning system commands
+
+Instead, they should feel like they're:
+- Talking to their smartest business advisor
+- Getting instant insights about their company
+- Having natural conversations about their data
+- Accessing business intelligence effortlessly
+
+---
+
+## **Success Metrics**
+
+The language change is successful when:
+- Users say "I asked Mobius..." instead of "I ran a query..."
+- New users immediately understand how to interact
+- The interface feels conversational, not technical
+- Business users feel confident, not intimidated
+- The product feels like AI assistance, not database software
+
+---
+
+## **Final Reminder**
+
+This isn't just a word replacement - it's a fundamental shift in how users perceive and interact with Mobius. Every piece of text should reinforce that they're having intelligent conversations about their business, not operating technical software.
+
+**Make it feel like talking to the smartest person in your company, not like using enterprise software.**

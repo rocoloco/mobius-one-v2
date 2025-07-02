@@ -237,6 +237,15 @@ Changelog:
   * All questions route back to home page to encourage immediate engagement
   * Applied consistent Mobius branding and magical micro-interactions throughout
   * Result: Help page now inspires and empowers users rather than teaching software functionality
+- January 2, 2025. Complete replacement of "Query" with conversational language throughout application:
+  * Replaced all "Ask AI" buttons with "Ask Mobius" for consistent brand identity
+  * Updated all "AI Assistant" references to "Mobius" in chat components and message displays
+  * Changed "AI Insight" labels to "Mobius Insight" in message bubbles and analysis components
+  * Updated database entries: converted "New Query Session" titles to "New Conversation"
+  * Fixed floating action button navigation from broken `/query` route to home page (`/`)
+  * Updated dashboard terminology: "todaysQueries" → "todaysConversations", "quickQueries" → "quickQuestions"
+  * Applied conversational language consistently: "Mobius is thinking..." instead of "AI is thinking..."
+  * Result: Application now feels like conversing with intelligent business advisor rather than using database software
 ```
 
 ## User Preferences

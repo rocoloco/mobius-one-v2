@@ -36,7 +36,7 @@ export default function DashboardPage() {
     ? systemConnections.filter((conn: any) => conn.isConnected)
     : [];
 
-  const todaysQueries = Array.isArray(conversations) 
+  const todaysConversations = Array.isArray(conversations) 
     ? conversations.filter((conv: any) => {
         const today = new Date();
         const convDate = new Date(conv.createdAt);
@@ -44,7 +44,7 @@ export default function DashboardPage() {
       }).length 
     : 0;
 
-  const quickQueries = [
+  const quickQuestions = [
     { text: "Show me this quarter's revenue vs target", category: "Revenue Analysis", icon: TrendingUp },
     { text: "Which customers have overdue payments?", category: "Collections", icon: Target },
     { text: "What deals are closing this month?", category: "Sales Pipeline", icon: DollarSign },
@@ -74,8 +74,8 @@ export default function DashboardPage() {
     }
   ];
 
-  const handleQuickQuery = (query: string) => {
-    window.location.href = `/query?q=${encodeURIComponent(query)}`;
+  const handleQuickQuestion = (question: string) => {
+    window.location.href = `/?q=${encodeURIComponent(question)}`;
   };
 
   const getActivityIcon = (type: string) => {
@@ -124,14 +124,14 @@ export default function DashboardPage() {
                 className="input-modern pl-10 h-12 text-base w-full"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && searchQuery.trim()) {
-                    handleQuickQuery(searchQuery);
+                    handleQuickQuestion(searchQuery);
                   }
                 }}
               />
             </div>
-            <Link to={searchQuery.trim() ? `/query?q=${encodeURIComponent(searchQuery)}` : "/query"}>
+            <Link to={searchQuery.trim() ? `/?q=${encodeURIComponent(searchQuery)}` : "/"}>
               <button className="btn-primary h-12 px-6">
-                Ask AI
+                Ask Mobius
                 <ArrowRight className="h-4 w-4" />
               </button>
             </Link>
@@ -143,8 +143,8 @@ export default function DashboardPage() {
           <div className="card p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-semibold text-gray-900">{todaysQueries}</p>
-                <p className="text-sm text-gray-600">Queries Today</p>
+                <p className="text-2xl font-semibold text-gray-900">{todaysConversations}</p>
+                <p className="text-sm text-gray-600">Conversations Today</p>
               </div>
               <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
                 <MessageSquare className="h-5 w-5 text-gray-600" />
@@ -195,21 +195,21 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-6">
             <h2 className="text-lg font-semibold text-gray-900">Popular Business Questions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {quickQueries.map((query, index) => (
+              {quickQuestions.map((question, index) => (
                 <div 
                   key={index} 
                   className="card-hover p-4 cursor-pointer group"
-                  onClick={() => handleQuickQuery(query.text)}
+                  onClick={() => handleQuickQuestion(question.text)}
                 >
                   <div className="flex items-start gap-3">
                     <div className="h-8 w-8 rounded-md bg-gray-100 flex items-center justify-center flex-shrink-0">
-                      <query.icon className="h-4 w-4 text-gray-600" />
+                      <question.icon className="h-4 w-4 text-gray-600" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-gray-900 leading-relaxed">
-                        {query.text}
+                        {question.text}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">{query.category}</p>
+                      <p className="text-xs text-gray-500 mt-1">{question.category}</p>
                     </div>
                     <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
                   </div>

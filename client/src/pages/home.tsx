@@ -157,7 +157,7 @@ export default function HomePage() {
                 {sendMessageMutation.isPending && (
                   <div className="flex items-center gap-2 text-sm" style={{color: '#718096'}}>
                     <Sparkles className="w-4 h-4 animate-spin" style={{color: '#048BA8'}} />
-                    <span>AI is thinking...</span>
+                    <span>Mobius is thinking...</span>
                   </div>
                 )}
                 <div className="flex-1"></div>
@@ -187,7 +187,7 @@ export default function HomePage() {
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      Ask AI
+                      Ask Mobius
                       <Send className="h-4 w-4" />
                     </div>
                   )}

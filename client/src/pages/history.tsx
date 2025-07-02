@@ -46,7 +46,7 @@ export default function HistoryPage() {
   };
 
   const handleContinueConversation = (conversationId: number) => {
-    navigate(`/query?conversation=${conversationId}`);
+    navigate(`/?conversation=${conversationId}`);
   };
 
   const getGreeting = () => {

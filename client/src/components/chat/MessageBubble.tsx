@@ -175,7 +175,7 @@ export default function MessageBubble({ message, userInitials = "U" }: MessageBu
                 <div className="flex items-start space-x-2">
                   <TrendingUp className="text-blue-600 mt-0.5 flex-shrink-0" size={16} />
                   <div>
-                    <p className="text-sm font-medium text-blue-900">AI Insight</p>
+                    <p className="text-sm font-medium text-blue-900">Mobius Insight</p>
                     <p className="text-sm text-blue-700">
                       This data has been analyzed and processed to provide you with actionable business insights.
                     </p>
@@ -186,7 +186,7 @@ export default function MessageBubble({ message, userInitials = "U" }: MessageBu
           </div>
           
           <div className="flex items-center space-x-2 mt-2">
-            <span className="text-xs text-gray-400">AI Assistant</span>
+            <span className="text-xs text-gray-400">Mobius</span>
             <span className="text-xs text-gray-400">•</span>
             <span className="text-xs text-gray-400">
               {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
