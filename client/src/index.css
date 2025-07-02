@@ -605,12 +605,3 @@ body {
   }
 }
 
-/* Fix for unwanted shadcn/ui sidebar input components only */
-[data-sidebar="input"]:not(.legitimate-search) {
-  display: none !important;
-}
-
-/* Only hide sidebar search inputs that are not part of main content */
-.sidebar [data-sidebar="input"] {
-  display: none !important;
-}
