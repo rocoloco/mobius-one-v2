@@ -66,15 +66,15 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 flex items-center justify-center">
+              <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
                 <img 
                   src="/attached_assets/Icon for dark background_1751426148569.png" 
                   alt="Mobius Logo" 
-                  className="w-10 h-10 object-contain"
+                  className="w-8 h-8 object-contain"
                 />
               </div>
-              <div>
-                <h2 className="font-semibold text-lg text-white">
+              <div className="min-w-0 flex-1">
+                <h2 className="font-semibold text-lg text-white truncate">
                   Mobius One
                 </h2>
                 <p className="text-xs text-gray-200">Business AI</p>
