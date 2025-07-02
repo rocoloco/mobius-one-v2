@@ -78,7 +78,6 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
                 <h2 className="font-semibold text-lg text-white truncate">
                   Mobius One
                 </h2>
-                <p className="text-xs text-gray-200">Business AI</p>
               </div>
             </div>
           )}
