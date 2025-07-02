@@ -91,10 +91,28 @@ export default function HistoryPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
+                type="text"
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input-modern pl-10 w-full"
+                className="input-modern pl-10 w-full font-body"
+                style={{
+                  background: 'white',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '8px',
+                  padding: '12px 12px 12px 40px',
+                  fontSize: '14px',
+                  color: '#1a202c',
+                  transition: 'all 0.2s ease'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#048BA8';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(4, 139, 168, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E2E8F0';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
