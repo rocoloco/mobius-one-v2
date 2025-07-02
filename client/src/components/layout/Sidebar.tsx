@@ -67,23 +67,11 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
-                <svg 
-                  width="32" 
-                  height="32" 
-                  viewBox="0 0 100 100" 
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 h-8"
-                >
-                  <defs>
-                    <linearGradient id="mobiusGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" style={{stopColor: '#048BA8', stopOpacity: 1}} />
-                      <stop offset="100%" style={{stopColor: '#C1EDCC', stopOpacity: 1}} />
-                    </linearGradient>
-                  </defs>
-                  {/* Left part of M */}
-                  <path d="M10 15 L10 85 L25 85 L25 45 L40 70 L50 50 L65 75 L65 85 L80 85 L80 15 L65 15 L65 55 L50 30 L40 50 L25 25 L25 15 Z" 
-                        fill="url(#mobiusGradient)" />
-                </svg>
+                <img 
+                  src="/attached_assets/Icon for dark background_1751426148569.png" 
+                  alt="Mobius Logo" 
+                  className="w-10 h-10 object-contain"
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <h2 className="font-semibold text-lg text-white truncate">
