@@ -11,11 +11,11 @@ export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const showBreadcrumbs = location.pathname !== '/' && location.pathname !== '/query';
-  const showQuickAction = location.pathname !== '/query';
+  const showBreadcrumbs = location.pathname !== '/';
+  const showQuickAction = location.pathname !== '/';
 
   const handleNewQuery = () => {
-    navigate('/query');
+    navigate('/');
   };
 
   return (
