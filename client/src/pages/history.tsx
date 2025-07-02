@@ -56,6 +56,12 @@ export default function HistoryPage() {
     return "Good evening";
   };
 
+  const getFirstName = (fullName: string) => {
+    if (!fullName) return "there";
+    const firstName = fullName.split(' ')[0];
+    return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  };
+
   return (
     <div className="min-h-screen" style={{background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)', position: 'relative'}}>
       {/* Profile Menu */}
@@ -72,7 +78,7 @@ export default function HistoryPage() {
         {/* Conversational Header */}
         <div className="space-y-6 mb-12">
           <h1 className="text-3xl font-brand" style={{color: '#061A40', lineHeight: '1.4'}}>
-            {getGreeting()}, {(user as any)?.username || "there"}
+            {getGreeting()}, {getFirstName((user as any)?.name)}
           </h1>
           
           <p className="text-lg font-body" style={{color: '#4A5568', lineHeight: '1.6'}}>

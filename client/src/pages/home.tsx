@@ -73,6 +73,12 @@ export default function HomePage() {
     return "Good evening";
   };
 
+  const getFirstName = (fullName: string) => {
+    if (!fullName) return "there";
+    const firstName = fullName.split(' ')[0];
+    return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  };
+
 
 
   const suggestedQuestions = [
@@ -99,7 +105,7 @@ export default function HomePage() {
         {/* Conversational Welcome */}
         <div className="space-y-8 mb-16">
           <h1 className="text-2xl font-brand leading-relaxed" style={{color: '#061A40'}}>
-            {getGreeting()}, {(user as any)?.username || "there"}
+            {getGreeting()}, {getFirstName((user as any)?.name)}
           </h1>
           
           <div className="rounded-lg p-4 mb-6" style={{

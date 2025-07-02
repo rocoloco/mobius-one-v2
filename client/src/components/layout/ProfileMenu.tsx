@@ -26,8 +26,14 @@ export default function ProfileMenu() {
 
   if (!user) return null;
 
-  const username = (user as any)?.username || "User";
-  const initials = username.substring(0, 2).toUpperCase();
+  const getFirstName = (fullName: string) => {
+    if (!fullName) return "User";
+    const firstName = fullName.split(' ')[0];
+    return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  };
+
+  const firstName = getFirstName((user as any)?.name);
+  const initials = (user as any)?.initials || firstName.substring(0, 2).toUpperCase();
 
   return (
     <div 
@@ -74,7 +80,7 @@ export default function ProfileMenu() {
         }}>
           {initials}
         </div>
-        <span style={{marginRight: '8px', fontWeight: '500'}}>{username}</span>
+        <span style={{marginRight: '8px', fontWeight: '500'}}>{firstName}</span>
         <ChevronDown 
           size={16} 
           style={{
@@ -108,7 +114,7 @@ export default function ProfileMenu() {
               fontSize: '14px',
               marginBottom: '4px'
             }}>
-              {username}
+              {firstName}
             </div>
             <div style={{
               fontFamily: 'Inter, sans-serif',

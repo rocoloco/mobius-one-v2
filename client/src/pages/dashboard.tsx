@@ -87,6 +87,12 @@ export default function DashboardPage() {
     }
   };
 
+  const getFirstName = (fullName: string) => {
+    if (!fullName) return "there";
+    const firstName = fullName.split(' ')[0];
+    return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="p-6 space-y-8">
@@ -94,7 +100,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">
-              Good {currentTime.getHours() < 12 ? 'morning' : currentTime.getHours() < 18 ? 'afternoon' : 'evening'}, {(user as any)?.username || 'there'}
+              Good {currentTime.getHours() < 12 ? 'morning' : currentTime.getHours() < 18 ? 'afternoon' : 'evening'}, {getFirstName((user as any)?.name)}
             </h1>
             <p className="text-gray-600 mt-1">
               What insights do you need from your business data today?
