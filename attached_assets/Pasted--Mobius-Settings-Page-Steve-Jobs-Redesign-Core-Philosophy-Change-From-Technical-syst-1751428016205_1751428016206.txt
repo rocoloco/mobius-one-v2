@@ -1,0 +1,217 @@
+# Mobius Settings Page: Steve Jobs Redesign
+
+## **Core Philosophy Change**
+
+**From**: Technical system administration
+**To**: Expanding your AI advisor's business intelligence
+
+---
+
+## **Page Structure Transformation**
+
+### **New Header Section**
+```
+Expand Mobius Intelligence
+The more systems I can access, the better insights I can provide
+```
+
+### **Connected Systems Section**
+Instead of technical cards, show **capability cards**:
+
+```
+✅ Active Intelligence Sources
+
+┌─────────────────────────────────────────────┐
+│ 💼 Sales Intelligence                       │
+│ Connected via Salesforce                    │
+│                                             │
+│ I can help you with:                        │
+│ • Revenue forecasting and pipeline health   │
+│ • Customer relationship insights            │
+│ • Deal progression and win rates            │
+│                                             │
+│ Recent insight: "Q4 pipeline is 18% ahead" │
+└─────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ 💰 Financial Intelligence                   │
+│ Connected via NetSuite                      │
+│                                             │
+│ I can help you with:                        │
+│ • Cash flow analysis and projections        │
+│ • Invoice tracking and collections          │
+│ • Revenue recognition and reporting         │
+│                                             │
+│ Recent insight: "3 accounts need attention" │
+└─────────────────────────────────────────────┘
+```
+
+### **Add New Intelligence Section**
+```
+🔮 Expand My Knowledge
+
+What other business systems do you use?
+
+[Search or browse 170+ integrations...]
+
+Popular additions:
+• HubSpot → Marketing campaign insights
+• Zendesk → Customer support intelligence  
+• Slack → Team communication patterns
+• Stripe → Payment and subscription data
+```
+
+---
+
+## **Design Specifications**
+
+### **Colors & Styling**
+```css
+/* Connected system cards */
+.intelligence-card {
+  background: linear-gradient(135deg, #FAFBFC 0%, rgba(193, 237, 204, 0.1) 100%);
+  border: 2px solid #C1EDCC;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+/* Recent insight highlight */
+.recent-insight {
+  background: rgba(4, 139, 168, 0.1);
+  color: #048BA8;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Add new section */
+.expand-section {
+  background: rgba(4, 139, 168, 0.05);
+  border: 2px dashed #048BA8;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+```
+
+### **Typography**
+```css
+/* Section headers */
+.intelligence-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: #061A40;
+  font-size: 1.25rem;
+}
+
+/* Capability descriptions */
+.capability-list {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  color: #4A5568;
+  line-height: 1.6;
+}
+
+/* Call-to-action text */
+.expand-cta {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  color: #048BA8;
+}
+```
+
+---
+
+## **Remove These Elements**
+
+### **❌ Eliminate Completely**
+- "System Connections" technical language
+- Test and Configure buttons
+- Duplicate system entries
+- Technical descriptions like "CRM and sales pipeline data"
+- Tab navigation (keep it simple)
+
+### **❌ Hide Technical Details**
+- Connection status indicators (unless there's a problem)
+- Technical configuration options
+- Database-style management interfaces
+
+---
+
+## **Interaction Patterns**
+
+### **1. Adding New Systems**
+Instead of "Add System" button, use conversational approach:
+```
+"What other business tools do you use daily?"
+[Search: HubSpot, Zendesk, Slack...]
+```
+
+### **2. System Issues**
+Only show technical details when there's a problem:
+```
+⚠️ Salesforce Connection Issue
+I haven't been able to access your latest data.
+[Fix Connection] [Get Help]
+```
+
+### **3. Success States**
+Celebrate connections with impact:
+```
+🎉 NetSuite Connected!
+I can now help you with financial insights and cash flow analysis.
+Try asking: "Which customers haven't paid this month?"
+```
+
+---
+
+## **Progressive Enhancement**
+
+### **Phase 1: Basic Redesign**
+- Update language and visual design
+- Group by business function, not technical system
+- Show capabilities, not technical specifications
+
+### **Phase 2: Intelligence Preview**
+- Show sample insights from each connected system
+- Preview what becomes possible with new connections
+- Dynamic suggestions based on current setup
+
+### **Phase 3: Conversational Setup**
+- Guide users through connections with conversation
+- "I notice you use Slack - want me to learn from your team communications?"
+- AI-driven recommendations for next integrations
+
+---
+
+## **Success Metrics**
+
+### **User Sentiment**
+- Settings should feel **exciting**, not administrative
+- Users should understand **business value**, not technical features
+- Connection process should feel like **expanding capabilities**
+
+### **Behavioral Changes**
+- Increased system connections
+- More diverse query types after new connections
+- Reduced support tickets about setup
+
+---
+
+## **The Jobs Test**
+
+After redesign, ask:
+1. **"Does this feel magical?"** → Expanding AI intelligence should feel like gaining superpowers
+2. **"Is the value obvious?"** → Users should immediately understand what becomes possible
+3. **"Would I be excited to connect more systems?"** → Should feel like enhancement, not administration
+4. **"Does this match the Mobius philosophy?"** → One continuous surface, not system management
+
+---
+
+## **Final Reminder**
+
+Steve Jobs would say: *"People don't want to manage integrations. They want to expand their business intelligence. Make that the story."*
+
+Transform this from technical plumbing into expanding the magic of what Mobius can do for their business.

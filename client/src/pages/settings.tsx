@@ -1,491 +1,267 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Button, Input, Switch } from "@heroui/react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { 
-  Database, Key, Bell, User, Shield, Globe, 
-  Check, X, AlertCircle, ExternalLink, Trash2,
-  Save, TestTube, Settings as SettingsIcon
+  Search, 
+  CheckCircle, 
+  AlertCircle,
+  Sparkles,
+  TrendingUp,
+  DollarSign,
+  Users,
+  BarChart3,
+  MessageSquare,
+  CreditCard,
+  ArrowRight
 } from "lucide-react";
-import { chatApi } from "@/lib/chatApi";
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("connections");
-  const [testResults, setTestResults] = useState<Record<string, any>>({});
-  const [isTestingConnection, setIsTestingConnection] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: user } = useQuery({
     queryKey: ['/api/user'],
     enabled: true
   });
 
-  const { data: systemConnections = [], refetch: refetchConnections } = useQuery({
+  const { data: systemConnections = [] } = useQuery({
     queryKey: ['/api/systems'],
     enabled: true
   });
 
-  const [notifications, setNotifications] = useState({
-    emailAlerts: true,
-    realTimeUpdates: true,
-    weeklyReports: false,
-    systemStatus: true
-  });
-
-  const [profile, setProfile] = useState({
-    displayName: '',
-    email: '',
-    role: '',
-    timezone: 'UTC'
-  });
-
-  useEffect(() => {
-    if (user) {
-      setProfile({
-        displayName: (user as any).username || '',
-        email: (user as any).email || '',
-        role: (user as any).role || 'User',
-        timezone: 'UTC'
-      });
-    }
-  }, [user]);
-
-  const testConnection = async (systemType: string) => {
-    setIsTestingConnection(systemType);
-    try {
-      let result;
-      if (systemType === 'salesforce') {
-        result = await chatApi.testSalesforceConnection();
-      } else if (systemType === 'netsuite') {
-        result = await chatApi.testNetSuiteConnection();
+  const getSystemCapabilities = (systemType: string) => {
+    const capabilities = {
+      salesforce: {
+        icon: <TrendingUp className="w-6 h-6" />,
+        title: "Sales Intelligence",
+        description: "Connected via Salesforce",
+        capabilities: [
+          "Revenue forecasting and pipeline health",
+          "Customer relationship insights", 
+          "Deal progression and win rates"
+        ],
+        recentInsight: "Q4 pipeline is 18% ahead of target"
+      },
+      netsuite: {
+        icon: <DollarSign className="w-6 h-6" />,
+        title: "Financial Intelligence",
+        description: "Connected via NetSuite", 
+        capabilities: [
+          "Cash flow analysis and projections",
+          "Invoice tracking and collections",
+          "Revenue recognition and reporting"
+        ],
+        recentInsight: "3 accounts need attention this week"
       }
-      
-      setTestResults(prev => ({
-        ...prev,
-        [systemType]: result
-      }));
-    } catch (error) {
-      setTestResults(prev => ({
-        ...prev,
-        [systemType]: { status: 'error', message: 'Connection test failed' }
-      }));
-    } finally {
-      setIsTestingConnection(null);
-    }
+    };
+    return capabilities[systemType as keyof typeof capabilities];
   };
 
-  const getConnectionStatus = (system: any) => {
-    const testResult = testResults[system.systemType];
-    if (testResult) {
-      return testResult.status === 'connected' ? 'Connected' : 'Error';
-    }
-    return system.isConnected ? 'Connected' : 'Disconnected';
-  };
-
-  const getStatusColor = (system: any) => {
-    const status = getConnectionStatus(system);
-    switch (status) {
-      case 'Connected': return 'text-green-600';
-      case 'Error': return 'text-red-600';
-      default: return 'text-gray-500';
-    }
-  };
-
-  const tabs = [
-    { id: 'connections', label: 'System Connections', icon: Database },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'profile', label: 'Profile', icon: User },
-    { id: 'security', label: 'Security', icon: Shield }
+  const availableIntegrations = [
+    { name: "HubSpot", category: "Marketing", benefit: "Marketing campaign insights", icon: <BarChart3 className="w-5 h-5" /> },
+    { name: "Zendesk", category: "Support", benefit: "Customer support intelligence", icon: <Users className="w-5 h-5" /> },
+    { name: "Slack", category: "Communication", benefit: "Team communication patterns", icon: <MessageSquare className="w-5 h-5" /> },
+    { name: "Stripe", category: "Payments", benefit: "Payment and subscription data", icon: <CreditCard className="w-5 h-5" /> }
   ];
 
+  const connectedSystems = systemConnections.filter((conn: any) => conn.isActive);
+
   return (
-    <div className="min-h-screen bg-white">
-      <div className="p-6">
+    <div className="min-h-screen" style={{background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)'}}>
+      <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Settings</h1>
-          <p className="text-gray-600">Manage your account preferences and system connections</p>
+        <div className="space-y-6 mb-12">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-8 h-8" style={{color: '#048BA8'}} />
+            <h1 className="text-3xl font-brand" style={{color: '#061A40', lineHeight: '1.4'}}>
+              Expand Mobius Intelligence
+            </h1>
+          </div>
+          
+          <p className="text-lg font-body" style={{color: '#4A5568', lineHeight: '1.6'}}>
+            The more systems I can access, the better insights I can provide for your business decisions.
+          </p>
         </div>
 
-        {/* Tabs */}
-        <div className="border-b border-gray-200 mb-8">
-          <nav className="flex space-x-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                <div className="flex items-center gap-2">
-                  <tab.icon className="h-4 w-4" />
-                  {tab.label}
-                </div>
-              </button>
-            ))}
-          </nav>
-        </div>
+        {/* Active Intelligence Sources */}
+        {connectedSystems.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-xl font-brand mb-6 flex items-center gap-2" style={{color: '#061A40'}}>
+              <CheckCircle className="w-5 h-5" style={{color: '#048BA8'}} />
+              Active Intelligence Sources
+            </h2>
+            
+            <div className="space-y-4">
+              {connectedSystems.map((system: any) => {
+                const capabilities = getSystemCapabilities(system.systemType);
+                if (!capabilities) return null;
 
-        {/* Tab Content */}
-        <div className="max-w-4xl">
-          {activeTab === 'connections' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">System Connections</h2>
-                <p className="text-gray-600 mb-6">
-                  Connect your business systems to enable cross-platform data queries and insights.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                {(systemConnections as any[]).map((system) => (
-                  <div key={system.id} className="card p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <Database className="h-6 w-6 text-gray-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900 capitalize">
-                            {system.systemType}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {system.systemType === 'salesforce' 
-                              ? 'CRM and sales pipeline data'
-                              : 'ERP and financial data'
-                            }
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-sm font-medium ${getStatusColor(system)}`}>
-                              {getConnectionStatus(system)}
-                            </span>
-                            {testResults[system.systemType] && (
-                              <span className="text-xs text-gray-500">
-                                Last tested: {new Date().toLocaleTimeString()}
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                return (
+                  <div
+                    key={system.id}
+                    className="p-6 rounded-xl border-2 transition-all duration-200"
+                    style={{
+                      background: 'linear-gradient(135deg, #FAFBFC 0%, rgba(193, 237, 204, 0.1) 100%)',
+                      border: '2px solid #C1EDCC'
+                    }}
+                  >
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="p-2 rounded-lg" style={{background: 'rgba(4, 139, 168, 0.1)', color: '#048BA8'}}>
+                        {capabilities.icon}
                       </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <button
-                          className="btn-secondary"
-                          onClick={() => testConnection(system.systemType)}
-                          disabled={isTestingConnection === system.systemType}
-                        >
-                          <TestTube className="h-4 w-4" />
-                          {isTestingConnection === system.systemType ? 'Testing...' : 'Test'}
-                        </button>
-                        <button className="btn-secondary">
-                          <SettingsIcon className="h-4 w-4" />
-                          Configure
-                        </button>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-brand mb-1" style={{color: '#061A40'}}>
+                          {capabilities.title}
+                        </h3>
+                        <p className="text-sm font-body" style={{color: '#718096'}}>
+                          {capabilities.description}
+                        </p>
                       </div>
                     </div>
-                    
-                    {testResults[system.systemType] && (
-                      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-start gap-3">
-                          {testResults[system.systemType].status === 'connected' ? (
-                            <Check className="h-5 w-5 text-green-600 mt-0.5" />
-                          ) : (
-                            <X className="h-5 w-5 text-red-600 mt-0.5" />
-                          )}
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900">
-                              {testResults[system.systemType].status === 'connected' 
-                                ? 'Connection successful' 
-                                : 'Connection failed'
-                              }
-                            </p>
-                            {testResults[system.systemType].message && (
-                              <p className="text-sm text-gray-600 mt-1">
-                                {testResults[system.systemType].message}
-                              </p>
-                            )}
-                          </div>
-                        </div>
+
+                    <div className="mb-4">
+                      <p className="font-body font-medium mb-2" style={{color: '#4A5568'}}>
+                        I can help you with:
+                      </p>
+                      <ul className="space-y-1">
+                        {capabilities.capabilities.map((capability, index) => (
+                          <li key={index} className="flex items-start gap-2 font-body text-sm" style={{color: '#4A5568'}}>
+                            <span style={{color: '#048BA8'}}>•</span>
+                            {capability}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="pt-3" style={{borderTop: '1px solid rgba(4, 139, 168, 0.1)'}}>
+                      <div className="inline-flex items-center px-3 py-1 rounded-md text-sm font-body font-medium" 
+                           style={{background: 'rgba(4, 139, 168, 0.1)', color: '#048BA8'}}>
+                        Recent insight: "{capabilities.recentInsight}"
                       </div>
-                    )}
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Expand Knowledge Section */}
+        <div className="mb-12">
+          <div className="p-6 rounded-xl border-2 text-center transition-all duration-200"
+               style={{
+                 background: 'rgba(4, 139, 168, 0.05)',
+                 border: '2px dashed #048BA8'
+               }}>
+            <Sparkles className="w-12 h-12 mx-auto mb-4" style={{color: '#048BA8'}} />
+            <h2 className="text-xl font-brand mb-3" style={{color: '#061A40'}}>
+              Expand My Knowledge
+            </h2>
+            <p className="font-body mb-6" style={{color: '#4A5568', lineHeight: '1.6'}}>
+              What other business systems do you use? The more I know, the smarter I become.
+            </p>
+
+            {/* Search Integration */}
+            <div className="relative max-w-md mx-auto mb-6">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{color: '#718096'}} />
+              <input
+                type="text"
+                placeholder="Search 170+ integrations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="font-body w-full pl-12 pr-4 py-3 rounded-xl transition-all duration-200"
+                style={{
+                  background: 'white',
+                  border: '2px solid #E2E8F0',
+                  fontSize: '16px',
+                  color: '#1a202c'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#048BA8';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(4, 139, 168, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E2E8F0';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            {/* Popular Integrations */}
+            <div className="text-left">
+              <h3 className="font-brand font-medium mb-4" style={{color: '#048BA8'}}>
+                Popular additions:
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {availableIntegrations.map((integration, index) => (
+                  <button
+                    key={index}
+                    className="group flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 text-left"
+                    style={{
+                      background: 'white',
+                      border: '1px solid #E2E8F0'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#048BA8';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(4, 139, 168, 0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#E2E8F0';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    <div className="p-1 rounded" style={{color: '#048BA8'}}>
+                      {integration.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-body font-medium text-sm" style={{color: '#061A40'}}>
+                        {integration.name}
+                      </div>
+                      <div className="font-body text-xs" style={{color: '#718096'}}>
+                        {integration.benefit}
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" style={{color: '#048BA8'}} />
+                  </button>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div className="card p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Add New Connection</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Connect additional business systems and data sources
-                    </p>
-                  </div>
-                  <button className="btn-primary">
-                    <Database className="h-4 w-4" />
-                    Add System
+        {/* Connected Systems Issue Alert (only show if there's a problem) */}
+        {systemConnections.some((conn: any) => !conn.isActive) && (
+          <div className="mb-8">
+            <div className="flex items-start gap-4 p-4 rounded-xl" style={{background: 'rgba(245, 101, 101, 0.1)', border: '1px solid #F56565'}}>
+              <AlertCircle className="w-5 h-5 mt-0.5" style={{color: '#F56565'}} />
+              <div className="flex-1">
+                <h3 className="font-brand font-medium mb-1" style={{color: '#C53030'}}>
+                  Connection Issue
+                </h3>
+                <p className="font-body text-sm mb-3" style={{color: '#744210'}}>
+                  I haven't been able to access your latest data from some systems.
+                </p>
+                <div className="flex gap-2">
+                  <button className="px-4 py-2 text-sm font-body font-medium rounded-lg transition-colors"
+                          style={{background: '#F56565', color: 'white'}}>
+                    Fix Connection
+                  </button>
+                  <button className="px-4 py-2 text-sm font-body font-medium rounded-lg transition-colors"
+                          style={{background: 'white', color: '#F56565', border: '1px solid #F56565'}}>
+                    Get Help
                   </button>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {activeTab === 'notifications' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Notification Preferences</h2>
-                <p className="text-gray-600 mb-6">
-                  Choose how and when you want to receive updates about your business data.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="card p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">Email Alerts</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Receive email notifications for important data changes and alerts
-                      </p>
-                    </div>
-                    <Switch
-                      isSelected={notifications.emailAlerts}
-                      onValueChange={(checked) => 
-                        setNotifications(prev => ({ ...prev, emailAlerts: checked }))
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="card p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">Real-time Updates</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Get instant notifications when your data is updated
-                      </p>
-                    </div>
-                    <Switch
-                      isSelected={notifications.realTimeUpdates}
-                      onValueChange={(checked) => 
-                        setNotifications(prev => ({ ...prev, realTimeUpdates: checked }))
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="card p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">Weekly Reports</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Receive weekly summaries of your business metrics
-                      </p>
-                    </div>
-                    <Switch
-                      isSelected={notifications.weeklyReports}
-                      onValueChange={(checked) => 
-                        setNotifications(prev => ({ ...prev, weeklyReports: checked }))
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="card p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">System Status</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Get notified about system maintenance and outages
-                      </p>
-                    </div>
-                    <Switch
-                      isSelected={notifications.systemStatus}
-                      onValueChange={(checked) => 
-                        setNotifications(prev => ({ ...prev, systemStatus: checked }))
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <button className="btn-primary">
-                  <Save className="h-4 w-4" />
-                  Save Preferences
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'profile' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h2>
-                <p className="text-gray-600 mb-6">
-                  Update your personal information and account preferences.
-                </p>
-              </div>
-
-              <div className="card p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Display Name
-                    </label>
-                    <input
-                      className="input-modern"
-                      value={profile.displayName}
-                      onChange={(e) => setProfile(prev => ({ ...prev, displayName: e.target.value }))}
-                      placeholder="Enter your display name"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      className="input-modern"
-                      type="email"
-                      value={profile.email}
-                      onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Role
-                    </label>
-                    <select 
-                      className="input-modern"
-                      value={profile.role}
-                      onChange={(e) => setProfile(prev => ({ ...prev, role: e.target.value }))}
-                    >
-                      <option value="User">User</option>
-                      <option value="Admin">Admin</option>
-                      <option value="Executive">Executive</option>
-                      <option value="Analyst">Analyst</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Timezone
-                    </label>
-                    <select 
-                      className="input-modern"
-                      value={profile.timezone}
-                      onChange={(e) => setProfile(prev => ({ ...prev, timezone: e.target.value }))}
-                    >
-                      <option value="UTC">UTC</option>
-                      <option value="America/New_York">Eastern Time</option>
-                      <option value="America/Chicago">Central Time</option>
-                      <option value="America/Denver">Mountain Time</option>
-                      <option value="America/Los_Angeles">Pacific Time</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <button className="btn-primary">
-                  <Save className="h-4 w-4" />
-                  Save Changes
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'security' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Security Settings</h2>
-                <p className="text-gray-600 mb-6">
-                  Manage your account security and access permissions.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="card p-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">Password</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Last changed 30 days ago
-                      </p>
-                    </div>
-                    <button className="btn-secondary">
-                      <Key className="h-4 w-4" />
-                      Change Password
-                    </button>
-                  </div>
-                </div>
-
-                <div className="card p-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">Two-Factor Authentication</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Add an extra layer of security to your account
-                      </p>
-                    </div>
-                    <button className="btn-secondary">
-                      <Shield className="h-4 w-4" />
-                      Enable 2FA
-                    </button>
-                  </div>
-                </div>
-
-                <div className="card p-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">API Keys</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Manage API access for integrations and automation
-                      </p>
-                    </div>
-                    <button className="btn-secondary">
-                      <Key className="h-4 w-4" />
-                      Manage Keys
-                    </button>
-                  </div>
-                </div>
-
-                <div className="card p-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">Active Sessions</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        View and manage your active login sessions
-                      </p>
-                    </div>
-                    <button className="btn-secondary">
-                      <Globe className="h-4 w-4" />
-                      View Sessions
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="card p-6 border-red-200 bg-red-50">
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-                  <div className="flex-1">
-                    <h3 className="font-medium text-red-900">Danger Zone</h3>
-                    <p className="text-sm text-red-700 mt-1 mb-4">
-                      These actions cannot be undone. Please proceed with caution.
-                    </p>
-                    <button className="btn-secondary text-red-700 border-red-200 hover:bg-red-100">
-                      <Trash2 className="h-4 w-4" />
-                      Delete Account
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+        {/* Encouraging Note */}
+        <div className="mt-12 p-6 rounded-xl" style={{background: 'rgba(193, 237, 204, 0.1)', borderLeft: '4px solid #048BA8'}}>
+          <p className="font-body" style={{color: '#061A40', lineHeight: '1.6', margin: 0}}>
+            💡 Each new connection makes our conversations smarter and more valuable. 
+            I learn your business patterns and can provide increasingly personalized insights.
+          </p>
         </div>
       </div>
     </div>
