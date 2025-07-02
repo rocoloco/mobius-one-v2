@@ -66,12 +66,11 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 flex items-center justify-center">
+              <div className="w-10 h-10 flex items-center justify-center">
                 <img 
-                  src="/attached_assets/Icon for light background_1751425597822.png" 
+                  src="/attached_assets/Icon for dark background_1751426148569.png" 
                   alt="Mobius Logo" 
-                  className="w-8 h-8"
-                  style={{filter: 'brightness(0) invert(1)'}}
+                  className="w-10 h-10 object-contain"
                 />
               </div>
               <div>
