@@ -1,125 +1,85 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { 
-  Search, MessageSquare, Database, BarChart3, Settings, 
-  ExternalLink, ChevronDown, ChevronRight, Book, 
-  HelpCircle, MessageCircle, Phone, Mail, Globe
-} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import ProfileMenu from "@/components/layout/ProfileMenu";
 
 export default function HelpPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const quickActions = [
+  const successStories = [
     {
-      title: "Getting Started Guide",
-      description: "Learn the basics of using Mobius One for business intelligence",
-      icon: Book,
-      link: "#getting-started"
+      icon: "💰",
+      title: "Found $450K in overdue payments",
+      description: "Sarah, CFO at TechCorp, asked \"Which customers owe us money?\" and discovered 3 enterprise accounts that had been overlooked for months.",
+      question: "Which customers owe us money?"
     },
     {
-      title: "Connect Your Systems",
-      description: "Step-by-step guide to integrate Salesforce and NetSuite",
-      icon: Database,
-      link: "/settings"
+      icon: "📈",
+      title: "Identified 18% revenue growth opportunity",
+      description: "Mike, RevOps Manager, asked about pipeline health and discovered untapped expansion opportunities with existing customers.",
+      question: "What deals are stuck in our pipeline?"
     },
     {
-      title: "Query Examples",
-      description: "Sample questions to get insights from your business data",
-      icon: MessageSquare,
-      link: "#examples"
-    },
-    {
-      title: "API Documentation",
-      description: "Technical reference for developers and integrations",
-      icon: Settings,
-      link: "#api-docs"
+      icon: "⚡",
+      title: "Reduced reporting time from 5 hours to 5 minutes",
+      description: "Lisa, Sales Director, now gets instant answers about deal status instead of manually checking multiple systems every week.",
+      question: "Show me our biggest customers"
     }
   ];
 
-  const faqItems = [
+  const questionCategories = [
     {
-      question: "How do I connect my Salesforce account?",
-      answer: "Go to Settings > System Connections and click 'Configure' next to Salesforce. You'll need your Salesforce instance URL, username, password, and security token. Our system uses OAuth 2.0 for secure authentication."
-    },
-    {
-      question: "What types of questions can I ask?",
-      answer: "You can ask about sales data, financial metrics, customer information, pipeline analysis, revenue trends, and cross-system comparisons. For example: 'Show me Q4 revenue by region' or 'Which deals are at risk this month?'"
-    },
-    {
-      question: "How accurate are the AI responses?",
-      answer: "Our AI provides confidence scores with each response. Responses typically achieve 90%+ accuracy when your systems are properly connected and data is current. Sources are always cited so you can verify information."
-    },
-    {
-      question: "Can I export the data and insights?",
-      answer: "Yes, you can export conversations, reports, and data visualizations in multiple formats including PDF, CSV, and JSON. Use the export buttons in the query interface or schedule automated reports."
-    },
-    {
-      question: "Is my business data secure?",
-      answer: "Absolutely. We use bank-level encryption, role-based access controls, and SOC 2 compliance. Your data never leaves your secure environment and all connections use encrypted channels."
-    },
-    {
-      question: "How do I schedule regular reports?",
-      answer: "In the query interface, after getting results you want to track, click 'Schedule' and choose your frequency (daily, weekly, monthly). Reports will be automatically generated and sent to your email."
-    },
-    {
-      question: "What happens if a system connection fails?",
-      answer: "You'll receive immediate notifications about connection issues. The system will attempt automatic reconnection, and you can manually test connections in Settings. Historical data remains accessible during outages."
-    },
-    {
-      question: "Can multiple team members use the same account?",
-      answer: "Yes, Mobius One supports team collaboration with role-based permissions. Admins can invite users, set access levels, and manage system connections for the entire organization."
-    }
-  ];
-
-  const examples = [
-    {
-      category: "Sales & Revenue",
-      queries: [
-        "Show me this quarter's revenue vs last quarter",
-        "Which sales reps are performing above target?",
-        "What's our average deal size this month?",
-        "List opportunities closing in the next 30 days"
+      icon: "💰",
+      title: "Revenue Intelligence",
+      questions: [
+        "Which deals closed but haven't been invoiced yet?",
+        "Show me revenue vs target this quarter",
+        "Which customers are behind on payments?",
+        "What's our cash flow looking like?"
       ]
     },
     {
-      category: "Financial Analysis",
-      queries: [
-        "What's our current cash flow position?",
-        "Show accounts receivable aging report",
-        "Compare expenses vs budget by department",
-        "What's our customer acquisition cost?"
+      icon: "👥",
+      title: "Customer Intelligence",
+      questions: [
+        "Who are our most valuable customers?",
+        "Which customers might be at risk of churning?",
+        "Show me expansion opportunities",
+        "What's our customer satisfaction trend?"
       ]
     },
     {
-      category: "Customer Insights",
-      queries: [
-        "Who are our top 10 customers by revenue?",
-        "Which customers haven't ordered in 90 days?",
-        "What's our customer churn rate?",
-        "Show customer satisfaction scores by region"
+      icon: "📊",
+      title: "Sales Intelligence",
+      questions: [
+        "What deals need immediate attention?",
+        "Which sales reps are performing best?",
+        "Show me pipeline health by region",
+        "What's our win rate trend?"
       ]
     },
     {
-      category: "Operational Metrics",
-      queries: [
-        "How many support tickets are open?",
-        "What's our average response time?",
-        "Show inventory levels by product category",
-        "Which products have the highest margins?"
+      icon: "⚡",
+      title: "Operational Intelligence",
+      questions: [
+        "Which processes are taking too long?",
+        "Where are we losing efficiency?",
+        "Show me resource utilization",
+        "What's blocking our team productivity?"
       ]
     }
   ];
 
-  const filteredFaq = faqItems.filter(item =>
-    searchQuery === "" || 
-    item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.answer.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleTryQuestion = (question: string) => {
+    navigate('/', { state: { suggestedQuestion: question } });
+  };
 
   return (
-    <div className="min-h-screen bg-white" style={{position: 'relative'}}>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)',
+      position: 'relative'
+    }}>
       {/* Profile Menu */}
       <div style={{
         position: 'absolute',
@@ -130,58 +90,389 @@ export default function HelpPage() {
         <ProfileMenu />
       </div>
       
-      <div className="p-6" style={{paddingRight: '120px'}}>
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Help Center</h1>
-          <p className="text-gray-600">Find answers, learn best practices, and get the most out of Mobius One</p>
-        </div>
-
-        {/* Search */}
-        <div className="card p-6 mb-8">
-          <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
-              placeholder="Search help articles, FAQs, and documentation..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="input-modern pl-12 h-12 text-base w-full"
-            />
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '48px 24px',
+        paddingRight: '120px'
+      }}>
+        {/* Hero Section */}
+        <div style={{
+          background: 'linear-gradient(135deg, #061A40 0%, #048BA8 100%)',
+          color: 'white',
+          padding: '48px 32px',
+          textAlign: 'center',
+          borderRadius: '12px',
+          marginBottom: '48px'
+        }}>
+          <h1 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            fontSize: '2.5rem',
+            marginBottom: '16px',
+            margin: '0 0 16px 0'
+          }}>
+            Unlock Your Business Intelligence
+          </h1>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '1.2rem',
+            opacity: 0.9,
+            maxWidth: '600px',
+            margin: '0 auto 32px auto',
+            lineHeight: 1.6
+          }}>
+            Discover how Mobius transforms the way you understand and act on your business data
+          </p>
+          
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '8px',
+            padding: '16px',
+            maxWidth: '500px',
+            margin: '0 auto'
+          }}>
+            <p style={{marginBottom: '12px', fontSize: '0.9rem', margin: '0 0 12px 0'}}>Try asking me right now:</p>
+            <div style={{
+              background: 'white',
+              color: '#4A5568',
+              borderRadius: '6px',
+              padding: '12px',
+              fontFamily: 'Inter, sans-serif',
+              cursor: 'pointer',
+              transition: 'transform 0.2s ease'
+            }}
+            onClick={() => handleTryQuestion("Which customers haven't paid but are still using our services?")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.02)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}>
+              "Which customers haven't paid but are still using our services?"
+            </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="mb-12">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Quick Start</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {quickActions.map((action, index) => (
-              <Link key={index} to={action.link} className="card-hover p-6 group">
-                <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-                  <action.icon className="h-6 w-6 text-gray-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                  {action.title}
+        {/* Success Stories */}
+        <div style={{marginBottom: '48px'}}>
+          <h2 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            color: '#061A40',
+            fontSize: '2rem',
+            textAlign: 'center',
+            marginBottom: '32px',
+            margin: '0 0 32px 0'
+          }}>
+            See What Others Accomplish
+          </h2>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '24px'
+          }}>
+            {successStories.map((story, index) => (
+              <div
+                key={index}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(193, 237, 204, 0.1) 0%, rgba(4, 139, 168, 0.05) 100%)',
+                  border: '2px solid #C1EDCC',
+                  borderRadius: '12px',
+                  padding: '24px',
+                  transition: 'transform 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={{fontSize: '2rem', marginBottom: '16px'}}>{story.icon}</div>
+                <h3 style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 600,
+                  color: '#061A40',
+                  marginBottom: '12px',
+                  margin: '0 0 12px 0'
+                }}>
+                  {story.title}
                 </h3>
-                <p className="text-sm text-gray-600">
-                  {action.description}
+                <p style={{
+                  fontFamily: 'Inter, sans-serif',
+                  color: '#4A5568',
+                  lineHeight: 1.6,
+                  marginBottom: '16px',
+                  margin: '0 0 16px 0'
+                }}>
+                  {story.description}
                 </p>
-              </Link>
+                <button
+                  onClick={() => handleTryQuestion(story.question)}
+                  style={{
+                    background: '#048BA8',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '8px 16px',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#037A96';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#048BA8';
+                  }}
+                >
+                  Try this question →
+                </button>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Query Examples */}
-        <div className="mb-12">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Example Questions</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {examples.map((category, index) => (
-              <div key={index} className="card p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">{category.category}</h3>
-                <div className="space-y-3">
-                  {category.queries.map((query, queryIndex) => (
-                    <div key={queryIndex} className="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer transition-colors">
-                      <MessageSquare className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">{query}</span>
+        {/* Getting Started */}
+        <div style={{
+          background: '#FAFBFC',
+          borderRadius: '12px',
+          padding: '32px',
+          marginBottom: '48px'
+        }}>
+          <h2 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            color: '#061A40',
+            fontSize: '1.8rem',
+            marginBottom: '24px',
+            margin: '0 0 24px 0'
+          }}>
+            Your First Conversation with Mobius
+          </h2>
+          
+          <div style={{display: 'grid', gap: '24px'}}>
+            {/* Step 1 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '16px'
+            }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                background: '#048BA8',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 600,
+                flexShrink: 0
+              }}>1</div>
+              <div>
+                <h3 style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 600,
+                  color: '#061A40',
+                  marginBottom: '8px',
+                  margin: '0 0 8px 0'
+                }}>
+                  Connect your business systems
+                </h3>
+                <p style={{
+                  fontFamily: 'Inter, sans-serif',
+                  color: '#4A5568',
+                  lineHeight: 1.6,
+                  margin: 0
+                }}>
+                  Go to Settings and connect Salesforce, NetSuite, or other systems. 
+                  This gives Mobius access to your business data for intelligent insights.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '16px'
+            }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                background: '#048BA8',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 600,
+                flexShrink: 0
+              }}>2</div>
+              <div>
+                <h3 style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 600,
+                  color: '#061A40',
+                  marginBottom: '8px',
+                  margin: '0 0 8px 0'
+                }}>
+                  Ask your first business question
+                </h3>
+                <p style={{
+                  fontFamily: 'Inter, sans-serif',
+                  color: '#4A5568',
+                  lineHeight: 1.6,
+                  marginBottom: '12px',
+                  margin: '0 0 12px 0'
+                }}>
+                  Start with something you actually need to know about your business. 
+                  Don't worry about perfect phrasing - Mobius understands natural language.
+                </p>
+                <div style={{
+                  background: 'rgba(4, 139, 168, 0.1)',
+                  borderLeft: '4px solid #048BA8',
+                  padding: '12px 16px',
+                  borderRadius: '0 6px 6px 0',
+                  fontFamily: 'Inter, sans-serif',
+                  fontStyle: 'italic'
+                }}>
+                  Try: "What deals are stuck in our pipeline?" or "Show me our biggest customers"
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '16px'
+            }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                background: '#048BA8',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 600,
+                flexShrink: 0
+              }}>3</div>
+              <div>
+                <h3 style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 600,
+                  color: '#061A40',
+                  marginBottom: '8px',
+                  margin: '0 0 8px 0'
+                }}>
+                  Follow the conversation
+                </h3>
+                <p style={{
+                  fontFamily: 'Inter, sans-serif',
+                  color: '#4A5568',
+                  lineHeight: 1.6,
+                  margin: 0
+                }}>
+                  Mobius will provide insights and suggest follow-up questions. 
+                  Think of it as having a conversation with your smartest business analyst.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Powerful Questions */}
+        <div style={{marginBottom: '48px'}}>
+          <h2 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            color: '#061A40',
+            fontSize: '1.8rem',
+            textAlign: 'center',
+            marginBottom: '16px',
+            margin: '0 0 16px 0'
+          }}>
+            Powerful Questions to Ask Mobius
+          </h2>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568',
+            textAlign: 'center',
+            marginBottom: '32px',
+            fontSize: '1.1rem',
+            margin: '0 0 32px 0'
+          }}>
+            Copy any of these questions and see what insights emerge
+          </p>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+            gap: '24px'
+          }}>
+            {questionCategories.map((category, index) => (
+              <div
+                key={index}
+                style={{
+                  background: 'white',
+                  border: '2px solid #E2E8F0',
+                  borderRadius: '12px',
+                  padding: '24px',
+                  transition: 'border-color 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#048BA8';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#E2E8F0';
+                }}
+              >
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: '16px'
+                }}>
+                  <span style={{fontSize: '1.5rem', marginRight: '12px'}}>{category.icon}</span>
+                  <h3 style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    fontWeight: 600,
+                    color: '#061A40',
+                    margin: 0
+                  }}>{category.title}</h3>
+                </div>
+                
+                <div>
+                  {category.questions.map((question, qIndex) => (
+                    <div
+                      key={qIndex}
+                      onClick={() => handleTryQuestion(question)}
+                      style={{
+                        background: '#F7FAFC',
+                        borderRadius: '6px',
+                        padding: '12px',
+                        marginBottom: '8px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#4A5568'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(4, 139, 168, 0.1)';
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#F7FAFC';
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }}
+                    >
+                      "{question}"
                     </div>
                   ))}
                 </div>
@@ -190,126 +481,56 @@ export default function HelpPage() {
           </div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="mb-12">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Frequently Asked Questions</h2>
-          <div className="space-y-4">
-            {filteredFaq.map((faq, index) => (
-              <div key={index} className="card">
-                <button
-                  className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
-                  onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                >
-                  <span className="font-medium text-gray-900 pr-4">{faq.question}</span>
-                  {expandedFaq === index ? (
-                    <ChevronDown className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                  ) : (
-                    <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                  )}
-                </button>
-                {expandedFaq === index && (
-                  <div className="px-6 pb-6 border-t border-gray-100">
-                    <p className="text-gray-600 pt-4 leading-relaxed">{faq.answer}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Resources */}
-        <div className="mb-12">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Additional Resources</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="card p-6">
-              <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-                <Book className="h-6 w-6 text-gray-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Documentation</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Complete technical documentation and integration guides
-              </p>
-              <button className="btn-secondary text-sm">
-                View Docs
-                <ExternalLink className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="card p-6">
-              <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-                <BarChart3 className="h-6 w-6 text-gray-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Best Practices</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Tips and strategies for getting the most out of your data
-              </p>
-              <button className="btn-secondary text-sm">
-                Learn More
-                <ExternalLink className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="card p-6">
-              <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-                <Globe className="h-6 w-6 text-gray-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">System Status</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Check real-time status of all Mobius One services
-              </p>
-              <button className="btn-secondary text-sm">
-                View Status
-                <ExternalLink className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Contact Support */}
-        <div className="card p-8">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Still Need Help?
-            </h2>
-            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-              Our support team is here to help you succeed with Mobius One. Get personalized assistance for your specific use case.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <MessageCircle className="h-6 w-6 text-blue-600" />
-                </div>
-                <h3 className="font-medium text-gray-900 mb-2">Live Chat</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Chat with our support team in real-time
-                </p>
-                <button className="btn-primary text-sm">Start Chat</button>
-              </div>
-              
-              <div className="text-center">
-                <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Mail className="h-6 w-6 text-blue-600" />
-                </div>
-                <h3 className="font-medium text-gray-900 mb-2">Email Support</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Send us a detailed message about your issue
-                </p>
-                <button className="btn-secondary text-sm">Send Email</button>
-              </div>
-              
-              <div className="text-center">
-                <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Phone className="h-6 w-6 text-blue-600" />
-                </div>
-                <h3 className="font-medium text-gray-900 mb-2">Phone Support</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Speak directly with a support specialist
-                </p>
-                <button className="btn-secondary text-sm">Call Now</button>
-              </div>
-            </div>
-          </div>
+        {/* Encouraging Note */}
+        <div style={{
+          background: 'rgba(193, 237, 204, 0.1)',
+          borderLeft: '4px solid #048BA8',
+          borderRadius: '0 12px 12px 0',
+          padding: '24px',
+          textAlign: 'center'
+        }}>
+          <h3 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            color: '#061A40',
+            marginBottom: '12px',
+            margin: '0 0 12px 0'
+          }}>
+            Ready to unlock your business potential?
+          </h3>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568',
+            lineHeight: 1.6,
+            marginBottom: '20px',
+            margin: '0 0 20px 0'
+          }}>
+            The most powerful insights come from asking the right questions. 
+            Start with what you need to know today, and let Mobius guide you to deeper understanding.
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              background: 'linear-gradient(135deg, #048BA8 0%, #037A96 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '12px 24px',
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontSize: '16px',
+              transition: 'transform 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            Start Your First Conversation
+          </button>
         </div>
       </div>
     </div>

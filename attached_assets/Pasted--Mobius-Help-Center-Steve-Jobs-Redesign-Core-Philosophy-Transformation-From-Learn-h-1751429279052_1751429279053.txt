@@ -1,0 +1,657 @@
+# Mobius Help Center: Steve Jobs Redesign
+
+## **Core Philosophy Transformation**
+
+**From**: "Learn how to use Mobius One"
+**To**: "Discover what becomes possible with your business intelligence"
+
+---
+
+## **New Page Structure**
+
+### **Hero Section**
+```jsx
+<div className="help-hero" style={{
+  background: 'linear-gradient(135deg, #061A40 0%, #048BA8 100%)',
+  color: 'white',
+  padding: '48px 24px',
+  textAlign: 'center',
+  borderRadius: '12px',
+  marginBottom: '48px'
+}}>
+  <h1 style={{
+    fontFamily: 'Poppins, sans-serif',
+    fontWeight: '600',
+    fontSize: '2.5rem',
+    marginBottom: '16px'
+  }}>
+    Unlock Your Business Intelligence
+  </h1>
+  <p style={{
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '1.2rem',
+    opacity: '0.9',
+    maxWidth: '600px',
+    margin: '0 auto 32px auto',
+    lineHeight: 1.6
+  }}>
+    Discover how Mobius transforms the way you understand and act on your business data
+  </p>
+  
+  <div className="quick-try" style={{
+    background: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: '8px',
+    padding: '16px',
+    maxWidth: '500px',
+    margin: '0 auto'
+  }}>
+    <p style={{marginBottom: '12px', fontSize: '0.9rem'}}>Try asking me right now:</p>
+    <div style={{
+      background: 'white',
+      color: '#4A5568',
+      borderRadius: '6px',
+      padding: '12px',
+      fontFamily: 'Inter, sans-serif'
+    }}>
+      "Which customers haven't paid but are still using our services?"
+    </div>
+  </div>
+</div>
+```
+
+### **Success Stories Section**
+```jsx
+<div className="success-stories" style={{marginBottom: '48px'}}>
+  <h2 style={{
+    fontFamily: 'Poppins, sans-serif',
+    fontWeight: '600',
+    color: '#061A40',
+    fontSize: '2rem',
+    textAlign: 'center',
+    marginBottom: '32px'
+  }}>
+    See What Others Accomplish
+  </h2>
+  
+  <div className="story-grid" style={{
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '24px'
+  }}>
+    
+    {/* Story 1 */}
+    <div className="story-card" style={{
+      background: 'linear-gradient(135deg, rgba(193, 237, 204, 0.1) 0%, rgba(4, 139, 168, 0.05) 100%)',
+      border: '2px solid #C1EDCC',
+      borderRadius: '12px',
+      padding: '24px'
+    }}>
+      <div style={{fontSize: '2rem', marginBottom: '16px'}}>💰</div>
+      <h3 style={{
+        fontFamily: 'Poppins, sans-serif',
+        fontWeight: '600',
+        color: '#061A40',
+        marginBottom: '12px'
+      }}>
+        "Found $450K in overdue payments"
+      </h3>
+      <p style={{
+        fontFamily: 'Inter, sans-serif',
+        color: '#4A5568',
+        lineHeight: 1.6,
+        marginBottom: '16px'
+      }}>
+        Sarah, CFO at TechCorp, asked "Which customers owe us money?" and discovered 
+        3 enterprise accounts that had been overlooked for months.
+      </p>
+      <button style={{
+        background: '#048BA8',
+        color: 'white',
+        border: 'none',
+        borderRadius: '6px',
+        padding: '8px 16px',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '14px',
+        cursor: 'pointer'
+      }}>
+        Try this question →
+      </button>
+    </div>
+
+    {/* Story 2 */}
+    <div className="story-card" style={{
+      background: 'linear-gradient(135deg, rgba(193, 237, 204, 0.1) 0%, rgba(4, 139, 168, 0.05) 100%)',
+      border: '2px solid #C1EDCC',
+      borderRadius: '12px',
+      padding: '24px'
+    }}>
+      <div style={{fontSize: '2rem', marginBottom: '16px'}}>📈</div>
+      <h3 style={{
+        fontFamily: 'Poppins, sans-serif',
+        fontWeight: '600',
+        color: '#061A40',
+        marginBottom: '12px'
+      }}>
+        "Identified 18% revenue growth opportunity"
+      </h3>
+      <p style={{
+        fontFamily: 'Inter, sans-serif',
+        color: '#4A5568',
+        lineHeight: 1.6,
+        marginBottom: '16px'
+      }}>
+        Mike, RevOps Manager, asked about pipeline health and discovered untapped 
+        expansion opportunities with existing customers.
+      </p>
+      <button style={{
+        background: '#048BA8',
+        color: 'white',
+        border: 'none',
+        borderRadius: '6px',
+        padding: '8px 16px',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '14px',
+        cursor: 'pointer'
+      }}>
+        Try this question →
+      </button>
+    </div>
+
+    {/* Story 3 */}
+    <div className="story-card" style={{
+      background: 'linear-gradient(135deg, rgba(193, 237, 204, 0.1) 0%, rgba(4, 139, 168, 0.05) 100%)',
+      border: '2px solid #C1EDCC',
+      borderRadius: '12px',
+      padding: '24px'
+    }}>
+      <div style={{fontSize: '2rem', marginBottom: '16px'}}>⚡</div>
+      <h3 style={{
+        fontFamily: 'Poppins, sans-serif',
+        fontWeight: '600',
+        color: '#061A40',
+        marginBottom: '12px'
+      }}>
+      "Reduced reporting time from 5 hours to 5 minutes"
+      </h3>
+      <p style={{
+        fontFamily: 'Inter, sans-serif',
+        color: '#4A5568',
+        lineHeight: 1.6,
+        marginBottom: '16px'
+      }}>
+        Lisa, Sales Director, now gets instant answers about deal status instead 
+        of manually checking multiple systems every week.
+      </p>
+      <button style={{
+        background: '#048BA8',
+        color: 'white',
+        border: 'none',
+        borderRadius: '6px',
+        padding: '8px 16px',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '14px',
+        cursor: 'pointer'
+      }}>
+        Try this question →
+      </button>
+    </div>
+  </div>
+</div>
+```
+
+### **Getting Started Section (Conversational)**
+```jsx
+<div className="getting-started" style={{
+  background: '#FAFBFC',
+  borderRadius: '12px',
+  padding: '32px',
+  marginBottom: '48px'
+}}>
+  <h2 style={{
+    fontFamily: 'Poppins, sans-serif',
+    fontWeight: '600',
+    color: '#061A40',
+    fontSize: '1.8rem',
+    marginBottom: '24px'
+  }}>
+    Your First Conversation with Mobius
+  </h2>
+  
+  <div className="conversation-flow" style={{
+    display: 'grid',
+    gap: '24px'
+  }}>
+    
+    {/* Step 1 */}
+    <div style={{
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '16px'
+    }}>
+      <div style={{
+        width: '32px',
+        height: '32px',
+        borderRadius: '50%',
+        background: '#048BA8',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: '600',
+        flexShrink: 0
+      }}>1</div>
+      <div>
+        <h3 style={{
+          fontFamily: 'Poppins, sans-serif',
+          fontWeight: '600',
+          color: '#061A40',
+          marginBottom: '8px'
+        }}>
+          Connect your business systems
+        </h3>
+        <p style={{
+          fontFamily: 'Inter, sans-serif',
+          color: '#4A5568',
+          lineHeight: 1.6
+        }}>
+          Go to Settings and connect Salesforce, NetSuite, or other systems. 
+          This gives Mobius access to your business data for intelligent insights.
+        </p>
+      </div>
+    </div>
+
+    {/* Step 2 */}
+    <div style={{
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '16px'
+    }}>
+      <div style={{
+        width: '32px',
+        height: '32px',
+        borderRadius: '50%',
+        background: '#048BA8',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: '600',
+        flexShrink: 0
+      }}>2</div>
+      <div>
+        <h3 style={{
+          fontFamily: 'Poppins, sans-serif',
+          fontWeight: '600',
+          color: '#061A40',
+          marginBottom: '8px'
+        }}>
+          Ask your first business question
+        </h3>
+        <p style={{
+          fontFamily: 'Inter, sans-serif',
+          color: '#4A5568',
+          lineHeight: 1.6,
+          marginBottom: '12px'
+        }}>
+          Start with something you actually need to know about your business. 
+          Don't worry about perfect phrasing - Mobius understands natural language.
+        </p>
+        <div style={{
+          background: 'rgba(4, 139, 168, 0.1)',
+          borderLeft: '4px solid #048BA8',
+          padding: '12px 16px',
+          borderRadius: '0 6px 6px 0',
+          fontFamily: 'Inter, sans-serif',
+          fontStyle: 'italic'
+        }}>
+          Try: "What deals are stuck in our pipeline?" or "Show me our biggest customers"
+        </div>
+      </div>
+    </div>
+
+    {/* Step 3 */}
+    <div style={{
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '16px'
+    }}>
+      <div style={{
+        width: '32px',
+        height: '32px',
+        borderRadius: '50%',
+        background: '#048BA8',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: '600',
+        flexShrink: 0
+      }}>3</div>
+      <div>
+        <h3 style={{
+          fontFamily: 'Poppins, sans-serif',
+          fontWeight: '600',
+          color: '#061A40',
+          marginBottom: '8px'
+        }}>
+          Follow the conversation
+        </h3>
+        <p style={{
+          fontFamily: 'Inter, sans-serif',
+          color: '#4A5568',
+          lineHeight: 1.6
+        }}>
+          Mobius will provide insights and suggest follow-up questions. 
+          Think of it as having a conversation with your smartest business analyst.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### **Powerful Questions Section**
+```jsx
+<div className="powerful-questions" style={{marginBottom: '48px'}}>
+  <h2 style={{
+    fontFamily: 'Poppins, sans-serif',
+    fontWeight: '600',
+    color: '#061A40',
+    fontSize: '1.8rem',
+    textAlign: 'center',
+    marginBottom: '16px'
+  }}>
+    Powerful Questions to Ask Mobius
+  </h2>
+  <p style={{
+    fontFamily: 'Inter, sans-serif',
+    color: '#4A5568',
+    textAlign: 'center',
+    marginBottom: '32px',
+    fontSize: '1.1rem'
+  }}>
+    Copy any of these questions and see what insights emerge
+  </p>
+  
+  <div className="question-categories" style={{
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+    gap: '24px'
+  }}>
+    
+    {/* Revenue Intelligence */}
+    <div className="category-card" style={{
+      background: 'white',
+      border: '2px solid #E2E8F0',
+      borderRadius: '12px',
+      padding: '24px'
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '16px'
+      }}>
+        <span style={{fontSize: '1.5rem', marginRight: '12px'}}>💰</span>
+        <h3 style={{
+          fontFamily: 'Poppins, sans-serif',
+          fontWeight: '600',
+          color: '#061A40',
+          margin: 0
+        }}>Revenue Intelligence</h3>
+      </div>
+      
+      <div className="question-list">
+        <div className="question-item" style={{
+          background: '#F7FAFC',
+          borderRadius: '6px',
+          padding: '12px',
+          marginBottom: '8px',
+          cursor: 'pointer',
+          transition: 'background 0.2s ease'
+        }}>
+          <span style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568'
+          }}>
+            "Which deals closed but haven't been invoiced yet?"
+          </span>
+        </div>
+        
+        <div className="question-item" style={{
+          background: '#F7FAFC',
+          borderRadius: '6px',
+          padding: '12px',
+          marginBottom: '8px',
+          cursor: 'pointer',
+          transition: 'background 0.2s ease'
+        }}>
+          <span style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568'
+          }}>
+            "Show me revenue vs target this quarter"
+          </span>
+        </div>
+        
+        <div className="question-item" style={{
+          background: '#F7FAFC',
+          borderRadius: '6px',
+          padding: '12px',
+          cursor: 'pointer',
+          transition: 'background 0.2s ease'
+        }}>
+          <span style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568'
+          }}>
+            "Which customers are behind on payments?"
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* Customer Intelligence */}
+    <div className="category-card" style={{
+      background: 'white',
+      border: '2px solid #E2E8F0',
+      borderRadius: '12px',
+      padding: '24px'
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '16px'
+      }}>
+        <span style={{fontSize: '1.5rem', marginRight: '12px'}}>👥</span>
+        <h3 style={{
+          fontFamily: 'Poppins, sans-serif',
+          fontWeight: '600',
+          color: '#061A40',
+          margin: 0
+        }}>Customer Intelligence</h3>
+      </div>
+      
+      <div className="question-list">
+        <div className="question-item" style={{
+          background: '#F7FAFC',
+          borderRadius: '6px',
+          padding: '12px',
+          marginBottom: '8px',
+          cursor: 'pointer',
+          transition: 'background 0.2s ease'
+        }}>
+          <span style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568'
+          }}>
+            "Which customers are at risk of churning?"
+          </span>
+        </div>
+        
+        <div className="question-item" style={{
+          background: '#F7FAFC',
+          borderRadius: '6px',
+          padding: '12px',
+          marginBottom: '8px',
+          cursor: 'pointer',
+          transition: 'background 0.2s ease'
+        }}>
+          <span style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568'
+          }}>
+            "Show me our most valuable customers"
+          </span>
+        </div>
+        
+        <div className="question-item" style={{
+          background: '#F7FAFC',
+          borderRadius: '6px',
+          padding: '12px',
+          cursor: 'pointer',
+          transition: 'background 0.2s ease'
+        }}>
+          <span style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568'
+          }}>
+            "Which accounts are ready for expansion?"
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### **Need More Help Section**
+```jsx
+<div className="more-help" style={{
+  background: 'linear-gradient(135deg, #F7FAFC 0%, rgba(4, 139, 168, 0.05) 100%)',
+  borderRadius: '12px',
+  padding: '32px',
+  textAlign: 'center'
+}}>
+  <h2 style={{
+    fontFamily: 'Poppins, sans-serif',
+    fontWeight: '600',
+    color: '#061A40',
+    fontSize: '1.8rem',
+    marginBottom: '16px'
+  }}>
+    Still Need Help?
+  </h2>
+  <p style={{
+    fontFamily: 'Inter, sans-serif',
+    color: '#4A5568',
+    marginBottom: '24px',
+    fontSize: '1.1rem'
+  }}>
+    Remember: Mobius learns from every conversation. The more you ask, the smarter it gets.
+  </p>
+  
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '16px',
+    flexWrap: 'wrap'
+  }}>
+    <button style={{
+      background: '#048BA8',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      padding: '12px 24px',
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: '600',
+      cursor: 'pointer'
+    }}>
+      Ask Mobius for Help
+    </button>
+    <button style={{
+      background: 'white',
+      color: '#048BA8',
+      border: '2px solid #048BA8',
+      borderRadius: '8px',
+      padding: '12px 24px',
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: '600',
+      cursor: 'pointer'
+    }}>
+      Contact Support
+    </button>
+  </div>
+</div>
+```
+
+---
+
+## **Key Design Principles**
+
+### **1. Emotional Connection**
+- Success stories instead of feature lists
+- Real business outcomes, not technical capabilities
+- Inspirational language that makes users excited
+
+### **2. Conversational Focus**
+- Everything centers around asking questions and getting answers
+- Shows the conversation flow, not system architecture
+- Makes getting help feel natural and approachable
+
+### **3. Outcome-Oriented**
+- Every section focuses on what users can accomplish
+- Shows business value, not technical features
+- Inspires users to try new things
+
+### **4. Progressive Disclosure**
+- Start with inspiration and success stories
+- Provide practical steps when users are ready
+- Don't overwhelm with all options at once
+
+---
+
+## **Remove These Elements**
+
+### **❌ Eliminate Completely**
+- "API Documentation" (too technical for main help)
+- Generic "Quick Start" cards
+- Feature-focused language
+- Traditional help center categories
+- Overwhelming option lists
+
+### **❌ Replace With**
+- Success stories and business outcomes
+- Conversational guidance
+- Powerful question examples
+- Inspiration-first approach
+
+---
+
+## **Mobile Considerations**
+
+- Hero section should stack nicely on mobile
+- Question cards should be touch-friendly
+- Success stories should flow well on small screens
+- All interactive elements should have proper touch targets
+
+---
+
+## **Success Metrics**
+
+After redesign, track:
+- **Engagement**: Users trying suggested questions
+- **Discovery**: Time spent exploring question examples  
+- **Conversion**: Help visitors becoming active users
+- **Sentiment**: Users feeling excited vs overwhelmed
+
+---
+
+## **The Jobs Philosophy Applied**
+
+Transform help from:
+- **Technical documentation** → **Business empowerment**
+- **How to use features** → **What becomes possible**
+- **Learning software** → **Discovering insights**
+- **Support burden** → **Inspiration resource**
+
+The goal is users leaving the Help Center thinking *"I can't wait to try this"* instead of *"I guess I understand how this works."*
