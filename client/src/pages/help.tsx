@@ -5,6 +5,7 @@ import {
   ExternalLink, ChevronDown, ChevronRight, Book, 
   HelpCircle, MessageCircle, Phone, Mail, Globe
 } from "lucide-react";
+import ProfileMenu from "@/components/layout/ProfileMenu";
 
 export default function HelpPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -118,8 +119,18 @@ export default function HelpPage() {
   );
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="p-6">
+    <div className="min-h-screen bg-white" style={{position: 'relative'}}>
+      {/* Profile Menu */}
+      <div style={{
+        position: 'absolute',
+        top: '24px',
+        right: '24px',
+        zIndex: 1000
+      }}>
+        <ProfileMenu />
+      </div>
+      
+      <div className="p-6" style={{paddingRight: '120px'}}>
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-gray-900 mb-2">Help Center</h1>

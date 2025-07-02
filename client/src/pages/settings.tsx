@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import ProfileMenu from "@/components/layout/ProfileMenu";
 
 export default function SettingsPage() {
   const [notificationSetting, setNotificationSetting] = useState("smart");
@@ -23,12 +24,24 @@ export default function SettingsPage() {
     <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)',
-      fontFamily: 'Inter, sans-serif'
+      fontFamily: 'Inter, sans-serif',
+      position: 'relative'
     }}>
+      {/* Profile Menu */}
+      <div style={{
+        position: 'absolute',
+        top: '24px',
+        right: '24px',
+        zIndex: 1000
+      }}>
+        <ProfileMenu />
+      </div>
+      
       <div style={{
         maxWidth: '960px',
         margin: '0 auto',
-        padding: '48px 24px'
+        padding: '48px 24px',
+        paddingRight: '120px'
       }}>
         {/* Page Header */}
         <div style={{marginBottom: '48px'}}>

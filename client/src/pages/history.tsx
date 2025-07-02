@@ -7,6 +7,7 @@ import {
   Clock,
   ArrowRight
 } from "lucide-react";
+import ProfileMenu from "@/components/layout/ProfileMenu";
 
 export default function HistoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,8 +57,18 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)'}}>
-      <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="min-h-screen" style={{background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)', position: 'relative'}}>
+      {/* Profile Menu */}
+      <div style={{
+        position: 'absolute',
+        top: '24px',
+        right: '24px',
+        zIndex: 1000
+      }}>
+        <ProfileMenu />
+      </div>
+      
+      <div className="max-w-4xl mx-auto px-6 py-12" style={{paddingRight: '120px'}}>
         {/* Conversational Header */}
         <div className="space-y-6 mb-12">
           <h1 className="text-3xl font-brand" style={{color: '#061A40', lineHeight: '1.4'}}>

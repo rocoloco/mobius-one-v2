@@ -132,38 +132,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
 
 
 
-      {/* User Profile */}
-      {!isCollapsed && user && (
-        <div className="p-4 space-y-3" style={{borderTop: '1px solid rgba(4, 139, 168, 0.2)'}}>
-          <div className="flex items-center space-x-3">
-            <Avatar
-              size="sm"
-              name={(user as any)?.username?.substring(0, 2).toUpperCase() || "U"}
-              className="bg-teal-500 text-white"
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">
-                {(user as any)?.username || "User"}
-              </p>
-              <p className="text-xs text-gray-200">
-                Business User
-              </p>
-            </div>
-          </div>
-          
-          <Button
-            size="sm"
-            variant="bordered"
-            className="w-full text-xs"
-            onClick={() => {
-              localStorage.setItem('logout', 'true');
-              window.location.href = '/';
-            }}
-          >
-            Sign Out
-          </Button>
-        </div>
-      )}
+
     </div>
   );
 }

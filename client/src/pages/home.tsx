@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Send, Sparkles } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
+import ProfileMenu from "@/components/layout/ProfileMenu";
 
 export default function HomePage() {
   const [message, setMessage] = useState("");
@@ -83,8 +84,18 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen warm-gradient">
-      <div className="max-w-3xl mx-auto px-6 py-12">
+    <div className="min-h-screen warm-gradient" style={{position: 'relative'}}>
+      {/* Profile Menu */}
+      <div style={{
+        position: 'absolute',
+        top: '24px',
+        right: '24px',
+        zIndex: 1000
+      }}>
+        <ProfileMenu />
+      </div>
+      
+      <div className="max-w-3xl mx-auto px-6 py-12" style={{paddingRight: '120px'}}>
         {/* Conversational Welcome */}
         <div className="space-y-8 mb-16">
           <h1 className="text-2xl font-brand leading-relaxed" style={{color: '#061A40'}}>
