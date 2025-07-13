@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -105,6 +105,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             size="sm"
             className="lg:hidden"
             onPress={onClose}
+            data-testid="close-sidebar"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -159,6 +160,17 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024)
+    }
+    
+    checkDesktop()
+    window.addEventListener('resize', checkDesktop)
+    return () => window.removeEventListener('resize', checkDesktop)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -170,13 +182,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
         />
       )}
 
-      <div className="flex h-full">
-        {/* Desktop Sidebar - Always visible on desktop */}
-        <div className="w-64 supabase-sidebar shadow-lg max-lg:hidden" data-testid="sidebar">
+      <div className="lg:flex h-screen">
+        {/* Desktop Sidebar */}
+        <div className="w-64 supabase-sidebar shadow-lg fixed left-0 top-0 h-full z-30 max-lg:hidden" data-testid="sidebar">
           <SidebarContent />
         </div>
 
-        {/* Mobile Sidebar - Slide out */}
+        {/* Mobile Sidebar */}
         <div
           className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 supabase-sidebar shadow-lg transform transition-transform duration-300 ease-in-out ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -187,7 +199,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </div>
 
         {/* Main content */}
-        <div className="flex-1 min-w-0">
+        <div className="min-h-screen" style={{ marginLeft: isDesktop ? '256px' : '0px' }}>
           {/* Top header */}
           <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:px-6 lg:px-8">
             <div className="flex items-center space-x-4">
