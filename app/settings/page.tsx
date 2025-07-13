@@ -10,11 +10,11 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <User className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold">User Preferences</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">User Preferences</h3>
             </div>
           </CardHeader>
           <CardBody>
@@ -24,11 +24,11 @@ export default function SettingsPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Bell className="h-5 w-5 text-amber-500" />
-              <h3 className="font-semibold">Notifications</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
             </div>
           </CardHeader>
           <CardBody>
@@ -38,11 +38,11 @@ export default function SettingsPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Database className="h-5 w-5 text-green-500" />
-              <h3 className="font-semibold">Integrations</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Integrations</h3>
             </div>
           </CardHeader>
           <CardBody>
@@ -52,11 +52,11 @@ export default function SettingsPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Settings className="h-5 w-5 text-purple-500" />
-              <h3 className="font-semibold">AI Configuration</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">AI Configuration</h3>
             </div>
           </CardHeader>
           <CardBody>

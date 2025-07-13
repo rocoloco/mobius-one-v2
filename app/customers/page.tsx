@@ -10,11 +10,11 @@ export default function CustomersPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Users className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold">Customer Overview</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Customer Overview</h3>
             </div>
           </CardHeader>
           <CardBody>
@@ -24,7 +24,7 @@ export default function CustomersPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <h3 className="font-semibold">Payment Behavior</h3>
           </CardHeader>
@@ -35,7 +35,7 @@ export default function CustomersPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <h3 className="font-semibold">Credit Management</h3>
           </CardHeader>

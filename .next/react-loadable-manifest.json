@@ -1,0 +1,68 @@
+{
+  "node_modules/@heroui/accordion/dist/chunk-F3X3YELH.mjs -> @heroui/dom-animation": {
+    "id": "node_modules/@heroui/accordion/dist/chunk-F3X3YELH.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+    ]
+  },
+  "node_modules/@heroui/calendar/dist/chunk-XPMFI4TR.mjs -> @heroui/dom-animation": {
+    "id": "node_modules/@heroui/calendar/dist/chunk-XPMFI4TR.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+    ]
+  },
+  "node_modules/@heroui/modal/dist/chunk-UKDXCIYN.mjs -> @heroui/dom-animation": {
+    "id": "node_modules/@heroui/modal/dist/chunk-UKDXCIYN.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+    ]
+  },
+  "node_modules/@heroui/navbar/dist/chunk-63OA3RRZ.mjs -> @heroui/dom-animation": {
+    "id": "node_modules/@heroui/navbar/dist/chunk-63OA3RRZ.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+    ]
+  },
+  "node_modules/@heroui/navbar/dist/chunk-GGZP2VLD.mjs -> @heroui/dom-animation": {
+    "id": "node_modules/@heroui/navbar/dist/chunk-GGZP2VLD.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+    ]
+  },
+  "node_modules/@heroui/popover/dist/chunk-2PG5BJX6.mjs -> @heroui/dom-animation": {
+    "id": "node_modules/@heroui/popover/dist/chunk-2PG5BJX6.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+    ]
+  },
+  "node_modules/@heroui/popover/dist/chunk-REV5W46G.mjs -> @heroui/dom-animation": {
+    "id": "node_modules/@heroui/popover/dist/chunk-REV5W46G.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+    ]
+  },
+  "node_modules/@heroui/ripple/dist/chunk-QHRCZSEO.mjs -> @heroui/dom-animation": {
+    "id": "node_modules/@heroui/ripple/dist/chunk-QHRCZSEO.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+    ]
+  },
+  "node_modules/@heroui/toast/dist/chunk-LZV3PIXS.mjs -> framer-motion": {
+    "id": "node_modules/@heroui/toast/dist/chunk-LZV3PIXS.mjs -> framer-motion",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_framer-motion_dist_es_index_mjs.js"
+    ]
+  },
+  "node_modules/@heroui/toast/dist/chunk-TEJQD255.mjs -> ./src-UW24ZMRV.mjs": {
+    "id": "node_modules/@heroui/toast/dist/chunk-TEJQD255.mjs -> ./src-UW24ZMRV.mjs",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_toast_dist_src-UW24ZMRV_mjs.js"
+    ]
+  },
+  "node_modules/@heroui/tooltip/dist/chunk-7ZZXWEXF.mjs -> @heroui/dom-animation": {
+    "id": "node_modules/@heroui/tooltip/dist/chunk-7ZZXWEXF.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+    ]
+  }
+}

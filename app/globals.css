@@ -3,50 +3,54 @@
 @tailwind utilities;
 
 :root {
+  /* Supabase-inspired design tokens */
   --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --foreground: 240 10% 3.9%;
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  --card-foreground: 240 10% 3.9%;
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 192 94% 48%; /* Mobius One brand color #048BA8 */
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 47.4% 11.2%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 142 76% 36%; /* Supabase green */
+  --primary-foreground: 356 29% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
   --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 192 94% 48%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 142 76% 36%;
   --radius: 0.5rem;
+  
+  /* Mobius brand colors as accents */
   --mobius-primary: 192 94% 48%; /* #048BA8 */
   --mobius-navy: 224 93% 13%; /* #061A40 */
 }
 
 .dark {
-  --background: 224 93% 13%; /* Mobius Navy background */
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 192 94% 48%; /* Mobius brand color maintained */
-  --primary-foreground: 210 40% 98%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
+  /* Supabase dark mode colors */
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 142 70% 45%;
+  --primary-foreground: 144 61% 20%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
   --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 192 94% 48%;
+  --destructive-foreground: 0 85.7% 97.3%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 142 70% 45%;
 }
 
 * {
@@ -56,33 +60,81 @@
 body {
   color: hsl(var(--foreground));
   background: hsl(var(--background));
+  font-feature-settings: "rlig" 1, "calt" 1;
 }
 
-/* Collection Dashboard Specific Styles */
-.collection-metric {
-  @apply bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20;
-  @apply border border-blue-200 dark:border-blue-800;
-  @apply rounded-lg p-6 shadow-sm;
+/* Supabase-inspired design patterns */
+.supabase-card {
+  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800;
+  @apply rounded-lg shadow-sm hover:shadow-md transition-shadow;
+  @apply p-6;
 }
 
-.approval-pending {
-  @apply bg-amber-50 dark:bg-amber-900/20;
-  @apply border-amber-200 dark:border-amber-800;
+.supabase-metric-card {
+  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800;
+  @apply rounded-lg shadow-sm;
+  @apply p-6 space-y-3;
+  @apply hover:border-gray-300 dark:hover:border-gray-700 transition-colors;
 }
 
-.approval-approved {
-  @apply bg-green-50 dark:bg-green-900/20;
-  @apply border-green-200 dark:border-green-800;
+.supabase-stat-value {
+  @apply text-2xl font-semibold text-gray-900 dark:text-gray-100;
 }
 
-.confidence-high {
-  @apply text-green-600 dark:text-green-400;
+.supabase-stat-label {
+  @apply text-sm font-medium text-gray-600 dark:text-gray-400;
 }
 
-.confidence-medium {
-  @apply text-yellow-600 dark:text-yellow-400;
+.supabase-stat-change {
+  @apply text-xs text-gray-500 dark:text-gray-400;
 }
 
-.confidence-low {
-  @apply text-red-600 dark:text-red-400;
+.supabase-badge-success {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300;
+}
+
+.supabase-badge-warning {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300;
+}
+
+.supabase-badge-error {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300;
+}
+
+.supabase-sidebar {
+  @apply bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800;
+}
+
+.supabase-nav-item {
+  @apply flex items-center px-3 py-2 text-sm font-medium rounded-md;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-800;
+  @apply hover:text-gray-900 dark:hover:text-gray-100;
+  @apply transition-colors duration-150;
+}
+
+.supabase-nav-item.active {
+  @apply bg-gray-100 dark:bg-gray-800;
+  @apply text-gray-900 dark:text-gray-100;
+  @apply border-r-2 border-green-500;
+}
+
+.supabase-header {
+  @apply bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800;
+}
+
+/* Typography improvements */
+.supabase-heading {
+  @apply text-2xl font-semibold text-gray-900 dark:text-gray-100;
+}
+
+.supabase-subheading {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+.supabase-section-title {
+  @apply text-lg font-medium text-gray-900 dark:text-gray-100 mb-4;
 }

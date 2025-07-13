@@ -10,11 +10,11 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <BarChart3 className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold">DSO Trends</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">DSO Trends</h3>
             </div>
           </CardHeader>
           <CardBody>
@@ -24,11 +24,11 @@ export default function AnalyticsPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <TrendingUp className="h-5 w-5 text-green-500" />
-              <h3 className="font-semibold">Collection Performance</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Collection Performance</h3>
             </div>
           </CardHeader>
           <CardBody>
@@ -38,11 +38,11 @@ export default function AnalyticsPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <PieChart className="h-5 w-5 text-purple-500" />
-              <h3 className="font-semibold">Customer Segments</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Customer Segments</h3>
             </div>
           </CardHeader>
           <CardBody>

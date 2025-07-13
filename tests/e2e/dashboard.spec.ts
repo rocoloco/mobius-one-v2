@@ -1,4 +1,16 @@
 import { test, expect } from '@playwright/test';
+import { DashboardPage } from './pages/DashboardPage';
+import { TestUtils } from './utils/test-utils';
+
+test.describe('Dashboard Functionality', () => {
+  let dashboardPage: DashboardPage;
+  let testUtils: TestUtils;
+
+  test.beforeEach(async ({ page }) => {
+    dashboardPage = new DashboardPage(page);
+    testUtils = new TestUtils(page);
+    await dashboardPage.goto();
+  });
 
 test.describe('Collection Dashboard E2E', () => {
   test('Dashboard loads with key metrics', async ({ page }) => {

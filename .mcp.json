@@ -7,8 +7,23 @@
       "env": {
         "SUPABASE_URL": "${NEXT_PUBLIC_SUPABASE_URL}",
         "SUPABASE_ANON_KEY": "${NEXT_PUBLIC_SUPABASE_ANON_KEY}",
-        "SUPABASE_SERVICE_KEY": "${SUPABASE_SERVICE_KEY}"
+        "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_SERVICE_KEY}",
+        "MCP_API_KEY": "mobius-one-local-dev-key"
       }
+    },
+    "serena": {
+      "type": "stdio",
+      "command": "/Users/rosarios/.local/bin/uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena-mcp-server",
+        "--context",
+        "ide-assistant",
+        "--project",
+        "/Users/rosarios/Mobius-One_v2"
+      ],
+      "env": {}
     }
   }
 }

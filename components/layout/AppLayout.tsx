@@ -80,9 +80,85 @@ interface AppLayoutProps {
   children: React.ReactNode
 }
 
+function SidebarContent({ onClose }: { onClose?: () => void }) {
+  const pathname = usePathname()
+  
+  return (
+    <div className="flex h-full flex-col">
+      {/* Logo */}
+      <div className="flex h-16 items-center justify-between px-6 border-b border-gray-200 dark:border-gray-700">
+        <Link href="/" className="flex items-center space-x-3">
+          <Image
+            src="/favicon-dark.svg"
+            alt="Mobius One"
+            width={32}
+            height={32}
+          />
+          <span className="text-xl font-semibold text-white whitespace-nowrap">
+            Mobius One
+          </span>
+        </Link>
+        {onClose && (
+          <Button
+            isIconOnly
+            variant="ghost"
+            size="sm"
+            className="lg:hidden"
+            onPress={onClose}
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        )}
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 space-y-1 px-3 py-4">
+        {navigation.map((item) => {
+          const isActive = pathname === item.href
+          const Icon = item.icon
+          
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`supabase-nav-item ${isActive ? 'active' : ''}`}
+              onClick={onClose}
+            >
+              <Icon
+                className={`mr-3 h-5 w-5 transition-colors ${
+                  isActive ? 'text-primary' : 'text-gray-400 group-hover:text-gray-500'
+                }`}
+              />
+              <div>
+                <div>{item.name}</div>
+                {isActive && (
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {item.description}
+                  </div>
+                )}
+              </div>
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* AI Status */}
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+        <Chip 
+          color="success" 
+          variant="flat"
+          startContent={<CheckCircle className="h-4 w-4" />}
+          className="w-full"
+        >
+          AI Engine Active
+        </Chip>
+      </div>
+    </div>
+  )
+}
+
 export default function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const pathname = usePathname()
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -94,160 +170,89 @@ export default function AppLayout({ children }: AppLayoutProps) {
         />
       )}
 
-      {/* Sidebar */}
-      <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-white dark:bg-gray-800 shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <div className="flex h-full flex-col">
-          {/* Logo */}
-          <div className="flex h-16 items-center justify-between px-6 border-b border-gray-200 dark:border-gray-700">
-            <Link href="/" className="flex items-center space-x-3">
-              <Image
-                src="/logo/Icon/Icon for light background.svg"
-                alt="Mobius One"
-                width={32}
-                height={32}
-                className="dark:hidden"
-              />
-              <Image
-                src="/logo/Icon/Icon for dark background.svg"
-                alt="Mobius One"
-                width={32}
-                height={32}
-                className="hidden dark:block"
-              />
-              <span className="text-xl font-semibold text-gray-900 dark:text-white">
-                Mobius One
-              </span>
-            </Link>
-            <Button
-              isIconOnly
-              variant="ghost"
-              size="sm"
-              className="lg:hidden"
-              onPress={() => setSidebarOpen(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 space-y-1 px-3 py-4">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href
-              const Icon = item.icon
-              
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`group flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-primary/10 text-primary border-r-2 border-primary'
-                      : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'
-                  }`}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <Icon
-                    className={`mr-3 h-5 w-5 transition-colors ${
-                      isActive ? 'text-primary' : 'text-gray-400 group-hover:text-gray-500'
-                    }`}
-                  />
-                  <div>
-                    <div>{item.name}</div>
-                    {isActive && (
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {item.description}
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              )
-            })}
-          </nav>
-
-          {/* AI Status */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-            <Chip 
-              color="success" 
-              variant="flat"
-              startContent={<CheckCircle className="h-4 w-4" />}
-              className="w-full"
-            >
-              AI Engine Active
-            </Chip>
-          </div>
+      <div className="flex h-full">
+        {/* Desktop Sidebar - Always visible on desktop */}
+        <div className="w-64 supabase-sidebar shadow-lg max-lg:hidden" data-testid="sidebar">
+          <SidebarContent />
         </div>
-      </div>
 
-      {/* Main content */}
-      <div className="lg:pl-64">
-        {/* Top header */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-4">
-            <Button
-              isIconOnly
-              variant="ghost"
-              size="sm"
-              className="lg:hidden"
-              onPress={() => setSidebarOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+        {/* Mobile Sidebar - Slide out */}
+        <div
+          className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 supabase-sidebar shadow-lg transform transition-transform duration-300 ease-in-out ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+          data-testid="mobile-sidebar"
+        >
+          <SidebarContent onClose={() => setSidebarOpen(false)} />
+        </div>
 
-            {/* Search */}
-            <div className="hidden sm:block">
-              <Input
-                placeholder="Search customers, invoices..."
-                startContent={<Search className="h-4 w-4 text-gray-400" />}
-                className="w-80"
+        {/* Main content */}
+        <div className="flex-1 min-w-0">
+          {/* Top header */}
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:px-6 lg:px-8">
+            <div className="flex items-center space-x-4">
+              <Button
+                isIconOnly
+                variant="ghost"
                 size="sm"
-              />
-            </div>
-          </div>
+                className="lg:hidden"
+                onPress={() => setSidebarOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
 
-          {/* Right side */}
-          <div className="flex items-center space-x-4">
-            {/* Notifications */}
-            <Button isIconOnly variant="ghost" size="sm">
-              <Bell className="h-5 w-5" />
-            </Button>
-
-            {/* User menu */}
-            <Dropdown placement="bottom-end">
-              <DropdownTrigger>
-                <Avatar
-                  as="button"
+              {/* Search */}
+              <div className="hidden sm:block">
+                <Input
+                  placeholder="Search customers, invoices..."
+                  startContent={<Search className="h-4 w-4 text-gray-400" />}
+                  className="w-80"
                   size="sm"
-                  name="User"
-                  className="cursor-pointer"
                 />
-              </DropdownTrigger>
-              <DropdownMenu aria-label="User menu">
-                <DropdownItem key="profile" startContent={<User className="h-4 w-4" />}>
-                  Profile
-                </DropdownItem>
-                <DropdownItem key="settings" startContent={<Settings className="h-4 w-4" />}>
-                  Settings
-                </DropdownItem>
-                <DropdownItem 
-                  key="logout" 
-                  color="danger"
-                  startContent={<LogOut className="h-4 w-4" />}
-                >
-                  Sign Out
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        </header>
+              </div>
+            </div>
 
-        {/* Page content */}
-        <main className="flex-1">
-          {children}
-        </main>
+            {/* Right side */}
+            <div className="flex items-center space-x-4">
+              {/* Notifications */}
+              <Button isIconOnly variant="ghost" size="sm">
+                <Bell className="h-5 w-5" />
+              </Button>
+
+              {/* User menu */}
+              <Dropdown placement="bottom-end">
+                <DropdownTrigger>
+                  <Avatar
+                    as="button"
+                    size="sm"
+                    name="User"
+                    className="cursor-pointer"
+                  />
+                </DropdownTrigger>
+                <DropdownMenu aria-label="User menu">
+                  <DropdownItem key="profile" startContent={<User className="h-4 w-4" />}>
+                    Profile
+                  </DropdownItem>
+                  <DropdownItem key="settings" startContent={<Settings className="h-4 w-4" />}>
+                    Settings
+                  </DropdownItem>
+                  <DropdownItem 
+                    key="logout" 
+                    color="danger"
+                    startContent={<LogOut className="h-4 w-4" />}
+                  >
+                    Sign Out
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          </header>
+
+          {/* Page content */}
+          <main className="flex-1">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   )

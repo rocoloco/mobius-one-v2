@@ -10,11 +10,11 @@ export default function RecommendationsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Brain className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold">Pending Approvals</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Pending Approvals</h3>
             </div>
           </CardHeader>
           <CardBody>
@@ -24,11 +24,11 @@ export default function RecommendationsPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
-              <h3 className="font-semibold">Success Rate</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Success Rate</h3>
             </div>
           </CardHeader>
           <CardBody>
@@ -38,11 +38,11 @@ export default function RecommendationsPage() {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Clock className="h-5 w-5 text-amber-500" />
-              <h3 className="font-semibold">Strategy Templates</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Strategy Templates</h3>
             </div>
           </CardHeader>
           <CardBody>
