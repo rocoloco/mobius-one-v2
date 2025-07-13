@@ -97,8 +97,7 @@ export default function CollectionsPage() {
   };
 
   return (
-    <Layout>
-      <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
         {/* Header */}
         <div style={{ marginBottom: '32px' }}>
           <h1 style={{ 
@@ -355,6 +354,5 @@ export default function CollectionsPage() {
           </div>
         </div>
       </div>
-    </Layout>
   );
 }
