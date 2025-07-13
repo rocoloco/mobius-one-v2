@@ -147,174 +147,111 @@ export default function CollectionsPage() {
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="p-4 max-w-7xl mx-auto">
         {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ 
-            fontFamily: 'Poppins, sans-serif', 
-            fontSize: '28px', 
-            fontWeight: '700',
-            color: '#061A40',
-            marginBottom: '8px'
-          }}>
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#061A40] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
             Collections Acceleration
           </h1>
-          <p style={{ 
-            fontFamily: 'Inter, sans-serif',
-            color: '#6B7280',
-            fontSize: '16px',
-            lineHeight: '1.6'
-          }}>
+          <p className="text-sm md:text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', lineHeight: '1.6' }}>
             Autonomous revenue optimization with relationship preservation
           </p>
         </div>
 
         {/* Key Metrics */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '20px',
-          marginBottom: '32px'
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #E2E8F0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <Clock size={20} style={{ color: '#048BA8' }} />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#6B7280' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 mb-6 md:mb-8">
+          <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <Clock size={18} className="text-[#048BA8]" />
+              <span className="text-xs md:text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Current DSO
               </span>
             </div>
-            <div style={{ fontSize: '24px', fontWeight: '700', color: '#061A40' }}>
+            <div className="text-xl md:text-2xl font-bold text-[#061A40]">
               {metricsLoading ? 'Loading...' : `${metrics?.currentDso || 0} days`}
             </div>
-            <div style={{ fontSize: '12px', color: '#6B7280' }}>
+            <div className="text-xs text-gray-500">
               Target: {metrics?.targetDso || 0} days
             </div>
           </div>
 
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #E2E8F0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <DollarSign size={20} style={{ color: '#048BA8' }} />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#6B7280' }}>
+          <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <DollarSign size={18} className="text-[#048BA8]" />
+              <span className="text-xs md:text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Working Capital Freed
               </span>
             </div>
-            <div style={{ fontSize: '24px', fontWeight: '700', color: '#048BA8' }}>
+            <div className="text-xl md:text-2xl font-bold text-[#048BA8]">
               {metricsLoading ? 'Loading...' : `$${(metrics?.workingCapitalFreed || 0).toLocaleString()}`}
             </div>
-            <div style={{ fontSize: '12px', color: '#6B7280' }}>
+            <div className="text-xs text-gray-500">
               This quarter
             </div>
           </div>
 
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #E2E8F0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <Target size={20} style={{ color: '#048BA8' }} />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#6B7280' }}>
+          <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <Target size={18} className="text-[#048BA8]" />
+              <span className="text-xs md:text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Approval Rate
               </span>
             </div>
-            <div style={{ fontSize: '24px', fontWeight: '700', color: '#061A40' }}>
+            <div className="text-xl md:text-2xl font-bold text-[#061A40]">
               {metricsLoading ? 'Loading...' : `${metrics?.approvalRate || 0}%`}
             </div>
-            <div style={{ fontSize: '12px', color: '#6B7280' }}>
+            <div className="text-xs text-gray-500">
               AI recommendations
             </div>
           </div>
 
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #E2E8F0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <TrendingUp size={20} style={{ color: '#048BA8' }} />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#6B7280' }}>
+          <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <TrendingUp size={18} className="text-[#048BA8]" />
+              <span className="text-xs md:text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Relationship Score
               </span>
             </div>
-            <div style={{ fontSize: '24px', fontWeight: '700', color: '#061A40' }}>
+            <div className="text-xl md:text-2xl font-bold text-[#061A40]">
               {metricsLoading ? 'Loading...' : `${metrics?.relationshipScore || 0}/100`}
             </div>
-            <div style={{ fontSize: '12px', color: '#6B7280' }}>
+            <div className="text-xs text-gray-500">
               Preservation rate
             </div>
           </div>
         </div>
 
         {/* One-Click Approval Section */}
-        <div style={{
-          background: 'white',
-          borderRadius: '12px',
-          padding: '24px',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          marginBottom: '32px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ 
-              fontFamily: 'Poppins, sans-serif', 
-              fontSize: '20px', 
-              fontWeight: '600',
-              color: '#061A40'
-            }}>
+        <div className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm mb-6 md:mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
+            <h2 className="text-lg md:text-xl font-semibold text-[#061A40]" style={{ fontFamily: 'Poppins, sans-serif' }}>
               AI Collection Recommendations
             </h2>
             <button
               onClick={handleBulkApprove}
               disabled={selectedInvoices.length === 0}
-              style={{
-                background: selectedInvoices.length > 0 ? '#048BA8' : '#E2E8F0',
-                color: selectedInvoices.length > 0 ? 'white' : '#9CA3AF',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 16px',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: selectedInvoices.length > 0 ? 'pointer' : 'not-allowed',
-                transition: 'all 0.2s ease'
-              }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedInvoices.length > 0
+                  ? 'bg-[#048BA8] text-white hover:bg-[#037a94]'
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              }`}
+              style={{ fontFamily: 'Inter, sans-serif' }}
             >
               Approve Selected ({selectedInvoices.length})
             </button>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="flex flex-col gap-4">
             {invoicesLoading ? (
-              <div style={{ padding: '40px', textAlign: 'center', color: '#6B7280' }}>
+              <div className="py-10 text-center text-gray-500">
                 Loading invoices...
               </div>
             ) : (
               (invoices || []).map((invoice: any) => (
-              <div key={invoice.id} style={{
-                border: '1px solid #E2E8F0',
-                borderRadius: '8px',
-                padding: '16px',
-                transition: 'all 0.2s ease'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <div key={invoice.id} className="border border-gray-200 rounded-lg p-4 transition-all duration-200 hover:shadow-md">
+                <div className="flex flex-col lg:flex-row justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
                       <input
                         type="checkbox"
                         checked={selectedInvoices.includes(invoice.id)}
@@ -325,67 +262,50 @@ export default function CollectionsPage() {
                             setSelectedInvoices(selectedInvoices.filter(id => id !== invoice.id));
                           }
                         }}
-                        style={{ width: '16px', height: '16px' }}
+                        className="w-4 h-4 text-[#048BA8] border-gray-300 rounded focus:ring-[#048BA8]"
                       />
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: '600', color: '#061A40' }}>
+                      <span className="font-semibold text-[#061A40]" style={{ fontFamily: 'Inter, sans-serif' }}>
                         {invoice.invoiceNumber}
                       </span>
-                      <span style={{ fontFamily: 'Inter, sans-serif', color: '#6B7280' }}>
+                      <span className="text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
                         {invoice.customer}
                       </span>
                     </div>
                     
-                    <div style={{ display: 'flex', gap: '24px', marginBottom: '12px' }}>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
                       <div>
-                        <span style={{ fontSize: '12px', color: '#6B7280' }}>Amount: </span>
-                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#061A40' }}>
+                        <span className="text-xs text-gray-500">Amount: </span>
+                        <span className="text-sm font-semibold text-[#061A40]">
                           ${invoice.amount.toLocaleString()}
                         </span>
                       </div>
                       <div>
-                        <span style={{ fontSize: '12px', color: '#6B7280' }}>Days Past Due: </span>
-                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#DC2626' }}>
+                        <span className="text-xs text-gray-500">Days Past Due: </span>
+                        <span className="text-sm font-semibold text-red-600">
                           {invoice.daysPastDue}
                         </span>
                       </div>
                       <div>
-                        <span style={{ fontSize: '12px', color: '#6B7280' }}>Relationship Score: </span>
-                        <span style={{ fontSize: '14px', fontWeight: '600' }} className={getRelationshipScoreColor(invoice.relationshipScore)}>
+                        <span className="text-xs text-gray-500">Relationship Score: </span>
+                        <span className={`text-sm font-semibold ${getRelationshipScoreColor(invoice.relationshipScore)}`}>
                           {invoice.relationshipScore}/100
                         </span>
                       </div>
                     </div>
 
-                    <div style={{ 
-                      background: '#F8FAFC',
-                      borderRadius: '6px',
-                      padding: '12px',
-                      marginBottom: '12px'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <AlertTriangle size={16} style={{ color: '#048BA8' }} />
-                          <span style={{ fontSize: '12px', color: '#6B7280' }}>AI Recommendation:</span>
-                          <span style={{ fontSize: '12px', fontWeight: '600' }} className={getConfidenceColor(invoice.recommendationConfidence)}>
+                    <div className="bg-gray-50 rounded-lg p-3 mb-3">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle size={16} className="text-[#048BA8]" />
+                          <span className="text-xs text-gray-500">AI Recommendation:</span>
+                          <span className={`text-xs font-semibold ${getConfidenceColor(invoice.recommendationConfidence)}`}>
                             {invoice.recommendationConfidence}% confidence
                           </span>
                         </div>
                         {editingInvoice !== invoice.id && (
                           <button
                             onClick={() => handleEditRecommendation(invoice.id, invoice.aiRecommendation)}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              color: '#048BA8',
-                              cursor: 'pointer',
-                              padding: '4px',
-                              borderRadius: '4px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              fontSize: '12px',
-                              transition: 'all 0.2s ease'
-                            }}
+                            className="flex items-center gap-1 text-xs text-[#048BA8] hover:text-[#037a94] transition-colors px-2 py-1 rounded"
                           >
                             <Edit size={12} />
                             Edit
