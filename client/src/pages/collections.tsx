@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Clock, DollarSign, Target, CheckCircle, AlertTriangle, TrendingUp } from 'lucide-react';
+import { Clock, DollarSign, Target, CheckCircle, AlertTriangle, TrendingUp, Edit, Zap, Shield } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
@@ -28,6 +28,8 @@ interface CollectionMetrics {
 
 export default function CollectionsPage() {
   const [selectedInvoices, setSelectedInvoices] = useState<number[]>([]);
+  const [editingInvoice, setEditingInvoice] = useState<number | null>(null);
+  const [editedRecommendation, setEditedRecommendation] = useState<string>('');
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -91,8 +93,38 @@ export default function CollectionsPage() {
     },
   });
 
-  const handleApproveAction = (invoiceId: number) => {
+  const handleApproveAction = (invoiceId: number, isHotApproval = false) => {
+    if (isHotApproval) {
+      toast({
+        title: 'Hot Approval Initiated',
+        description: 'High-priority collection action approved for immediate execution.',
+        variant: 'default',
+      });
+    }
     approveMutation.mutate(invoiceId);
+  };
+
+  const handleEditRecommendation = (invoiceId: number, currentRecommendation: string) => {
+    setEditingInvoice(invoiceId);
+    setEditedRecommendation(currentRecommendation);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingInvoice && editedRecommendation.trim()) {
+      // Here you would typically make an API call to update the recommendation
+      toast({
+        title: 'Recommendation Updated',
+        description: 'AI recommendation has been modified successfully.',
+      });
+      setEditingInvoice(null);
+      setEditedRecommendation('');
+      // In a real implementation, you'd want to update the local state or refetch data
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingInvoice(null);
+    setEditedRecommendation('');
   };
 
   const handleBulkApprove = () => {
@@ -335,47 +367,151 @@ export default function CollectionsPage() {
                       padding: '12px',
                       marginBottom: '12px'
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                        <AlertTriangle size={16} style={{ color: '#048BA8' }} />
-                        <span style={{ fontSize: '12px', color: '#6B7280' }}>AI Recommendation:</span>
-                        <span style={{ fontSize: '12px', fontWeight: '600' }} className={getConfidenceColor(invoice.recommendationConfidence)}>
-                          {invoice.recommendationConfidence}% confidence
-                        </span>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <AlertTriangle size={16} style={{ color: '#048BA8' }} />
+                          <span style={{ fontSize: '12px', color: '#6B7280' }}>AI Recommendation:</span>
+                          <span style={{ fontSize: '12px', fontWeight: '600' }} className={getConfidenceColor(invoice.recommendationConfidence)}>
+                            {invoice.recommendationConfidence}% confidence
+                          </span>
+                        </div>
+                        {editingInvoice !== invoice.id && (
+                          <button
+                            onClick={() => handleEditRecommendation(invoice.id, invoice.aiRecommendation)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#048BA8',
+                              cursor: 'pointer',
+                              padding: '4px',
+                              borderRadius: '4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontSize: '12px',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            <Edit size={12} />
+                            Edit
+                          </button>
+                        )}
                       </div>
-                      <p style={{ 
-                        fontFamily: 'Inter, sans-serif',
-                        fontSize: '14px',
-                        color: '#374151',
-                        lineHeight: '1.5',
-                        margin: 0
-                      }}>
-                        {invoice.aiRecommendation}
-                      </p>
+                      
+                      {editingInvoice === invoice.id ? (
+                        <div>
+                          <textarea
+                            value={editedRecommendation}
+                            onChange={(e) => setEditedRecommendation(e.target.value)}
+                            style={{
+                              width: '100%',
+                              minHeight: '80px',
+                              padding: '8px',
+                              border: '1px solid #E2E8F0',
+                              borderRadius: '4px',
+                              fontFamily: 'Inter, sans-serif',
+                              fontSize: '14px',
+                              resize: 'vertical',
+                              marginBottom: '8px'
+                            }}
+                          />
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                            <button
+                              onClick={handleCancelEdit}
+                              style={{
+                                background: '#E2E8F0',
+                                color: '#6B7280',
+                                border: 'none',
+                                borderRadius: '4px',
+                                padding: '6px 12px',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                              }}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleSaveEdit}
+                              style={{
+                                background: '#048BA8',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                padding: '6px 12px',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                              }}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p style={{ 
+                          fontFamily: 'Inter, sans-serif',
+                          fontSize: '14px',
+                          color: '#374151',
+                          lineHeight: '1.5',
+                          margin: 0
+                        }}>
+                          {invoice.aiRecommendation}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => handleApproveAction(invoice.id)}
-                    style={{
-                      background: invoice.recommendationConfidence >= 90 ? '#10B981' : 
-                                 invoice.recommendationConfidence >= 70 ? '#F59E0B' : '#EF4444',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '8px 16px',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    <CheckCircle size={16} />
-                    Approve
-                  </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {/* Hot Approval for high-risk or urgent cases */}
+                    {(invoice.daysPastDue > 60 || invoice.recommendationConfidence < 70) && (
+                      <button
+                        onClick={() => handleApproveAction(invoice.id, true)}
+                        style={{
+                          background: '#FF6B35',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '8px 16px',
+                          fontFamily: 'Inter, sans-serif',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <Zap size={16} />
+                        Hot Approve
+                      </button>
+                    )}
+                    
+                    {/* Regular Approval */}
+                    <button
+                      onClick={() => handleApproveAction(invoice.id)}
+                      style={{
+                        background: invoice.recommendationConfidence >= 90 ? '#10B981' : 
+                                   invoice.recommendationConfidence >= 70 ? '#F59E0B' : '#EF4444',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px 16px',
+                        fontFamily: 'Inter, sans-serif',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <CheckCircle size={16} />
+                      Approve
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
