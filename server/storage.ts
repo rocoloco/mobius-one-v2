@@ -12,7 +12,7 @@ import {
   type SecurityAlert, type InsertSecurityAlert
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, gte, lte } from "drizzle-orm";
+import { eq, and, desc, gte, lte, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Users
