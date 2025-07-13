@@ -66,38 +66,67 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
       borderRight: '1px solid rgba(4, 139, 168, 0.2)'
     }}>
       {/* Header */}
-      <div className="p-4" style={{borderBottom: '1px solid rgba(4, 139, 168, 0.2)'}}>
+      <div className={`${isCollapsed ? 'p-2' : 'p-4'}`} style={{borderBottom: '1px solid rgba(4, 139, 168, 0.2)'}}>
         <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+          {isCollapsed ? (
+            <div className="flex flex-col items-center space-y-2 w-full">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <img 
                   src={mobiusLogo} 
                   alt="Mobius Logo" 
                   className="w-10 h-10 object-contain"
                 />
               </div>
-              <div className="min-w-0 flex-1">
-                <h2 className="font-brand text-lg text-white truncate">
-                  Mobius One
-                </h2>
-              </div>
+              <Button
+                isIconOnly
+                variant="flat"
+                size="sm"
+                onClick={onToggleCollapse}
+                className="text-white hover:bg-white/10 h-8 w-8 min-w-8 rounded-lg"
+                style={{
+                  background: 'rgba(4, 139, 168, 0.2)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <ChevronRight size={16} />
+              </Button>
             </div>
+          ) : (
+            <>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                  <img 
+                    src={mobiusLogo} 
+                    alt="Mobius Logo" 
+                    className="w-10 h-10 object-contain"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-brand text-lg text-white truncate">
+                    Mobius One
+                  </h2>
+                </div>
+              </div>
+              <Button
+                isIconOnly
+                variant="flat"
+                size="sm"
+                onClick={onToggleCollapse}
+                className="text-white hover:bg-white/10 h-8 w-8 min-w-8 rounded-lg"
+                style={{
+                  background: 'rgba(4, 139, 168, 0.2)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <ChevronLeft size={16} />
+              </Button>
+            </>
           )}
-          <Button
-            isIconOnly
-            variant="flat"
-            size="sm"
-            onClick={onToggleCollapse}
-            className="text-white hover:bg-white/10 ml-auto"
-          >
-            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          </Button>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className={`flex-1 space-y-1 ${isCollapsed ? 'px-2 py-4' : 'px-4 py-4'}`}>
         {navigationItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
@@ -105,29 +134,37 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
           return (
             <button
               key={item.path}
-              className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-150 ${
+              className={`w-full flex items-center transition-all duration-200 ${
+                isCollapsed 
+                  ? 'justify-center h-12 rounded-xl' 
+                  : 'justify-start gap-3 px-3 py-3 rounded-lg'
+              } ${
                 isActive 
-                  ? 'text-white border-l-3 border-l-4' 
+                  ? 'text-white' 
                   : 'text-gray-200 hover:text-white'
               }`}
               style={isActive ? {
-                background: 'rgba(4, 139, 168, 0.2)',
-                borderLeft: '3px solid #048BA8'
+                background: 'rgba(4, 139, 168, 0.3)',
+                borderLeft: isCollapsed ? 'none' : '3px solid #048BA8',
+                boxShadow: isCollapsed ? '0 2px 8px rgba(4, 139, 168, 0.3)' : 'none'
               } : {}}
               onMouseEnter={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.background = 'rgba(4, 139, 168, 0.1)';
+                  e.currentTarget.style.background = 'rgba(4, 139, 168, 0.15)';
+                  e.currentTarget.style.transform = 'scale(1.02)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive) {
                   e.currentTarget.style.background = '';
+                  e.currentTarget.style.transform = 'scale(1)';
                 }
               }}
               onClick={() => navigate(item.path)}
+              title={isCollapsed ? item.label : undefined}
             >
-              <Icon size={18} />
-              {!isCollapsed && <span className="font-medium">{item.label}</span>}
+              <Icon size={isCollapsed ? 24 : 20} strokeWidth={isActive ? 2.5 : 2} />
+              {!isCollapsed && <span className="font-medium text-sm">{item.label}</span>}
             </button>
           );
         })}
