@@ -48,9 +48,7 @@ export default function CollectionsPage() {
   // Approve single invoice mutation
   const approveMutation = useMutation({
     mutationFn: async (invoiceId: number) => {
-      return await apiRequest(`/api/collections/approve/${invoiceId}`, {
-        method: 'POST',
-      });
+      return await apiRequest('POST', `/api/collections/approve/${invoiceId}`);
     },
     onSuccess: (data, invoiceId) => {
       toast({
@@ -71,10 +69,7 @@ export default function CollectionsPage() {
   // Bulk approve mutation
   const bulkApproveMutation = useMutation({
     mutationFn: async (invoiceIds: number[]) => {
-      return await apiRequest('/api/collections/bulk-approve', {
-        method: 'POST',
-        body: JSON.stringify({ invoiceIds }),
-      });
+      return await apiRequest('POST', '/api/collections/bulk-approve', { invoiceIds });
     },
     onSuccess: (data, invoiceIds) => {
       toast({
