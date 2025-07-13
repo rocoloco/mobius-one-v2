@@ -17,11 +17,40 @@ export const users = pgTable("users", {
   username: varchar("username", { length: 50 }).unique().notNull(),
   name: varchar("name", { length: 100 }),
   email: varchar("email", { length: 255 }),
-  password: varchar("password", { length: 255 }).notNull(),
+  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  
+  // Business fields
   role: varchar("role", { length: 20 }).default("user"),
   companyName: varchar("company_name", { length: 100 }),
   arrAmount: decimal("arr_amount", { precision: 12, scale: 2 }),
   currentDso: integer("current_dso"),
+  
+  // Zero Trust Security Fields
+  lastActivity: timestamp("last_activity"),
+  lastKnownIp: varchar("last_known_ip", { length: 45 }),
+  knownDevices: jsonb("known_devices").default([]),
+  failedLoginAttempts: integer("failed_login_attempts").default(0),
+  accountLocked: boolean("account_locked").default(false),
+  lockoutUntil: timestamp("lockout_until"),
+  
+  // Role-based Access Control
+  permissions: jsonb("permissions").default(["read", "write"]),
+  roles: jsonb("roles").default(["user"]),
+  
+  // Multi-factor Authentication
+  mfaEnabled: boolean("mfa_enabled").default(false),
+  mfaSecret: varchar("mfa_secret", { length: 255 }),
+  backupCodes: jsonb("backup_codes").default([]),
+  
+  // Audit and Compliance
+  dataClassification: varchar("data_classification", { length: 50 }).default("internal"),
+  consentVersion: varchar("consent_version", { length: 50 }),
+  consentDate: timestamp("consent_date"),
+  
+  // Security Metadata
+  securityFlags: jsonb("security_flags").default({}),
+  riskScore: integer("risk_score").default(0),
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -109,16 +138,92 @@ export const systemConnections = pgTable("system_connections", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Zero Trust Security Tables
+export const sessions = pgTable("sessions", {
+  id: serial("id").primaryKey(),
+  sessionId: varchar("session_id", { length: 255 }).unique().notNull(),
+  userId: integer("user_id").references(() => users.id),
+  deviceFingerprint: varchar("device_fingerprint", { length: 255 }),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  riskScore: integer("risk_score").default(0),
+  mfaVerified: boolean("mfa_verified").default(false),
+  lastActivity: timestamp("last_activity").defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(),
+  isRevoked: boolean("is_revoked").default(false),
+  revokedAt: timestamp("revoked_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  sessionId: varchar("session_id", { length: 255 }),
+  action: varchar("action", { length: 100 }).notNull(),
+  resource: varchar("resource", { length: 100 }),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  riskScore: integer("risk_score"),
+  success: boolean("success").default(true),
+  errorMessage: text("error_message"),
+  metadata: jsonb("metadata"),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+export const securityAlerts = pgTable("security_alerts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  alertType: varchar("alert_type", { length: 50 }).notNull(), // suspicious_login, high_risk, etc
+  severity: varchar("severity", { length: 20 }).default("medium"), // low, medium, high, critical
+  message: text("message").notNull(),
+  metadata: jsonb("metadata"),
+  resolved: boolean("resolved").default(false),
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas for validation
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   name: true,
   email: true,
-  password: true,
+  passwordHash: true,
   role: true,
   companyName: true,
   arrAmount: true,
   currentDso: true,
+});
+
+export const insertSessionSchema = createInsertSchema(sessions).pick({
+  sessionId: true,
+  userId: true,
+  deviceFingerprint: true,
+  ipAddress: true,
+  userAgent: true,
+  riskScore: true,
+  mfaVerified: true,
+  expiresAt: true,
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLogs).pick({
+  userId: true,
+  sessionId: true,
+  action: true,
+  resource: true,
+  ipAddress: true,
+  userAgent: true,
+  riskScore: true,
+  success: true,
+  errorMessage: true,
+  metadata: true,
+});
+
+export const insertSecurityAlertSchema = createInsertSchema(securityAlerts).pick({
+  userId: true,
+  alertType: true,
+  severity: true,
+  message: true,
+  metadata: true,
 });
 
 export const insertCustomerSchema = createInsertSchema(customers).pick({
@@ -203,3 +308,19 @@ export type InsertDsoMetric = z.infer<typeof insertDsoMetricSchema>;
 export type DsoMetric = typeof dsoMetrics.$inferSelect;
 export type InsertSystemConnection = z.infer<typeof insertSystemConnectionSchema>;
 export type SystemConnection = typeof systemConnections.$inferSelect;
+
+// Security table types
+export type InsertSession = z.infer<typeof insertSessionSchema>;
+export type Session = typeof sessions.$inferSelect;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertSecurityAlert = z.infer<typeof insertSecurityAlertSchema>;
+export type SecurityAlert = typeof securityAlerts.$inferSelect;
+
+// Security table types
+export type InsertSession = z.infer<typeof insertSessionSchema>;
+export type Session = typeof sessions.$inferSelect;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertSecurityAlert = z.infer<typeof insertSecurityAlertSchema>;
+export type SecurityAlert = typeof securityAlerts.$inferSelect;

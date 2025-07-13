@@ -1,5 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import helmet from "helmet";
+import cors from "cors";
 import { storage } from "./storage";
 import { litellmService } from "./services/litellm";
 import { salesforceService } from "./services/salesforce";
@@ -12,17 +14,82 @@ import {
   insertDsoMetricSchema,
   insertSystemConnectionSchema 
 } from "@shared/schema";
+import { authenticateToken } from "./auth";
+import authRoutes from "./routes/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Get current user (mock user for development)
-  app.get("/api/user", async (req, res) => {
-    try {
-      const user = await storage.getUser(1); // Default user
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+  // Zero Trust Security Configuration
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
+        fontSrc: ["'self'", "fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "wss:", "https:"],
+        frameAncestors: ["'none'"]
       }
-      res.json(user);
+    },
+    crossOriginEmbedderPolicy: false
+  }));
+
+  app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+      ? ['https://yourdomain.com'] 
+      : ['http://localhost:5000', 'http://127.0.0.1:5000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  }));
+
+  // Authentication routes (no auth required)
+  app.use('/api/auth', authRoutes);
+
+  // Create demo user if none exists
+  app.get("/api/setup-demo", async (req, res) => {
+    try {
+      const existingUser = await storage.getUserByUsername("demo");
+      if (!existingUser) {
+        const { hashPassword } = await import("./auth");
+        const passwordHash = await hashPassword("Demo123!");
+        
+        await storage.createUser({
+          username: "demo",
+          name: "Demo User",
+          email: "demo@example.com",
+          passwordHash,
+          role: "user",
+          companyName: "Demo Company",
+          permissions: ["read", "write"],
+          roles: ["user"]
+        });
+      }
+      res.json({ message: "Demo user ready" });
     } catch (error) {
+      console.error("Demo setup error:", error);
+      res.status(500).json({ message: "Error setting up demo user" });
+    }
+  });
+
+  // Get current user (protected route)
+  app.get("/api/user", authenticateToken, async (req: any, res) => {
+    try {
+      const user = req.user;
+      res.json({
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        companyName: user.companyName,
+        role: user.role,
+        permissions: user.permissions,
+        roles: user.roles,
+        lastActivity: user.lastActivity,
+        riskScore: user.riskScore
+      });
+    } catch (error) {
+      console.error("Error fetching user:", error);
       res.status(500).json({ message: "Error fetching user" });
     }
   });

@@ -21,17 +21,49 @@ export default function LoginPage() {
     }
 
     try {
-      // For now, simulate successful login
-      // In a real app, this would call your authentication API
-      console.log("Login attempt:", { username: formData.username, isLogin });
-      
-      // Clear logout flag and redirect to dashboard
-      localStorage.removeItem('logout');
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 1000);
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const payload = isLogin 
+        ? { username: formData.username, password: formData.password }
+        : { 
+            username: formData.username, 
+            password: formData.password,
+            email: formData.username + '@example.com', // For demo
+            name: formData.username 
+          };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store authentication token
+        localStorage.setItem('authToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.removeItem('logout');
+        
+        // Redirect to collections dashboard
+        window.location.href = '/';
+      } else {
+        // Handle authentication errors
+        const errorMessage = data.error || 'Authentication failed';
+        alert(errorMessage);
+        
+        // Handle specific error cases
+        if (data.code === 'ACCOUNT_LOCKED') {
+          alert(`Account temporarily locked. Please try again in ${data.remainingTime} minutes.`);
+        } else if (data.code === 'HIGH_RISK_LOGIN') {
+          alert('High risk login detected. Please verify your identity.');
+        }
+      }
     } catch (error) {
       console.error("Authentication error:", error);
+      alert("Network error. Please try again.");
     }
   };
 

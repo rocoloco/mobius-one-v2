@@ -1,11 +1,15 @@
 import { 
   users, customers, invoices, collectionActions, dsoMetrics, systemConnections,
+  sessions, auditLogs, securityAlerts,
   type User, type InsertUser, 
   type Customer, type InsertCustomer,
   type Invoice, type InsertInvoice,
   type CollectionAction, type InsertCollectionAction,
   type DsoMetric, type InsertDsoMetric,
-  type SystemConnection, type InsertSystemConnection
+  type SystemConnection, type InsertSystemConnection,
+  type Session, type InsertSession,
+  type AuditLog, type InsertAuditLog,
+  type SecurityAlert, type InsertSecurityAlert
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, gte, lte } from "drizzle-orm";
@@ -50,6 +54,31 @@ export interface IStorage {
   getSystemConnectionsByUserId(userId: number): Promise<SystemConnection[]>;
   createSystemConnection(connection: InsertSystemConnection): Promise<SystemConnection>;
   updateSystemConnection(id: number, updates: Partial<SystemConnection>): Promise<SystemConnection | undefined>;
+
+  // Zero Trust Security Management
+  // Sessions
+  getSession(sessionId: string): Promise<Session | undefined>;
+  getSessionsByUserId(userId: number): Promise<Session[]>;
+  createSession(session: InsertSession): Promise<Session>;
+  updateSession(id: number, updates: Partial<Session>): Promise<Session | undefined>;
+  revokeSession(sessionId: string): Promise<void>;
+  revokeAllUserSessions(userId: number): Promise<void>;
+  
+  // Audit Logs
+  createAuditLog(auditLog: InsertAuditLog): Promise<AuditLog>;
+  getAuditLogsByUserId(userId: number, limit?: number): Promise<AuditLog[]>;
+  getAuditLogsByAction(action: string, limit?: number): Promise<AuditLog[]>;
+  
+  // Security Alerts
+  createSecurityAlert(alert: InsertSecurityAlert): Promise<SecurityAlert>;
+  getSecurityAlertsByUserId(userId: number, resolved?: boolean): Promise<SecurityAlert[]>;
+  resolveSecurityAlert(id: number): Promise<SecurityAlert | undefined>;
+  
+  // Enhanced User Management
+  incrementFailedLoginAttempts(userId: number): Promise<void>;
+  resetFailedLoginAttempts(userId: number): Promise<void>;
+  lockAccount(userId: number, lockDuration: number): Promise<void>;
+  unlockAccount(userId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -285,6 +314,144 @@ export class DatabaseStorage implements IStorage {
       .where(eq(systemConnections.id, id))
       .returning();
     return connection || undefined;
+  }
+
+  // Zero Trust Security Implementation
+  // Sessions
+  async getSession(sessionId: string): Promise<Session | undefined> {
+    const [session] = await db.select().from(sessions).where(eq(sessions.sessionId, sessionId));
+    return session || undefined;
+  }
+
+  async getSessionsByUserId(userId: number): Promise<Session[]> {
+    return await db.select().from(sessions).where(eq(sessions.userId, userId));
+  }
+
+  async createSession(insertSession: InsertSession): Promise<Session> {
+    const [session] = await db
+      .insert(sessions)
+      .values(insertSession)
+      .returning();
+    return session;
+  }
+
+  async updateSession(id: number, updates: Partial<Session>): Promise<Session | undefined> {
+    const [session] = await db
+      .update(sessions)
+      .set(updates)
+      .where(eq(sessions.id, id))
+      .returning();
+    return session || undefined;
+  }
+
+  async revokeSession(sessionId: string): Promise<void> {
+    await db
+      .update(sessions)
+      .set({ isRevoked: true, revokedAt: new Date() })
+      .where(eq(sessions.sessionId, sessionId));
+  }
+
+  async revokeAllUserSessions(userId: number): Promise<void> {
+    await db
+      .update(sessions)
+      .set({ isRevoked: true, revokedAt: new Date() })
+      .where(eq(sessions.userId, userId));
+  }
+
+  // Audit Logs
+  async createAuditLog(insertAuditLog: InsertAuditLog): Promise<AuditLog> {
+    const [auditLog] = await db
+      .insert(auditLogs)
+      .values(insertAuditLog)
+      .returning();
+    return auditLog;
+  }
+
+  async getAuditLogsByUserId(userId: number, limit = 100): Promise<AuditLog[]> {
+    return await db
+      .select()
+      .from(auditLogs)
+      .where(eq(auditLogs.userId, userId))
+      .orderBy(desc(auditLogs.timestamp))
+      .limit(limit);
+  }
+
+  async getAuditLogsByAction(action: string, limit = 100): Promise<AuditLog[]> {
+    return await db
+      .select()
+      .from(auditLogs)
+      .where(eq(auditLogs.action, action))
+      .orderBy(desc(auditLogs.timestamp))
+      .limit(limit);
+  }
+
+  // Security Alerts
+  async createSecurityAlert(insertAlert: InsertSecurityAlert): Promise<SecurityAlert> {
+    const [alert] = await db
+      .insert(securityAlerts)
+      .values(insertAlert)
+      .returning();
+    return alert;
+  }
+
+  async getSecurityAlertsByUserId(userId: number, resolved?: boolean): Promise<SecurityAlert[]> {
+    let query = db.select().from(securityAlerts).where(eq(securityAlerts.userId, userId));
+    
+    if (resolved !== undefined) {
+      query = query.where(eq(securityAlerts.resolved, resolved));
+    }
+    
+    return await query.orderBy(desc(securityAlerts.createdAt));
+  }
+
+  async resolveSecurityAlert(id: number): Promise<SecurityAlert | undefined> {
+    const [alert] = await db
+      .update(securityAlerts)
+      .set({ resolved: true, resolvedAt: new Date() })
+      .where(eq(securityAlerts.id, id))
+      .returning();
+    return alert || undefined;
+  }
+
+  // Enhanced User Management
+  async incrementFailedLoginAttempts(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        failedLoginAttempts: sql`failed_login_attempts + 1`
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async resetFailedLoginAttempts(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        failedLoginAttempts: 0
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async lockAccount(userId: number, lockDuration: number): Promise<void> {
+    const lockoutUntil = new Date(Date.now() + lockDuration * 60 * 1000);
+    await db
+      .update(users)
+      .set({ 
+        accountLocked: true,
+        lockoutUntil
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async unlockAccount(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        accountLocked: false,
+        lockoutUntil: null,
+        failedLoginAttempts: 0
+      })
+      .where(eq(users.id, userId));
   }
 }
 
