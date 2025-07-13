@@ -147,9 +147,9 @@ export default function CollectionsPage() {
   };
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
+    <div className="px-0 sm:px-4 py-4 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6 md:mb-8">
+        <div className="mb-6 md:mb-8 px-4 sm:px-0">
           <h1 className="text-2xl md:text-3xl font-bold text-[#061A40] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
             Collections Acceleration
           </h1>
@@ -159,7 +159,7 @@ export default function CollectionsPage() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 mb-6 md:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 mb-6 md:mb-8 px-4 sm:px-0">
           <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <Clock size={18} className="text-[#048BA8]" />
@@ -222,7 +222,7 @@ export default function CollectionsPage() {
         </div>
 
         {/* One-Click Approval Section */}
-        <div className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm mb-6 md:mb-8">
+        <div className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm mb-6 md:mb-8 mx-4 sm:mx-0">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
             <h2 className="text-lg md:text-xl font-semibold text-[#061A40]" style={{ fontFamily: 'Poppins, sans-serif' }}>
               AI Collection Recommendations
