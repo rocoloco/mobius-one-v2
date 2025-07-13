@@ -1,8 +1,64 @@
 import { Router } from 'express';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { storage } from '../storage';
 import { hashPassword, verifyPassword, generateToken, calculateRiskScore, generateDeviceFingerprint } from '../auth';
 
 const router = Router();
+
+// Google OAuth Configuration (only if credentials are provided)
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/api/auth/google/callback"
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Check if user exists
+      const existingUser = await storage.getUserByUsername(profile.id);
+      
+      if (existingUser) {
+        // Update existing user with fresh Google data
+        const updatedUser = await storage.updateUser(existingUser.id, {
+          name: profile.displayName,
+          email: profile.emails?.[0]?.value,
+          lastActivity: new Date()
+        });
+        return done(null, updatedUser);
+      }
+      
+      // Create new user from Google profile
+      const newUser = await storage.createUser({
+        username: profile.id,
+        name: profile.displayName || profile.id,
+        email: profile.emails?.[0]?.value || `${profile.id}@gmail.com`,
+        passwordHash: '', // OAuth users don't need password
+        role: 'user',
+        companyName: profile.emails?.[0]?.value?.split('@')[1] || 'Unknown',
+        permissions: ['read', 'write'],
+        roles: ['user']
+      });
+      
+      return done(null, newUser);
+    } catch (error) {
+      return done(error, null);
+    }
+  }));
+}
+
+// Passport session serialization
+passport.serializeUser((user: any, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id: any, done) => {
+  try {
+    const user = await storage.getUser(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
 
 // Registration endpoint
 router.post('/register', async (req, res) => {
@@ -191,10 +247,85 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Google OAuth Routes
+router.get('/google', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(501).json({
+      error: 'Google OAuth is not configured',
+      code: 'OAUTH_NOT_CONFIGURED',
+      message: 'Administrator needs to configure GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables'
+    });
+  }
+  
+  passport.authenticate('google', {
+    scope: ['profile', 'email']
+  })(req, res, next);
+});
+
+router.get('/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  async (req: any, res) => {
+    try {
+      const user = req.user;
+      
+      // Calculate risk score for OAuth login
+      const riskScore = calculateRiskScore(req, user);
+      
+      // Create audit log for OAuth login
+      await storage.createAuditLog({
+        userId: user.id,
+        action: 'oauth_login_success',
+        resource: 'auth',
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent') || '',
+        riskScore,
+        success: true,
+        metadata: {
+          provider: 'google',
+          username: user.username,
+          email: user.email,
+          deviceFingerprint: generateDeviceFingerprint(req)
+        }
+      });
+      
+      // Generate JWT tokens for OAuth user
+      const tokenData = generateToken(user);
+      
+      // Update user activity
+      await storage.updateUser(user.id, {
+        lastActivity: new Date(),
+        lastKnownIp: req.ip,
+        riskScore
+      });
+      
+      // Create session for OAuth user
+      await storage.createSession({
+        sessionId: `oauth_${Date.now()}`,
+        userId: user.id,
+        deviceFingerprint: generateDeviceFingerprint(req),
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent') || '',
+        riskScore,
+        mfaVerified: true, // OAuth is considered MFA
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+      });
+      
+      // Redirect to frontend with tokens
+      const redirectUrl = `/?token=${tokenData.accessToken}&refresh=${tokenData.refreshToken}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      console.error('OAuth callback error:', error);
+      res.redirect('/login?error=oauth_failed');
+    }
+  }
+);
+
 // Logout endpoint
 router.post('/logout', async (req, res) => {
   try {
-    res.json({ message: 'Logout successful' });
+    req.logout(() => {
+      res.json({ message: 'Logout successful' });
+    });
   } catch (error) {
     console.error('Logout error:', error);
     res.status(500).json({

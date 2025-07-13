@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Card, CardBody, CardHeader, Input, Divider } from "@heroui/react";
 import { ArrowRight, Terminal, User, Lock, ArrowLeft } from "lucide-react";
+import { FaGoogle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
@@ -11,6 +12,30 @@ export default function LoginPage() {
     password: "",
     confirmPassword: ""
   });
+
+  // Check for OAuth tokens in URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const refreshToken = urlParams.get('refresh');
+    const error = urlParams.get('error');
+
+    if (error) {
+      alert('OAuth login failed. Please try again.');
+      return;
+    }
+
+    if (token && refreshToken) {
+      // Store OAuth tokens
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.removeItem('logout');
+      
+      // Clean URL and redirect
+      window.history.replaceState({}, document.title, window.location.pathname);
+      window.location.href = '/';
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,6 +89,25 @@ export default function LoginPage() {
     } catch (error) {
       console.error("Authentication error:", error);
       alert("Network error. Please try again.");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      // Check if Google OAuth is configured
+      const response = await fetch('/api/auth/google');
+      
+      if (response.status === 501) {
+        const data = await response.json();
+        alert('Google OAuth is not configured. Please use regular login or contact your administrator.');
+        return;
+      }
+      
+      // Redirect to Google OAuth
+      window.location.href = '/api/auth/google';
+    } catch (error) {
+      console.error('Google OAuth error:', error);
+      alert('Error accessing Google OAuth. Please try regular login.');
     }
   };
 
@@ -155,6 +199,20 @@ export default function LoginPage() {
                 {isLogin ? "SIGN IN" : "CREATE ACCOUNT"}
               </Button>
             </form>
+
+            <Divider className="my-6" />
+
+            {/* Google OAuth Button */}
+            <Button
+              size="lg"
+              variant="bordered"
+              className="w-full font-mono font-bold border-2 border-gray-300 hover:border-gray-400 text-gray-700 bg-white"
+              startContent={<FaGoogle className="text-red-500" size={18} />}
+              onClick={handleGoogleLogin}
+              style={{ minHeight: '48px' }}
+            >
+              CONTINUE WITH GOOGLE
+            </Button>
 
             <Divider className="my-6" />
 

@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import helmet from "helmet";
 import cors from "cors";
+import session from "express-session";
+import passport from "passport";
 import { storage } from "./storage";
 import { litellmService } from "./services/litellm";
 import { salesforceService } from "./services/salesforce";
@@ -42,6 +44,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
   }));
+
+  // Session configuration for OAuth
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'mobius-oauth-session-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
+
+  // Initialize passport
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   // Authentication routes (no auth required)
   app.use('/api/auth', authRoutes);
