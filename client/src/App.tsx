@@ -10,6 +10,7 @@ import Layout from "@/components/layout/Layout";
 import LandingPage from "@/pages/landing";
 import LoginPage from "./pages/login";
 import HomePage from "@/pages/home";
+import CollectionsPage from "@/pages/collections";
 import HistoryPage from "@/pages/history";
 import SettingsPage from "@/pages/settings";
 import HelpPage from "@/pages/help";
@@ -20,7 +21,9 @@ function AuthenticatedApp() {
     <Routes>
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/" element={<Layout />}>
-        <Route index element={<HomePage />} />
+        <Route index element={<CollectionsPage />} />
+        <Route path="collections" element={<CollectionsPage />} />
+        <Route path="chat" element={<HomePage />} />
         <Route path="history" element={<HistoryPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="help" element={<HelpPage />} />

@@ -1,0 +1,434 @@
+# **Mobius One MVP: Product Requirements Document**
+
+*Version 3.0 – Solo Founder Collection Acceleration Engine*
+
+-----
+
+## **Product Overview**
+
+### **Vision**
+
+Mobius One creates autonomous revenue optimization workflows that operate 24/7, starting with collection acceleration to prove AI can make trusted revenue decisions.
+
+### **Mission**
+
+Demonstrate that AI can autonomously accelerate collections and improve cash flow for SaaS companies, establishing the foundation for a complete autonomous revenue engine.
+
+### **MVP Scope**
+
+A single autonomous workflow that accelerates collections for overdue invoices by analyzing customer data across Salesforce and NetSuite, making intelligent outreach decisions with relationship preservation, and measuring revenue impact.
+
+-----
+
+## **Target Customer (MVP)**
+
+### **Primary: Sarah, CFO at $5-15M ARR SaaS Company**
+
+- **Pain**: Manual collections process, 54+ day DSO, $200K+ working capital tied up
+- **Need**: Automated, intelligent collections that preserve customer relationships
+- **Tech comfort**: Medium - comfortable with SaaS tools, wants measurable ROI
+- **Success metric**: Reduce DSO by 15+ days, free up $100K+ working capital
+
+### **Pilot Profile**
+
+- SaaS company with $5-15M ARR
+- Uses Salesforce + NetSuite specifically
+- 50+ day average DSO currently
+- 20+ overdue invoices monthly
+- Experiencing the “$5M ARR breaking point” where manual processes fail
+
+-----
+
+## **Core MVP Features**
+
+### **1. Collection Acceleration Engine**
+
+**Automated Overdue Detection**
+
+- Monitor NetSuite for invoices 30+ days overdue
+- Cross-reference with Salesforce account health data
+- Analyze customer usage patterns and support history
+- **NEW**: Relationship risk scoring before any action
+
+**AI-Powered Recommendations with Relationship Preservation**
+
+- Claude-driven analysis of collection probability
+- **Customer relationship risk assessment (0-100 score)**
+- Personalized outreach strategy with draft content
+- Confidence scoring for recommendation quality
+- **Adjustment of collection intensity based on customer lifetime value**
+
+**One-Click Approval Workflow**
+
+- **Simplified approval interface** (vs competitors’ complex processes)
+- Present AI recommendations for instant approval
+- Batch approval for high-confidence recommendations
+- Manual override and customization capabilities
+- **Target: <30 seconds per approval decision**
+
+### **2. Salesforce + NetSuite Integration (Required)**
+
+**Pre-Built SaaS Workflows**
+
+- **Out-of-box templates for common SaaS scenarios**
+- Real-time invoice status updates
+- Customer account matching across systems
+- Payment history and usage correlation
+- **No professional services required**
+
+**30-Day Implementation Guarantee**
+
+- Self-serve setup wizard
+- Intelligent defaults based on SaaS best practices
+- Automatic field mapping with override options
+- **Progress tracking: “You’re 75% done with setup”**
+
+### **3. Impact Measurement Dashboard**
+
+**Real-Time Cash Flow Impact**
+
+- **Live working capital freed counter**
+- Before/after DSO calculations with trend lines
+- Collection velocity improvements by customer segment
+- **Competitive comparison: “18x faster than enterprise tools”**
+
+**Success Attribution**
+
+- Every AI decision with confidence scores
+- Action outcomes and customer responses
+- Revenue attribution to Mobius actions
+- **Relationship preservation metrics**
+
+**ROI Calculator**
+
+- Built-in tool showing:
+  - (DSO improvement × monthly revenue) × 12
+  - Working capital freed calculation
+  - **Direct comparison to 18-month enterprise implementations**
+  - Case study generator for pilot success stories
+
+### **4. Administration & Onboarding**
+
+**30-Day Quick Start**
+
+- Day 1: Connect Salesforce + NetSuite
+- Day 7: First AI recommendations ready
+- Day 14: Baseline DSO established
+- Day 30: First impact measurements
+
+**Simple Configuration**
+
+- Collection timing rules (30, 45, 60 days)
+- Email template customization with AI suggestions
+- Escalation thresholds by customer value
+- **Relationship preservation settings**
+
+-----
+
+## **Technical Architecture (Solo-Friendly)**
+
+### **Core Stack**
+
+- **Frontend/Backend**: Next.js 14 + TypeScript
+- **Database**: PostgreSQL (Supabase managed)
+- **Hosting**: Vercel (zero DevOps)
+- **AI**: Claude via Anthropic API
+- **Integrations**: REST APIs + webhooks
+
+### **System Design**
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   Admin UI      │────▶│   Next.js API    │────▶│   Supabase DB   │
+│  (Dashboard)    │     │   (Orchestrator) │     │  (Audit Trail)  │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+                                │                          
+                                ▼                          
+                        ┌──────────────┐          ┌───────────────┐
+                        │   Claude API │          │  Salesforce   │
+                        │  (Decisions) │          │  + NetSuite   │
+                        └──────────────┘          └───────────────┘
+```
+
+### **Key Components**
+
+**Data Layer**
+
+- Customer accounts with relationship scores
+- Invoice tracking with payment velocity
+- Decision history and relationship outcomes
+- Configuration and rules storage
+
+**AI Orchestration**
+
+- Scheduled job processing (every 6 hours)
+- Claude API integration for decision-making
+- **Relationship risk assessment before actions**
+- Action execution and result tracking
+
+**Integration Layer**
+
+- Salesforce REST API for CRM data
+- NetSuite RESTlets for invoice management
+- SendGrid for email automation
+- **Pre-built connectors, no custom code**
+
+-----
+
+## **MVP User Stories**
+
+### **As a CFO, I want to:**
+
+- See my current DSO and collections performance
+- **Compare my metrics to industry benchmarks (54-day average)**
+- Know which overdue invoices Mobius is handling
+- Measure the working capital impact of faster collections
+- **Trust that AI won’t damage customer relationships**
+- **See ROI within 30 days, not 18 months**
+
+### **As an AR Manager, I want to:**
+
+- **Approve recommendations in <30 seconds**
+- Receive AI-drafted collection emails for quick approval
+- See why AI recommended specific actions with supporting data
+- **View relationship risk scores before approving**
+- Track which recommendations lead to fastest payments
+- Override AI recommendations when my judgment differs
+- **Never have aggressive collections damage a key account**
+
+### **As a Customer Success Manager, I want to:**
+
+- **Get alerts when collections might affect my accounts**
+- Know when collections actions might affect my accounts
+- See customer health data influencing collection decisions
+- **Ensure collections preserve expansion opportunities**
+
+-----
+
+## **MVP Workflow Detail**
+
+### **Core Collection Workflow**
+
+**Trigger Conditions**:
+
+- Invoice 30+ days overdue
+- Customer account in good standing (not churning)
+- No recent support escalations
+- Previous payment history available
+- **Relationship score above minimum threshold**
+
+**AI Decision Process**:
+
+1. **Data Analysis**: Payment history, account health, usage patterns
+1. **Relationship Risk Assessment**:
+- Customer lifetime value calculation
+- Churn probability scoring
+- Expansion opportunity assessment
+- Support ticket sentiment analysis
+1. **Strategy Selection**:
+- Gentle reminder (relationship score 80+)
+- Standard notice (relationship score 50-79)
+- Urgent escalation (relationship score <50)
+1. **Draft Generation**: Complete email content with personalization
+1. **Confidence Scoring**: 0-100% confidence in recommended action
+
+**One-Click Approval Workflow**:
+
+- **High Confidence (90%+)**: Green button, pre-filled email ready
+- **Medium Confidence (70-89%)**: Yellow button, suggested edits highlighted
+- **Low Confidence (<70%)**: Red flag, requires manual review
+- **Batch mode**: Approve all high-confidence with single click
+
+**Outcome Tracking**:
+
+- Payment received within 7/14/30 days post-approval
+- **Relationship impact score (renewal probability change)**
+- Customer response sentiment analysis
+- Time saved vs manual collections process
+- Overall DSO improvement attribution
+- **Zero relationship incidents target**
+
+-----
+
+## **Success Metrics (3-Month MVP)**
+
+### **Product Metrics**
+
+- **Implementation time**: <30 days average (vs 18 months)
+- **Collection velocity**: 15+ day DSO improvement from 54-day baseline
+- **Approval speed**: 90% of decisions in <30 seconds
+- **Relationship preservation**: 0 customer complaints/escalations
+- **Recommendation quality**: 85%+ AI recommendations approved without edit
+
+### **Business Metrics**
+
+- **Revenue impact**: $50K+ working capital freed per customer
+- **Process efficiency**: 40+ hours saved monthly per AR manager
+- **Customer adoption**: 3-5 pilot customers using daily
+- **30-day value**: Measurable DSO improvement within first month
+- **ROI demonstration**: 10x+ return on Mobius cost
+
+### **Technical Metrics**
+
+- **Uptime**: 99%+ system availability
+- **Processing speed**: <30 seconds per decision
+- **Integration reliability**: <1% API error rate
+- **Setup time**: <4 hours from signup to first recommendation
+
+-----
+
+## **Development Phases**
+
+### **Phase 1: Foundation (Weeks 1-4)**
+
+- Salesforce + NetSuite API integrations
+- **Pre-built field mappings for SaaS companies**
+- Basic data synchronization
+- Simple overdue invoice detection
+- **Relationship scoring algorithm v1**
+
+**Success Criteria**: Can identify overdue invoices with customer context and relationship risk
+
+### **Phase 2: AI Recommendation Engine (Weeks 5-8)**
+
+- Claude API integration with relationship preservation
+- **One-click approval interface**
+- Recommendation generation with draft content
+- Action execution upon approval
+- **Real-time impact tracking**
+
+**Success Criteria**: AI generates relationship-aware recommendations that humans approve in <30 seconds
+
+### **Phase 3: Impact Measurement (Weeks 9-12)**
+
+- **Live cash flow impact dashboard**
+- DSO calculation and tracking
+- **Competitive positioning metrics**
+- Customer onboarding flow (<30 minutes)
+- Pilot customer deployment
+
+**Success Criteria**: 3 pilot customers showing measurable DSO improvement within 30 days
+
+-----
+
+## **Technical Requirements**
+
+### **MVP Infrastructure**
+
+- **Database**: Handle 10K+ invoices, 1K+ customers
+- **API limits**: 1000+ calls/day to Salesforce, NetSuite
+- **Email volume**: 100+ automated emails/day
+- **Response time**: <2 seconds for dashboard loads
+- **Setup time**: <4 hours end-to-end
+
+### **Security & Compliance**
+
+- OAuth 2.0 for Salesforce integration
+- API key management for NetSuite
+- Data encryption in transit and at rest
+- GDPR-compliant data handling
+- **SOC 2 Type I within 6 months**
+
+### **Integration Requirements**
+
+- **Salesforce**: Accounts, Opportunities, Contacts, Activities, Custom Objects
+- **NetSuite**: Customers, Invoices, Payments, Credit memos
+- **Email**: SendGrid for automated outreach
+- **Webhooks**: Real-time invoice and payment updates
+- **No middleware required**: Direct API connections
+
+-----
+
+## **Risk Mitigation**
+
+### **Technical Risks**
+
+✓ **AI accuracy**: Start with high-confidence decisions only, human review for edge cases
+✓ **API reliability**: Implement retry logic, graceful degradation, offline processing
+✓ **Data sync**: Regular reconciliation jobs, conflict resolution, audit trails
+
+### **Business Risks**
+
+✓ **Customer relationship damage**: Conservative AI prompts, relationship risk scoring, easy override
+✓ **Limited impact**: Focus on high-value invoices first, measure incrementally
+✓ **Pilot customer churn**: Daily check-ins, immediate issue resolution, value demonstration
+
+### **Solo Founder Risks**
+
+✓ **Technical complexity**: Use managed services, focus on business logic only
+✓ **Customer support load**: Automated monitoring, proactive communication, clear escalation
+✓ **Development velocity**: Time-box features, ship frequently, validate continuously
+
+-----
+
+## **Pilot Customer Requirements**
+
+### **Ideal Pilot Profile**
+
+- SaaS company with $5-15M ARR
+- **Currently experiencing the “$5M ARR breaking point”**
+- Salesforce + NetSuite users (required)
+- 50+ day DSO currently
+- Finance team willing to test and provide feedback
+- 20+ overdue invoices monthly for testing
+
+### **Pilot Success Criteria**
+
+- **30-day implementation completed**
+- 15+ day DSO improvement within 60 days
+- 90%+ AI recommendations approved by AR team
+- **Zero customer relationship incidents**
+- 50%+ time savings in collections process
+- Customer willing to provide case study/reference
+
+-----
+
+## **Post-MVP Roadmap**
+
+### **Immediate Next Features (Months 4-6)**
+
+- **Churn Prevention Engine**: Second autonomous workflow
+- **HubSpot integration**: Expand beyond Salesforce
+- **Advanced email sequences**: Multi-touch collection campaigns
+- **Mobile notifications**: Real-time alerts for finance teams
+
+### **Scale Features (Months 7-12)**
+
+- **Expansion Opportunity Engine**: Third autonomous workflow
+- **Multi-tenant architecture**: Support 10+ customers simultaneously
+- **Advanced analytics**: Cohort analysis, benchmarking
+- **Pricing Optimization Engine**: Complete revenue engine suite
+
+-----
+
+## **Launch Strategy**
+
+### **Pilot Phase (Months 1-3)**
+
+- Direct outreach to finance leaders at companies hitting $5M ARR
+- **“From signup to value in 30 days” guarantee**
+- Daily feedback sessions and rapid iteration
+- Document case studies and ROI calculations
+
+### **Early Adoption (Months 4-6)**
+
+- Product Hunt launch with pilot customer testimonials
+- **“18x faster than enterprise tools” messaging**
+- Finance leader referral program
+- Basic self-service onboarding
+
+-----
+
+## **Why This MVP Wins**
+
+1. **30-day implementation**: While competitors take 18 months
+1. **Relationship preservation**: AI that protects customer lifetime value
+1. **Measurable impact**: Clear DSO improvement and working capital benefits
+1. **Solo-buildable**: Focused scope with proven technologies
+1. **Market timing**: Captures companies at the $5M ARR breaking point
+
+**Success means**: 3-5 pilot customers with documented DSO improvements from 54 to <40 days, zero relationship damage, and 90%+ approval rates on AI recommendations within 30 days of implementation.
+
+-----
+
+*“We’re not replacing collections teams. We’re giving them AI superpowers that work in 30 days, not 18 months, while protecting the relationships that drive recurring revenue.”*

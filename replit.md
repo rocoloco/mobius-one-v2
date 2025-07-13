@@ -1,8 +1,10 @@
-# Business AI Assistant
+# Mobius One - Collections Acceleration Engine
 
 ## Overview
 
-This is a full-stack business AI assistant application that integrates with Salesforce CRM and NetSuite ERP systems. The application provides a chat interface where users can interact with an AI assistant to query and analyze business data from these integrated systems.
+Mobius One is an autonomous revenue optimization platform that starts with collection acceleration to prove AI can make trusted revenue decisions. The MVP focuses on a single autonomous workflow that accelerates collections for overdue invoices by analyzing customer data across Salesforce and NetSuite, making intelligent outreach decisions with relationship preservation, and measuring revenue impact.
+
+**Target Customer**: CFOs at $5-15M ARR SaaS companies with 50+ day DSO looking to free up $100K+ working capital through automated, intelligent collections that preserve customer relationships.
 
 ## System Architecture
 

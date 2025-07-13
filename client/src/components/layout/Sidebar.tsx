@@ -17,7 +17,9 @@ import {
   Terminal,
   Zap,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  DollarSign,
+  MessageSquare
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -44,7 +46,8 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "" 
   });
 
   const navigationItems = [
-    { path: '/', label: 'Home', icon: Home },
+    { path: '/', label: 'Collections', icon: DollarSign },
+    { path: '/chat', label: 'Chat', icon: MessageSquare },
     { path: '/history', label: 'History', icon: History },
     { path: '/settings', label: 'Settings', icon: Settings },
     { path: '/help', label: 'Help', icon: HelpCircle }
