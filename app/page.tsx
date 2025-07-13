@@ -8,9 +8,7 @@ import {
   DollarSign, 
   Clock, 
   AlertTriangle,
-  CheckCircle,
-  Brain,
-  Users
+  CheckCircle
 } from 'lucide-react'
 
 export default function CollectionDashboard() {
@@ -62,29 +60,11 @@ export default function CollectionDashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="border-b bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <Brain className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Mobius One
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Chip color="success" variant="flat">
-                <CheckCircle className="h-4 w-4 mr-1" />
-                AI Active
-              </Chip>
-            </div>
-          </div>
-        </div>
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-400">Collection performance overview and key metrics</p>
       </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="collection-metric">
@@ -263,7 +243,6 @@ export default function CollectionDashboard() {
             </CardBody>
           </Card>
         </div>
-      </div>
     </div>
   )
 }

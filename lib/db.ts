@@ -1,10 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema/collections';
-import { config } from 'dotenv';
-
-// Load environment variables
-config();
+// Environment variables are automatically loaded by Next.js
 
 const connectionString = process.env.DATABASE_URL!;
 
