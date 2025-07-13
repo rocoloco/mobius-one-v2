@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Clock, DollarSign, Target, CheckCircle, AlertTriangle, TrendingUp } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 interface Invoice {
   id: number;
@@ -26,62 +28,83 @@ interface CollectionMetrics {
 
 export default function CollectionsPage() {
   const [selectedInvoices, setSelectedInvoices] = useState<number[]>([]);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  // Mock data for demonstration - will be replaced with real API calls
-  const mockMetrics: CollectionMetrics = {
-    currentDso: 54,
-    targetDso: 38,
-    workingCapitalFreed: 127000,
-    totalOverdue: 342000,
-    pendingActions: 12,
-    approvalRate: 94,
-    relationshipScore: 87
-  };
+  // Fetch metrics from API
+  const { data: metrics, isLoading: metricsLoading } = useQuery({
+    queryKey: ['/api/collections/metrics'],
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-  const mockInvoices: Invoice[] = [
-    {
-      id: 1,
-      invoiceNumber: 'INV-2024-001',
-      customer: 'Acme Corp',
-      amount: 15000,
-      daysPastDue: 45,
-      relationshipScore: 82,
-      aiRecommendation: 'Send gentle reminder with payment plan options',
-      recommendationConfidence: 94,
-      approvalStatus: 'pending'
+  // Fetch overdue invoices from API
+  const { data: invoices, isLoading: invoicesLoading } = useQuery({
+    queryKey: ['/api/collections/overdue-invoices'],
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+
+  // Approve single invoice mutation
+  const approveMutation = useMutation({
+    mutationFn: async (invoiceId: number) => {
+      return await apiRequest(`/api/collections/approve/${invoiceId}`, {
+        method: 'POST',
+      });
     },
-    {
-      id: 2,
-      invoiceNumber: 'INV-2024-002', 
-      customer: 'TechFlow Solutions',
-      amount: 8500,
-      daysPastDue: 32,
-      relationshipScore: 91,
-      aiRecommendation: 'Schedule follow-up call with account manager',
-      recommendationConfidence: 87,
-      approvalStatus: 'pending'
+    onSuccess: (data, invoiceId) => {
+      toast({
+        title: 'Collection Action Approved',
+        description: `Invoice ${invoiceId} has been approved for collection.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/collections/overdue-invoices'] });
     },
-    {
-      id: 3,
-      invoiceNumber: 'INV-2024-003',
-      customer: 'StartupXYZ',
-      amount: 22000,
-      daysPastDue: 62,
-      relationshipScore: 65,
-      aiRecommendation: 'Escalate to finance team with payment deadline',
-      recommendationConfidence: 78,
-      approvalStatus: 'pending'
-    }
-  ];
+    onError: (error) => {
+      toast({
+        title: 'Approval Failed',
+        description: 'Failed to approve collection action. Please try again.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Bulk approve mutation
+  const bulkApproveMutation = useMutation({
+    mutationFn: async (invoiceIds: number[]) => {
+      return await apiRequest('/api/collections/bulk-approve', {
+        method: 'POST',
+        body: JSON.stringify({ invoiceIds }),
+      });
+    },
+    onSuccess: (data, invoiceIds) => {
+      toast({
+        title: 'Bulk Approval Successful',
+        description: `${invoiceIds.length} collection actions have been approved.`,
+      });
+      setSelectedInvoices([]);
+      queryClient.invalidateQueries({ queryKey: ['/api/collections/overdue-invoices'] });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Bulk Approval Failed',
+        description: 'Failed to approve collection actions. Please try again.',
+        variant: 'destructive',
+      });
+    },
+  });
 
   const handleApproveAction = (invoiceId: number) => {
-    // Handle approval logic
-    console.log('Approving action for invoice:', invoiceId);
+    approveMutation.mutate(invoiceId);
   };
 
   const handleBulkApprove = () => {
-    // Handle bulk approval
-    console.log('Bulk approving invoices:', selectedInvoices);
+    if (selectedInvoices.length === 0) {
+      toast({
+        title: 'No Items Selected',
+        description: 'Please select at least one invoice to approve.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    bulkApproveMutation.mutate(selectedInvoices);
   };
 
   const getConfidenceColor = (confidence: number) => {
@@ -140,10 +163,10 @@ export default function CollectionsPage() {
               </span>
             </div>
             <div style={{ fontSize: '24px', fontWeight: '700', color: '#061A40' }}>
-              {mockMetrics.currentDso} days
+              {metricsLoading ? 'Loading...' : `${metrics?.currentDso || 0} days`}
             </div>
             <div style={{ fontSize: '12px', color: '#6B7280' }}>
-              Target: {mockMetrics.targetDso} days
+              Target: {metrics?.targetDso || 0} days
             </div>
           </div>
 
@@ -161,7 +184,7 @@ export default function CollectionsPage() {
               </span>
             </div>
             <div style={{ fontSize: '24px', fontWeight: '700', color: '#048BA8' }}>
-              ${mockMetrics.workingCapitalFreed.toLocaleString()}
+              {metricsLoading ? 'Loading...' : `$${(metrics?.workingCapitalFreed || 0).toLocaleString()}`}
             </div>
             <div style={{ fontSize: '12px', color: '#6B7280' }}>
               This quarter
@@ -182,7 +205,7 @@ export default function CollectionsPage() {
               </span>
             </div>
             <div style={{ fontSize: '24px', fontWeight: '700', color: '#061A40' }}>
-              {mockMetrics.approvalRate}%
+              {metricsLoading ? 'Loading...' : `${metrics?.approvalRate || 0}%`}
             </div>
             <div style={{ fontSize: '12px', color: '#6B7280' }}>
               AI recommendations
@@ -203,7 +226,7 @@ export default function CollectionsPage() {
               </span>
             </div>
             <div style={{ fontSize: '24px', fontWeight: '700', color: '#061A40' }}>
-              {mockMetrics.relationshipScore}/100
+              {metricsLoading ? 'Loading...' : `${metrics?.relationshipScore || 0}/100`}
             </div>
             <div style={{ fontSize: '12px', color: '#6B7280' }}>
               Preservation rate
@@ -250,7 +273,12 @@ export default function CollectionsPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {mockInvoices.map((invoice) => (
+            {invoicesLoading ? (
+              <div style={{ padding: '40px', textAlign: 'center', color: '#6B7280' }}>
+                Loading invoices...
+              </div>
+            ) : (
+              (invoices || []).map((invoice: any) => (
               <div key={invoice.id} style={{
                 border: '1px solid #E2E8F0',
                 borderRadius: '8px',
@@ -350,7 +378,8 @@ export default function CollectionsPage() {
                   </button>
                 </div>
               </div>
-            ))}
+            ))
+            )}
           </div>
         </div>
       </div>
