@@ -14,43 +14,21 @@ import { z } from "zod";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  username: varchar("username", { length: 50 }).unique().notNull(),
-  name: varchar("name", { length: 100 }),
+  username: text("username").unique().notNull(),
+  password: text("password").notNull(),
+  name: text("name"),
+  role: text("role").default("user"),
+  initials: text("initials").notNull(),
   email: varchar("email", { length: 255 }),
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
-  
-  // Business fields
-  role: varchar("role", { length: 20 }).default("user"),
   companyName: varchar("company_name", { length: 100 }),
-  arrAmount: decimal("arr_amount", { precision: 12, scale: 2 }),
-  currentDso: integer("current_dso"),
-  
-  // Zero Trust Security Fields
-  lastActivity: timestamp("last_activity"),
-  lastKnownIp: varchar("last_known_ip", { length: 45 }),
-  knownDevices: jsonb("known_devices").default([]),
+  permissions: text("permissions").array().default(["read", "write"]),
+  roles: text("roles").array().default(["user"]),
   failedLoginAttempts: integer("failed_login_attempts").default(0),
   accountLocked: boolean("account_locked").default(false),
   lockoutUntil: timestamp("lockout_until"),
-  
-  // Role-based Access Control
-  permissions: jsonb("permissions").default(["read", "write"]),
-  roles: jsonb("roles").default(["user"]),
-  
-  // Multi-factor Authentication
-  mfaEnabled: boolean("mfa_enabled").default(false),
-  mfaSecret: varchar("mfa_secret", { length: 255 }),
-  backupCodes: jsonb("backup_codes").default([]),
-  
-  // Audit and Compliance
-  dataClassification: varchar("data_classification", { length: 50 }).default("internal"),
-  consentVersion: varchar("consent_version", { length: 50 }),
-  consentDate: timestamp("consent_date"),
-  
-  // Security Metadata
-  securityFlags: jsonb("security_flags").default({}),
+  lastActivity: timestamp("last_activity"),
   riskScore: integer("risk_score").default(0),
-  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -185,13 +163,18 @@ export const securityAlerts = pgTable("security_alerts", {
 // Insert schemas for validation
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
+  password: true,
   name: true,
+  initials: true,
   email: true,
   passwordHash: true,
   role: true,
   companyName: true,
-  arrAmount: true,
-  currentDso: true,
+  permissions: true,
+  roles: true,
+  failedLoginAttempts: true,
+  accountLocked: true,
+  riskScore: true,
 });
 
 export const insertSessionSchema = createInsertSchema(sessions).pick({
