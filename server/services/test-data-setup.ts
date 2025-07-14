@@ -1,6 +1,26 @@
-import { SaaSDataGenerator } from './saas-data-generator';
-import { ScoringService } from './scoring-service';
+import { ScoringService } from './scoringService';
 import { Customer, Invoice } from '@shared/schema';
+
+// Simple data generator for testing
+class SaaSDataGenerator {
+  generateCustomer(): Customer {
+    return {
+      id: `test-customer-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: 'Test Customer',
+      email: 'test@example.com',
+      phone: '555-0123',
+      createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString()
+    };
+  }
+
+  generateTestDataset(count: number) {
+    const customers = [];
+    for (let i = 0; i < count; i++) {
+      customers.push(this.generateCustomer());
+    }
+    return { customers };
+  }
+}
 
 interface TestScenario {
   name: string;
