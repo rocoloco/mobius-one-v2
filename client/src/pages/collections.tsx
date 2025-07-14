@@ -143,7 +143,7 @@ export default function CollectionsPage() {
     
     if (availableInvoices.length === 0) {
       console.log('No new invoices to process, redirecting to empty queue');
-      window.location.href = '/empty-queue';
+      navigate('/empty-queue');
       return;
     }
     
@@ -235,7 +235,7 @@ export default function CollectionsPage() {
             clearInterval(timer);
             // Clear current session progress but keep processed invoices
             localStorage.removeItem('collectionsProgress');
-            window.location.href = '/empty-queue';
+            navigate('/empty-queue');
             return 0;
           }
           return prev - 1;
