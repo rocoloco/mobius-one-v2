@@ -47,14 +47,16 @@ function PublicApp() {
 
 function AppRouter() {
   const isLoggedOut = localStorage.getItem('logout') === 'true';
+  const hasAuthToken = localStorage.getItem('authToken');
   
   const { data: user, isLoading } = useQuery({
     queryKey: ['/api/user'],
     retry: false,
-    enabled: !isLoggedOut
+    enabled: !isLoggedOut && !!hasAuthToken
   });
 
-  if (isLoggedOut) {
+  // If explicitly logged out or no auth token, show public app
+  if (isLoggedOut || !hasAuthToken) {
     return <PublicApp />;
   }
 

@@ -39,16 +39,18 @@ export default function LoginPage() {
         localStorage.setItem('refreshToken', data.refreshToken);
       }
       
+      // Clear logout flag and invalidate queries
       localStorage.removeItem('logout');
       queryClient.invalidateQueries({ queryKey: ['/api/user'] });
       
-      // Show success message
+      // Force a page reload to ensure app state is reset properly
       if (isSignUp) {
         setError(""); // Clear any previous errors
-        // You could show a success toast here instead
-        setTimeout(() => navigate('/collections'), 100);
+        setTimeout(() => {
+          window.location.href = '/collections';
+        }, 100);
       } else {
-        navigate('/collections');
+        window.location.href = '/collections';
       }
     },
     onError: (error: Error) => {
