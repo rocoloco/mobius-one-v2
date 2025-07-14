@@ -43,6 +43,13 @@ export default function CollectionsPage() {
     remainingQueue: 8
   });
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [showInlineEditor, setShowInlineEditor] = useState(false);
+  const [editorContent, setEditorContent] = useState('');
+  const [processed, setProcessed] = useState<Invoice[]>([]);
+  const [skipped, setSkipped] = useState<Invoice[]>([]);
+  const [queue, setQueue] = useState<Invoice[]>([]);
+  const [isQueueComplete, setIsQueueComplete] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -63,6 +70,19 @@ export default function CollectionsPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isProfileDropdownOpen]);
+
+  // Initialize queue with mock data
+  useEffect(() => {
+    setQueue(invoices);
+  }, []);
+
+  // Update metrics when queue changes
+  useEffect(() => {
+    setMetrics(prev => ({
+      ...prev,
+      remainingQueue: queue.length - processed.length - skipped.length
+    }));
+  }, [queue, processed, skipped]);
 
   // Mock data for demonstration - in real app this would come from API
   const invoices: Invoice[] = [
@@ -116,53 +136,102 @@ export default function CollectionsPage() {
     }
   ];
 
-  const currentInvoice = invoices[currentIndex];
+  const currentInvoice = queue[currentIndex];
+
+  const moveToNext = () => {
+    if (currentIndex >= queue.length - 1) {
+      // Navigate to celebration
+      setIsQueueComplete(true);
+    } else {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
 
   const updateMetrics = (action: 'send' | 'write' | 'skip') => {
     setIsAnimating(true);
 
-    if (action === 'send') {
+    if (action === 'send' || action === 'write') {
       setMetrics(prev => ({
         ...prev,
         revenueAccelerated: prev.revenueAccelerated + currentInvoice.amount,
-        timeSaved: prev.timeSaved + 2.5,
-        remainingQueue: prev.remainingQueue - 1
-      }));
-    } else if (action === 'write') {
-      setMetrics(prev => ({
-        ...prev,
-        revenueAccelerated: prev.revenueAccelerated + currentInvoice.amount,
-        timeSaved: prev.timeSaved + 1.5,
-        remainingQueue: prev.remainingQueue - 1
-      }));
-    } else {
-      setMetrics(prev => ({
-        ...prev,
-        remainingQueue: prev.remainingQueue - 1
+        timeSaved: prev.timeSaved + (action === 'send' ? 2.5 : 1.5),
+        relationshipsProtected: prev.relationshipsProtected + 1,
+        aiLearningProgress: Math.min(prev.aiLearningProgress + 2, 100)
       }));
     }
 
     setTimeout(() => setIsAnimating(false), 500);
   };
 
-  const handleAction = (action: 'send' | 'write' | 'skip') => {
-    updateMetrics(action);
-    setIsMobileMenuOpen(false); // Close mobile menu if open
+  const handleSend = () => {
+    if (!currentInvoice) return;
+    
+    setProcessed([...processed, currentInvoice]);
+    updateMetrics('send');
+    setShowSuccessAnimation(true);
+    setIsMobileMenuOpen(false);
 
     setTimeout(() => {
-      setCurrentIndex(prev => (prev + 1) % invoices.length);
-    }, 300);
-
-    const actionMessages = {
-      send: 'AI message sent successfully!',
-      write: 'Custom message template opened',
-      skip: 'Invoice skipped for later review'
-    };
+      setShowSuccessAnimation(false);
+      moveToNext();
+    }, 1000);
 
     toast({
-      title: actionMessages[action],
+      title: 'AI message sent successfully!',
       description: `${currentInvoice.customer} - $${currentInvoice.amount.toLocaleString()}`,
     });
+  };
+
+  const handleWrite = () => {
+    if (!currentInvoice) return;
+    
+    setEditorContent(currentInvoice.aiMessage);
+    setShowInlineEditor(true);
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleWriteSubmit = () => {
+    if (!currentInvoice) return;
+    
+    setProcessed([...processed, currentInvoice]);
+    updateMetrics('write');
+    setShowSuccessAnimation(true);
+    setShowInlineEditor(false);
+
+    setTimeout(() => {
+      setShowSuccessAnimation(false);
+      moveToNext();
+    }, 1000);
+
+    toast({
+      title: 'Custom message sent successfully!',
+      description: `${currentInvoice.customer} - $${currentInvoice.amount.toLocaleString()}`,
+    });
+  };
+
+  const handleWriteCancel = () => {
+    setShowInlineEditor(false);
+    setEditorContent('');
+  };
+
+  const handleSkip = () => {
+    if (!currentInvoice) return;
+    
+    setSkipped([...skipped, currentInvoice]);
+    setIsMobileMenuOpen(false);
+    
+    setTimeout(() => {
+      moveToNext();
+    }, 300);
+
+    toast({
+      title: 'Invoice skipped for later review',
+      description: `${currentInvoice.customer} - $${currentInvoice.amount.toLocaleString()}`,
+    });
+  };
+
+  const handleDoneForToday = () => {
+    setIsQueueComplete(true);
   };
 
   const getRiskColor = (risk: string) => {
@@ -323,15 +392,89 @@ export default function CollectionsPage() {
     </div>
   );
 
-  if (!currentInvoice) {
+  const getCelebrationMessage = () => {
+    const totalItems = queue.length;
+    const processedCount = processed.length;
+    const skippedCount = skipped.length;
+    const completionRate = totalItems > 0 ? (processedCount / totalItems) * 100 : 0;
+
+    if (completionRate === 100) {
+      return {
+        title: "Perfect Day! 🎉",
+        message: "You've processed every invoice in your queue.",
+        subtitle: "Outstanding work maintaining those customer relationships!"
+      };
+    } else if (completionRate >= 80) {
+      return {
+        title: "Great Progress! 👏",
+        message: `You've processed ${processedCount} of ${totalItems} invoices.`,
+        subtitle: `${skippedCount} items were skipped for later review.`
+      };
+    } else {
+      return {
+        title: "See You Later! 👋",
+        message: `You've processed ${processedCount} of ${totalItems} invoices.`,
+        subtitle: "You can continue where you left off anytime."
+      };
+    }
+  };
+
+  if (!currentInvoice || isQueueComplete) {
+    const celebration = getCelebrationMessage();
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-white" />
+        <div className="text-center max-w-md mx-auto p-8">
+          <div className="w-20 h-20 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-10 h-10 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">All Done!</h2>
-          <p className="text-gray-600">You've processed all invoices in your queue.</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">{celebration.title}</h2>
+          <p className="text-lg text-gray-700 mb-2">{celebration.message}</p>
+          <p className="text-gray-600 mb-8">{celebration.subtitle}</p>
+          
+          <div className="bg-white rounded-lg p-6 shadow-lg mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Impact</h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{processed.length}</div>
+                <div className="text-gray-600">Processed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">
+                  {formatCurrency(processed.reduce((sum, invoice) => sum + invoice.amount, 0))}
+                </div>
+                <div className="text-gray-600">Revenue</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-yellow-600">{skipped.length}</div>
+                <div className="text-gray-600">Skipped</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">{metrics.timeSaved.toFixed(1)}h</div>
+                <div className="text-gray-600">Time Saved</div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <button
+              onClick={() => {
+                setCurrentIndex(0);
+                setProcessed([]);
+                setSkipped([]);
+                setIsQueueComplete(false);
+              }}
+              className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+            >
+              Start Another Session
+            </button>
+            <button
+              onClick={() => window.location.href = '/'}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+            >
+              Return to Home
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -397,45 +540,106 @@ export default function CollectionsPage() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="space-y-3">
-                  <button
-                    onClick={() => handleAction('send')}
-                    className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 transform hover:scale-105"
-                  >
-                    <ArrowRight className="w-5 h-5" />
-                    Send This Message
-                  </button>
-
-                  <button
-                    onClick={() => handleAction('write')}
-                    className="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-4 px-6 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-3"
-                  >
-                    I'll Write My Own
-                  </button>
-
-                  <div className="text-center pt-2">
+                {!showInlineEditor ? (
+                  <div className="space-y-3">
                     <button
-                      onClick={() => handleAction('skip')}
-                      className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors duration-200"
+                      onClick={handleSend}
+                      className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 transform hover:scale-105"
                     >
-                      Skip for now
+                      {showSuccessAnimation ? (
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <ArrowRight className="w-5 h-5" />
+                      )}
+                      Send This Message
                     </button>
+
+                    <button
+                      onClick={handleWrite}
+                      className="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-4 px-6 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-3"
+                    >
+                      I'll Write My Own
+                    </button>
+
+                    <div className="text-center pt-2 space-y-2">
+                      <button
+                        onClick={handleSkip}
+                        className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors duration-200 block"
+                      >
+                        Skip for now
+                      </button>
+                      <button
+                        onClick={handleDoneForToday}
+                        className="text-gray-400 hover:text-gray-600 text-xs font-medium transition-colors duration-200 block"
+                      >
+                        I'm done for now
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Edit your message:
+                      </label>
+                      <textarea
+                        value={editorContent}
+                        onChange={(e) => setEditorContent(e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        rows={4}
+                        placeholder="Write your custom message..."
+                      />
+                    </div>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleWriteSubmit}
+                        className="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                        Send
+                      </button>
+                      <button
+                        onClick={handleWriteCancel}
+                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Progress Indicator */}
-            <div className="mt-6 flex items-center justify-center">
-              <div className="flex gap-2">
-                {invoices.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                      index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
+            <div className="mt-6 space-y-3">
+              <div className="text-center">
+                <span className="text-sm text-gray-600">
+                  {Math.max(0, queue.length - processed.length - skipped.length)} of {queue.length} remaining
+                </span>
+              </div>
+              <div className="flex items-center justify-center">
+                <div className="flex gap-2">
+                  {queue.map((_, index) => {
+                    const isProcessed = processed.some(p => p.id === queue[index]?.id);
+                    const isSkipped = skipped.some(s => s.id === queue[index]?.id);
+                    const isCurrent = index === currentIndex;
+                    
+                    return (
+                      <div
+                        key={index}
+                        className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                          isProcessed 
+                            ? 'bg-green-500' 
+                            : isSkipped 
+                              ? 'bg-yellow-500' 
+                              : isCurrent 
+                                ? 'bg-blue-600' 
+                                : 'bg-gray-300'
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
@@ -515,45 +719,106 @@ export default function CollectionsPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="space-y-3">
-                <button
-                  onClick={() => handleAction('send')}
-                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
-                >
-                  <ArrowRight className="w-5 h-5" />
-                  Send This Message
-                </button>
-
-                <button
-                  onClick={() => handleAction('write')}
-                  className="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-3"
-                >
-                  I'll Write My Own
-                </button>
-
-                <div className="text-center pt-2">
+              {!showInlineEditor ? (
+                <div className="space-y-3">
                   <button
-                    onClick={() => handleAction('skip')}
-                    className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors duration-200"
+                    onClick={handleSend}
+                    className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
                   >
-                    Skip for now
+                    {showSuccessAnimation ? (
+                      <CheckCircle className="w-5 h-5 text-green-400" />
+                    ) : (
+                      <ArrowRight className="w-5 h-5" />
+                    )}
+                    Send This Message
                   </button>
+
+                  <button
+                    onClick={handleWrite}
+                    className="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-3"
+                  >
+                    I'll Write My Own
+                  </button>
+
+                  <div className="text-center pt-2 space-y-2">
+                    <button
+                      onClick={handleSkip}
+                      className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors duration-200 block"
+                    >
+                      Skip for now
+                    </button>
+                    <button
+                      onClick={handleDoneForToday}
+                      className="text-gray-400 hover:text-gray-600 text-xs font-medium transition-colors duration-200 block"
+                    >
+                      I'm done for now
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Edit your message:
+                    </label>
+                    <textarea
+                      value={editorContent}
+                      onChange={(e) => setEditorContent(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      rows={4}
+                      placeholder="Write your custom message..."
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleWriteSubmit}
+                      className="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                    >
+                      <ArrowRight className="w-4 h-4" />
+                      Send
+                    </button>
+                    <button
+                      onClick={handleWriteCancel}
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Progress Indicator */}
-          <div className="mt-4 flex items-center justify-center">
-            <div className="flex gap-2">
-              {invoices.map((_, index) => (
-                <div
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                    index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                />
-              ))}
+          <div className="mt-4 space-y-2">
+            <div className="text-center">
+              <span className="text-sm text-gray-600">
+                {Math.max(0, queue.length - processed.length - skipped.length)} of {queue.length} remaining
+              </span>
+            </div>
+            <div className="flex items-center justify-center">
+              <div className="flex gap-2">
+                {queue.map((_, index) => {
+                  const isProcessed = processed.some(p => p.id === queue[index]?.id);
+                  const isSkipped = skipped.some(s => s.id === queue[index]?.id);
+                  const isCurrent = index === currentIndex;
+                  
+                  return (
+                    <div
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                        isProcessed 
+                          ? 'bg-green-500' 
+                          : isSkipped 
+                            ? 'bg-yellow-500' 
+                            : isCurrent 
+                              ? 'bg-blue-600' 
+                              : 'bg-gray-300'
+                      }`}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
