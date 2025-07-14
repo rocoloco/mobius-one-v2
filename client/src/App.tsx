@@ -62,13 +62,68 @@ function AppRouter() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
-            <span className="text-white font-mono font-bold text-xl">M1</span>
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)',
+        fontFamily: 'Inter, sans-serif',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '80px',
+            height: '80px',
+            background: 'white',
+            borderRadius: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '24px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            boxShadow: '0 8px 32px rgba(6, 26, 64, 0.12)',
+            border: '1px solid rgba(226, 232, 240, 0.5)',
+            animation: 'pulse 2s ease-in-out infinite'
+          }}>
+            <img 
+              src="/logos/mobius-logo-light.png" 
+              alt="Mobius Logo" 
+              style={{
+                width: '48px',
+                height: '48px',
+                objectFit: 'contain'
+              }}
+            />
           </div>
-          <p className="font-mono text-gray-600">Loading Mobius One...</p>
+          <h1 style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            fontSize: '24px',
+            color: '#061A40',
+            margin: '0 0 8px 0',
+            letterSpacing: '0.5px'
+          }}>
+            MOBIUS ONE
+          </h1>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#4A5568',
+            fontSize: '16px',
+            margin: 0
+          }}>
+            Initializing your AI Terminal...
+          </p>
         </div>
+        
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            @keyframes pulse {
+              0%, 100% { transform: scale(1); opacity: 1; }
+              50% { transform: scale(1.05); opacity: 0.8; }
+            }
+          `
+        }} />
       </div>
     );
   }
