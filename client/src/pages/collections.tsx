@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { DollarSign, Clock, Shield, BarChart3, ArrowRight, CheckCircle, Menu, X } from 'lucide-react';
+import { DollarSign, Clock, Shield, BarChart3, ArrowRight, CheckCircle, Menu, X, User, Settings, CreditCard, LogOut, ChevronDown } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
@@ -32,6 +32,7 @@ interface CollectionMetrics {
 export default function CollectionsPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [metrics, setMetrics] = useState<CollectionMetrics>({
     revenueAccelerated: 127500,
     timeSaved: 12.5,
@@ -42,6 +43,24 @@ export default function CollectionsPage() {
   const [isAnimating, setIsAnimating] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    if (isProfileDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isProfileDropdownOpen]);
 
   // Mock data for demonstration - in real app this would come from API
   const invoices: Invoice[] = [
@@ -242,11 +261,59 @@ export default function CollectionsPage() {
       </div>
 
       {/* Queue Status */}
-      <div className="flex-1 flex flex-col justify-end p-6">
+      <div className="flex-1 flex flex-col justify-end p-6 space-y-4">
         <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
           <BarChart3 className="w-5 h-5" />
           See Full Queue ({metrics.remainingQueue} remaining)
         </button>
+        
+        {/* Profile Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+          >
+            <div className="w-8 h-8 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-medium text-gray-900">Test User</p>
+              <p className="text-xs text-gray-500">test@example.com</p>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {/* Dropdown Menu */}
+          {isProfileDropdownOpen && (
+            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+              <button
+                onClick={() => setIsProfileDropdownOpen(false)}
+                className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3"
+              >
+                <Settings className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-700">Account Settings</span>
+              </button>
+              
+              <button
+                onClick={() => setIsProfileDropdownOpen(false)}
+                className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3"
+              >
+                <CreditCard className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-700">Billing</span>
+              </button>
+              
+              <div className="border-t border-gray-200">
+                <button
+                  onClick={() => setIsProfileDropdownOpen(false)}
+                  className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3"
+                >
+                  <LogOut className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-700">Sign Out</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
