@@ -23,6 +23,7 @@ function AuthenticatedApp() {
       <Route path="/" element={<Layout />}>
         <Route index element={<CollectionsPage />} />
         <Route path="collections" element={<CollectionsPage />} />
+        <Route path="dashboard" element={<CollectionsPage />} />
         <Route path="chat" element={<HomePage />} />
         <Route path="history" element={<HistoryPage />} />
         <Route path="settings" element={<SettingsPage />} />

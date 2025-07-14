@@ -68,65 +68,23 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "",
       borderRight: '1px solid rgba(4, 139, 168, 0.2)'
     }}>
       {/* Header */}
-      <div className={`${isCollapsed && !isMobile ? 'p-2' : 'p-4'}`} style={{borderBottom: '1px solid rgba(4, 139, 168, 0.2)'}}>
-        <div className="flex items-center justify-between">
-          {isCollapsed && !isMobile ? (
-            <div className="flex flex-col items-center space-y-2 w-full">
-              <div className="w-12 h-12 flex items-center justify-center">
-                <img 
-                  src="/logos/mobius-logo-dark.png" 
-                  alt="Mobius Logo" 
-                  className="w-10 h-10 object-contain"
-                />
-              </div>
-              <Button
-                isIconOnly
-                variant="flat"
-                size="sm"
-                onClick={onToggleCollapse}
-                className="text-white hover:bg-white/10 h-8 w-8 min-w-8 rounded-lg"
-                style={{
-                  background: 'rgba(4, 139, 168, 0.2)',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                <ChevronRight size={16} />
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
-                  <img 
-                    src="/logos/mobius-logo-dark.png" 
-                    alt="Mobius Logo" 
-                    className="w-10 h-10 object-contain"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="font-brand text-lg text-white truncate">
-                    Mobius One
-                  </h2>
-                </div>
-              </div>
-              {!isMobile && (
-                <Button
-                  isIconOnly
-                  variant="flat"
-                  size="sm"
-                  onClick={onToggleCollapse}
-                  className="text-white hover:bg-white/10 h-8 w-8 min-w-8 rounded-lg"
-                  style={{
-                    background: 'rgba(4, 139, 168, 0.2)',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <ChevronLeft size={16} />
-                </Button>
-              )}
-            </>
-          )}
-        </div>
+      <div className="flex items-center gap-3 px-4 py-6">
+        <button
+          onClick={onMobileClose}
+          className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors mr-2"
+        >
+          <X className="w-5 h-5 text-white" />
+        </button>
+        <img 
+          src="/logos/mobius-logo-light.png" 
+          alt="Mobius" 
+          className="w-8 h-8 flex-shrink-0"
+        />
+        {!isCollapsed && (
+          <h1 className="font-brand font-semibold text-xl text-white tracking-tight">
+            MOBIUS ONE
+          </h1>
+        )}
       </div>
 
       {/* Navigation */}
@@ -134,7 +92,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "",
         {navigationItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
-          
+
           return (
             <button
               key={item.path}

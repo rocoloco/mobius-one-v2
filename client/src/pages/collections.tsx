@@ -118,7 +118,7 @@ export default function CollectionsPage() {
 
   const updateMetrics = (action: 'send' | 'write' | 'skip') => {
     setIsAnimating(true);
-    
+
     if (action === 'send') {
       setMetrics(prev => ({
         ...prev,
@@ -146,7 +146,7 @@ export default function CollectionsPage() {
   const handleAction = (action: 'send' | 'write' | 'skip') => {
     updateMetrics(action);
     setIsMobileMenuOpen(false); // Close mobile menu if open
-    
+
     setTimeout(() => {
       setCurrentIndex(prev => (prev + 1) % invoices.length);
     }, 300);
@@ -199,7 +199,7 @@ export default function CollectionsPage() {
       {/* Today's Impact */}
       <div className="p-6 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Today's Impact</h2>
-        
+
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
@@ -242,7 +242,7 @@ export default function CollectionsPage() {
       {/* AI Learning */}
       <div className="p-6 border-b border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Learning</h3>
-        
+
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Progress</span>
@@ -266,7 +266,7 @@ export default function CollectionsPage() {
           <BarChart3 className="w-5 h-5" />
           See Full Queue ({metrics.remainingQueue} remaining)
         </button>
-        
+
         {/* Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
@@ -282,7 +282,7 @@ export default function CollectionsPage() {
             </div>
             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
-          
+
           {/* Dropdown Menu */}
           {isProfileDropdownOpen && (
             <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
@@ -293,7 +293,7 @@ export default function CollectionsPage() {
                 <Settings className="w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-700">Account Settings</span>
               </button>
-              
+
               <button
                 onClick={() => setIsProfileDropdownOpen(false)}
                 className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3"
@@ -301,7 +301,7 @@ export default function CollectionsPage() {
                 <CreditCard className="w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-700">Billing</span>
               </button>
-              
+
               <div className="border-t border-gray-200">
                 <button
                   onClick={() => setIsProfileDropdownOpen(false)}
@@ -348,7 +348,7 @@ export default function CollectionsPage() {
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               {/* Color-coded header bar */}
               <div className={`h-2 ${getRiskColor(currentInvoice.riskLevel)}`} />
-              
+
               {/* Card Header */}
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
@@ -358,11 +358,11 @@ export default function CollectionsPage() {
                   <span>•</span>
                   <span className="capitalize">{currentInvoice.riskLevel} risk</span>
                 </div>
-                
+
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">
                   {currentInvoice.contactName} at {currentInvoice.customer}
                 </h1>
-                
+
                 <p className="text-gray-600">
                   {currentInvoice.relationship} {currentInvoice.situation}
                 </p>
@@ -400,14 +400,14 @@ export default function CollectionsPage() {
                     <ArrowRight className="w-5 h-5" />
                     Send This Message
                   </button>
-                  
+
                   <button
                     onClick={() => handleAction('write')}
                     className="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-4 px-6 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-3"
                   >
                     I'll Write My Own
                   </button>
-                  
+
                   <div className="text-center pt-2">
                     <button
                       onClick={() => handleAction('skip')}
@@ -447,7 +447,7 @@ export default function CollectionsPage() {
           >
             <Menu className="w-6 h-6 text-gray-600" />
           </button>
-          
+
           <div className="flex items-center gap-3">
             <img 
               src="/logos/mobius-logo-light.png" 
@@ -456,7 +456,7 @@ export default function CollectionsPage() {
             />
             <h1 className="text-lg font-bold text-gray-900">Collections</h1>
           </div>
-          
+
           <div className="w-10" /> {/* Spacer for centering */}
         </div>
 
@@ -466,7 +466,7 @@ export default function CollectionsPage() {
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
             {/* Color-coded header bar */}
             <div className={`h-2 ${getRiskColor(currentInvoice.riskLevel)}`} />
-            
+
             {/* Card Header */}
             <div className="p-4 border-b border-gray-200">
               <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 mb-3">
@@ -476,11 +476,11 @@ export default function CollectionsPage() {
                 <span>•</span>
                 <span className="capitalize">{currentInvoice.riskLevel} risk</span>
               </div>
-              
+
               <h1 className="text-xl font-bold text-gray-900 mb-2">
                 {currentInvoice.contactName} at {currentInvoice.customer}
               </h1>
-              
+
               <p className="text-gray-600">
                 {currentInvoice.relationship} {currentInvoice.situation}
               </p>
@@ -512,20 +512,20 @@ export default function CollectionsPage() {
               {/* Action Buttons */}
               <div className="space-y-3">
                 <button
-                  onClick={() => handleAction('send')}
+                  onClick={()={() => handleAction('send')}}
                   className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
                 >
                   <ArrowRight className="w-5 h-5" />
                   Send This Message
                 </button>
-                
+
                 <button
-                  onClick={() => handleAction('write')}
+                  onClick={()={() => handleAction('write')}}
                   className="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-3"
                 >
                   I'll Write My Own
                 </button>
-                
+
                 <div className="text-center pt-2">
                   <button
                     onClick={() => handleAction('skip')}
@@ -566,12 +566,12 @@ export default function CollectionsPage() {
                   <X className="w-6 h-6 text-gray-600" />
                 </button>
               </div>
-              
+
               <div className="h-full overflow-y-auto">
                 <SidebarContent />
               </div>
             </div>
-            
+
             <div
               className="flex-1"
               onClick={() => setIsMobileMenuOpen(false)}

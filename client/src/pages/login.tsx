@@ -46,9 +46,9 @@ export default function LoginPage() {
       if (isSignUp) {
         setError(""); // Clear any previous errors
         // You could show a success toast here instead
-        setTimeout(() => navigate('/dashboard'), 100);
+        setTimeout(() => navigate('/collections'), 100);
       } else {
-        navigate('/dashboard');
+        navigate('/collections');
       }
     },
     onError: (error: Error) => {
