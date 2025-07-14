@@ -54,6 +54,7 @@ export default function CollectionsPage() {
   const [approvedForBatch, setApprovedForBatch] = useState<Invoice[]>([]);
   const [needsReview, setNeedsReview] = useState<Invoice[]>([]);
   const [queue, setQueue] = useState<Invoice[]>([]);
+  const [processedInvoices, setProcessedInvoices] = useState<number[]>([]);
   const [isQueueComplete, setIsQueueComplete] = useState(false);
   const [totalQueueSize, setTotalQueueSize] = useState(0);
   const queryClient = useQueryClient();
@@ -104,22 +105,62 @@ export default function CollectionsPage() {
     return null;
   };
 
+  // Load processed invoices from persistent storage
+  const loadProcessedInvoices = () => {
+    try {
+      const stored = localStorage.getItem('processedInvoices');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error('Error loading processed invoices:', e);
+    }
+    return [];
+  };
+
+  // Save processed invoices to persistent storage
+  const saveProcessedInvoices = (invoiceIds: number[]) => {
+    try {
+      localStorage.setItem('processedInvoices', JSON.stringify(invoiceIds));
+    } catch (e) {
+      console.error('Error saving processed invoices:', e);
+    }
+  };
+
   // Initialize queue with mock data and restore progress
   useEffect(() => {
     const savedProgress = loadProgressFromStorage();
+    const alreadyProcessed = loadProcessedInvoices();
+    
+    console.log('Already processed invoices:', alreadyProcessed);
+    
+    // Filter out already processed invoices
+    const availableInvoices = invoices.filter(invoice => 
+      !alreadyProcessed.includes(invoice.id)
+    );
+    
+    console.log('Available invoices after filtering:', availableInvoices.length);
+    
+    if (availableInvoices.length === 0) {
+      console.log('No new invoices to process, redirecting to empty queue');
+      window.location.href = '/empty-queue';
+      return;
+    }
+    
+    setProcessedInvoices(alreadyProcessed);
     
     if (savedProgress) {
       setCurrentIndex(savedProgress.currentIndex || 0);
       setProcessed(savedProgress.processed || []);
       setApprovedForBatch(savedProgress.approvedForBatch || []);
       setNeedsReview(savedProgress.needsReview || []);
-      setTotalQueueSize(savedProgress.totalQueueSize || invoices.length);
+      setTotalQueueSize(savedProgress.totalQueueSize || availableInvoices.length);
       setMetrics(savedProgress.metrics || metrics);
     } else {
-      setTotalQueueSize(invoices.length);
+      setTotalQueueSize(availableInvoices.length);
     }
     
-    setQueue(invoices);
+    setQueue(availableInvoices);
   }, []);
 
   // Auto-save progress on state changes
@@ -170,17 +211,31 @@ export default function CollectionsPage() {
   // Auto-redirect countdown for completed sessions
   useEffect(() => {
     if (isQueueComplete && isComplete) {
-      console.log('Starting auto-redirect countdown');
+      console.log('Queue completed! Saving processed invoices and starting countdown');
+      
+      // Save all processed invoice IDs to persistent storage
+      const allProcessedIds = [
+        ...processed.map(inv => inv.id),
+        ...approvedForBatch.map(inv => inv.id),
+        ...needsReview.map(inv => inv.id)
+      ];
+      
+      const updatedProcessedInvoices = [...new Set([...processedInvoices, ...allProcessedIds])];
+      saveProcessedInvoices(updatedProcessedInvoices);
+      
+      console.log('Saved processed invoices:', updatedProcessedInvoices);
+      
       setRedirectCountdown(5);
       
       const timer = setInterval(() => {
         setRedirectCountdown(prev => {
           console.log('Countdown:', prev);
           if (prev <= 1) {
-            console.log('Auto-redirecting to home');
+            console.log('Auto-redirecting to empty queue');
             clearInterval(timer);
-            // Use window.location instead of navigate for more reliable redirect
-            window.location.href = '/';
+            // Clear current session progress but keep processed invoices
+            localStorage.removeItem('collectionsProgress');
+            window.location.href = '/empty-queue';
             return 0;
           }
           return prev - 1;
@@ -189,7 +244,7 @@ export default function CollectionsPage() {
 
       return () => clearInterval(timer);
     }
-  }, [isQueueComplete, isComplete]);
+  }, [isQueueComplete, isComplete, processed, approvedForBatch, needsReview, processedInvoices]);
 
   // Mock data for demonstration - in real app this would come from API
   const invoices: Invoice[] = [
@@ -664,9 +719,23 @@ Best regards,
             
             <button
               onClick={() => {
-                console.log('Button clicked - clearing progress and navigating');
+                console.log('Button clicked - saving processed invoices and navigating');
+                
+                // Save all processed invoice IDs to persistent storage
+                const allProcessedIds = [
+                  ...processed.map(inv => inv.id),
+                  ...approvedForBatch.map(inv => inv.id),
+                  ...needsReview.map(inv => inv.id)
+                ];
+                
+                const updatedProcessedInvoices = [...new Set([...processedInvoices, ...allProcessedIds])];
+                saveProcessedInvoices(updatedProcessedInvoices);
+                
+                console.log('Saved processed invoices:', updatedProcessedInvoices);
+                
+                // Clear current session progress but keep processed invoices
                 localStorage.removeItem('collectionsProgress');
-                window.location.href = '/';
+                window.location.href = '/empty-queue';
               }}
               className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200"
             >

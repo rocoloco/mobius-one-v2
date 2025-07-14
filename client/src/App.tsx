@@ -11,6 +11,7 @@ import LandingPage from "@/pages/landing";
 import LoginPage from "./pages/login";
 import HomePage from "@/pages/home";
 import CollectionsPage from "@/pages/collections";
+import EmptyQueuePage from "@/pages/empty-queue";
 import HistoryPage from "@/pages/history";
 import SettingsPage from "@/pages/settings";
 import HelpPage from "@/pages/help";
@@ -30,6 +31,7 @@ function AuthenticatedApp() {
         <Route path="help" element={<HelpPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
+      <Route path="/empty-queue" element={<EmptyQueuePage />} />
     </Routes>
   );
 }
