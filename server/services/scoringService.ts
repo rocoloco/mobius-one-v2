@@ -112,8 +112,8 @@ export class ScoringService {
    */
   private calculatePaymentHistoryScore(history: ScoringFactors['paymentHistory']): number {
     const onTimeRate = history.onTimePayments / (history.onTimePayments + history.latePayments);
-    const defaultPenalty = history.defaultHistory * 15; // Heavy penalty for defaults
-    const latePenalty = Math.min(history.avgDaysLate * 2, 30); // Cap at 30 points
+    const defaultPenalty = history.defaultHistory * 50; // Severe penalty for defaults
+    const latePenalty = Math.min(history.avgDaysLate * 5, 70); // Aggressive penalty for late payments
     const frequencyBonus = Math.min(history.paymentFrequency * 10, 20); // Regular payments bonus
     
     const baseScore = onTimeRate * 100;
@@ -284,8 +284,8 @@ export class ScoringService {
    * Determine risk level based on score
    */
   private determineRiskLevel(score: number): 'low' | 'medium' | 'high' {
-    if (score >= 70) return 'low';
-    if (score >= 40) return 'medium';
+    if (score >= 85) return 'low';
+    if (score >= 65) return 'medium';
     return 'high';
   }
 
@@ -318,12 +318,16 @@ export class ScoringService {
     const daysPastDue = Math.max(0, Math.floor((Date.now() - new Date(invoice.dueDate).getTime()) / (1000 * 60 * 60 * 24)));
     const accountAge = Math.max(1, Math.floor((Date.now() - new Date(customer.createdAt || Date.now()).getTime()) / (1000 * 60 * 60 * 24 * 30)));
     
+    // Add escalating penalty multiplier
+    const overdueMultiplier = daysPastDue > 60 ? 3.0 : 
+                             daysPastDue > 30 ? 2.0 : 1.0;
+    
     return {
       paymentHistory: {
         onTimePayments: Math.max(1, 10 - Math.floor(daysPastDue / 30)),
         latePayments: Math.floor(daysPastDue / 30),
         defaultHistory: daysPastDue > 90 ? 1 : 0,
-        avgDaysLate: Math.min(30, daysPastDue / 2),
+        avgDaysLate: Math.min(60, (daysPastDue / 2) * overdueMultiplier),
         paymentFrequency: Math.max(0.1, 1 - (daysPastDue / 365))
       },
       financialHealth: {
