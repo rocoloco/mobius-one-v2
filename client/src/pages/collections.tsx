@@ -512,7 +512,7 @@ export default function CollectionsPage() {
               {/* Action Buttons */}
               <div className="space-y-3">
                 <button
-                  onClick={()={() => handleAction('send')}}
+                  onClick={() => handleAction('send')}
                   className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
                 >
                   <ArrowRight className="w-5 h-5" />
@@ -520,7 +520,7 @@ export default function CollectionsPage() {
                 </button>
 
                 <button
-                  onClick={()={() => handleAction('write')}}
+                  onClick={() => handleAction('write')}
                   className="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-3"
                 >
                   I'll Write My Own
