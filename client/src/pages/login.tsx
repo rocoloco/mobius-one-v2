@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,18 +15,19 @@ export default function LoginPage() {
 
   const authMutation = useMutation({
     mutationFn: async (data: { username: string; password: string; isSignUp: boolean }) => {
-      const endpoint = data.isSignUp ? '/api/auth/signup' : '/api/auth/login';
+      const endpoint = data.isSignUp ? '/api/auth/register' : '/api/auth/login';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: data.username, password: data.password }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Authentication failed');
+        setError(errorData.error || errorData.message || 'Registration failed');
+        return;
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -106,7 +106,7 @@ export default function LoginPage() {
               }}
             />
           </div>
-          
+
           <h1 style={{
             fontFamily: 'Poppins, sans-serif',
             fontWeight: 600,
@@ -116,7 +116,7 @@ export default function LoginPage() {
           }}>
             MOBIUS ONE
           </h1>
-          
+
           <p style={{
             fontFamily: 'Inter, sans-serif',
             color: '#4A5568',

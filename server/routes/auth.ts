@@ -65,10 +65,33 @@ router.post('/register', async (req, res) => {
   try {
     const { username, password, email, name, companyName } = req.body;
 
-    // Validate input
-    if (!username || !password || username.length < 3 || password.length < 8) {
+    // Enhanced input validation
+    if (!username || !password) {
       return res.status(400).json({
-        error: 'Username must be at least 3 characters and password at least 8 characters',
+        error: 'Username and password are required',
+        code: 'VALIDATION_ERROR'
+      });
+    }
+
+    if (username.length < 3) {
+      return res.status(400).json({
+        error: 'Username must be at least 3 characters long',
+        code: 'VALIDATION_ERROR'
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        error: 'Password must be at least 8 characters long',
+        code: 'VALIDATION_ERROR'
+      });
+    }
+
+    // Password strength validation
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).*$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        error: 'Password must contain at least one letter and one number',
         code: 'VALIDATION_ERROR'
       });
     }
