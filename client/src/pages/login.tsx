@@ -91,22 +91,17 @@ export default function LoginPage() {
           marginBottom: '32px'
         }}>
           <div style={{
-            width: '64px',
-            height: '64px',
-            background: 'linear-gradient(135deg, #048BA8 0%, #037A96 100%)',
-            borderRadius: '16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 24px auto',
-            padding: '12px'
+            margin: '0 auto 24px auto'
           }}>
             <img 
-              src="/logos/mobius-logo-dark.png" 
+              src="/logos/mobius-logo-light.png" 
               alt="Mobius Logo" 
               style={{
-                width: '100%',
-                height: '100%',
+                width: '48px',
+                height: '48px',
                 objectFit: 'contain'
               }}
             />
