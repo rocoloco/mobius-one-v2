@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { DollarSign, Clock, Shield, BarChart3, ArrowRight, CheckCircle, Menu, X, User, Settings, CreditCard, LogOut, ChevronDown } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -31,6 +32,7 @@ interface CollectionMetrics {
 }
 
 export default function CollectionsPage() {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -545,19 +547,22 @@ Best regards,
       return {
         title: "Perfect Day! 🎉",
         message: "You've processed every invoice in your queue.",
-        subtitle: "Outstanding work maintaining those customer relationships!"
+        subtitle: "Outstanding work maintaining those customer relationships!",
+        isComplete: true
       };
     } else if (completionRate >= 80) {
       return {
         title: "Great Progress! 👏",
         message: `You've processed ${processedCount + approvedCount} of ${totalItems} invoices.`,
-        subtitle: `${reviewCount} items need review, ${approvedCount} ready for batch sending.`
+        subtitle: `${reviewCount} items need review, ${approvedCount} ready for batch sending.`,
+        isComplete: false
       };
     } else {
       return {
         title: "See You Later! 👋",
         message: `You've processed ${processedCount + approvedCount} of ${totalItems} invoices.`,
-        subtitle: "You can continue where you left off anytime."
+        subtitle: "You can continue where you left off anytime.",
+        isComplete: false
       };
     }
   };
@@ -600,24 +605,55 @@ Best regards,
           </div>
           
           <div className="space-y-2">
-            <button
-              onClick={() => {
-                setCurrentIndex(0);
-                setProcessed([]);
-                setApprovedForBatch([]);
-                setNeedsReview([]);
-                setIsQueueComplete(false);
-              }}
-              className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
-            >
-              Start Another Session
-            </button>
-            <button
-              onClick={() => window.location.href = '/'}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
-            >
-              Return to Home
-            </button>
+            {celebration.isComplete ? (
+              // Complete session - offer to start fresh
+              <>
+                <button
+                  onClick={() => {
+                    setCurrentIndex(0);
+                    setProcessed([]);
+                    setApprovedForBatch([]);
+                    setNeedsReview([]);
+                    setIsQueueComplete(false);
+                    localStorage.removeItem('collectionsProgress');
+                  }}
+                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+                >
+                  Start Fresh Session
+                </button>
+                <button
+                  onClick={() => navigate('/')}
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+                >
+                  Return to Dashboard
+                </button>
+              </>
+            ) : (
+              // Partial session - offer to continue or go home
+              <>
+                <button
+                  onClick={() => {
+                    setIsQueueComplete(false);
+                    // Find next unprocessed invoice
+                    const nextIndex = queue.findIndex(invoice => 
+                      !processed.some(p => p.id === invoice.id) && 
+                      !approvedForBatch.some(a => a.id === invoice.id) &&
+                      !needsReview.some(n => n.id === invoice.id)
+                    );
+                    setCurrentIndex(nextIndex >= 0 ? nextIndex : currentIndex);
+                  }}
+                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+                >
+                  Continue Session
+                </button>
+                <button
+                  onClick={() => navigate('/')}
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+                >
+                  Return to Dashboard
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
