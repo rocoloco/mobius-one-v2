@@ -108,12 +108,18 @@ router.post('/register', async (req, res) => {
     // Hash password
     const passwordHash = await hashPassword(password);
 
+    // Generate initials from name or username
+    const displayName = name || username;
+    const initials = displayName.length >= 2 ? displayName.substring(0, 2).toUpperCase() : displayName.toUpperCase().padEnd(2, 'X');
+
     // Create user
     const user = await storage.createUser({
       username,
       name: name || username,
       email: email || `${username}@example.com`,
       password: passwordHash, // Use password field to match database schema
+      passwordHash: passwordHash, // Also include passwordHash for compatibility
+      initials,
       role: 'user',
       companyName: companyName || 'Unknown Company',
       permissions: ['read', 'write'],
