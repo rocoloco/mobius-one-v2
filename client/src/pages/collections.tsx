@@ -137,30 +137,49 @@ export default function CollectionsPage() {
 
   // Update metrics when queue changes
   useEffect(() => {
-    const remaining = Math.max(0, totalQueueSize - processed.length - approvedForBatch.length);
+    // Calculate unique invoices handled to avoid double counting
+    const uniqueHandledIds = new Set([
+      ...processed.map(inv => inv.id),
+      ...approvedForBatch.map(inv => inv.id),
+      ...needsReview.map(inv => inv.id)
+    ]);
+    const totalHandled = uniqueHandledIds.size;
+    const remaining = Math.max(0, queue.length - totalHandled);
+    
     setMetrics(prev => ({
       ...prev,
       remainingQueue: remaining
     }));
-  }, [totalQueueSize, processed, approvedForBatch]);
+  }, [queue.length, processed, approvedForBatch, needsReview]);
 
   // Auto-redirect countdown for completed sessions
   useEffect(() => {
-    if (isQueueComplete && getCelebrationMessage().isComplete) {
-      const timer = setInterval(() => {
-        setRedirectCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            navigate('/');
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    if (isQueueComplete) {
+      // Calculate completion status
+      const uniqueHandledIds = new Set([
+        ...processed.map(inv => inv.id),
+        ...approvedForBatch.map(inv => inv.id),
+        ...needsReview.map(inv => inv.id)
+      ]);
+      const totalHandled = uniqueHandledIds.size;
+      const completionRate = queue.length > 0 ? (totalHandled / queue.length) * 100 : 0;
+      
+      if (completionRate === 100) {
+        const timer = setInterval(() => {
+          setRedirectCountdown(prev => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              navigate('/');
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
 
-      return () => clearInterval(timer);
+        return () => clearInterval(timer);
+      }
     }
-  }, [isQueueComplete, navigate]);
+  }, [isQueueComplete, navigate, queue.length, processed, approvedForBatch, needsReview]);
 
   // Mock data for demonstration - in real app this would come from API
   const invoices: Invoice[] = [
@@ -556,11 +575,19 @@ Best regards,
   );
 
   const getCelebrationMessage = () => {
-    const totalItems = totalQueueSize;
+    const totalItems = queue.length; // Use actual queue length, not totalQueueSize
     const processedCount = processed.length;
     const approvedCount = approvedForBatch.length;
     const reviewCount = needsReview.length;
-    const completionRate = totalItems > 0 ? ((processedCount + approvedCount) / totalItems) * 100 : 0;
+    
+    // Calculate unique invoices handled (avoid double counting)
+    const uniqueHandledIds = new Set([
+      ...processed.map(inv => inv.id),
+      ...approvedForBatch.map(inv => inv.id),
+      ...needsReview.map(inv => inv.id)
+    ]);
+    const totalHandled = uniqueHandledIds.size;
+    const completionRate = totalItems > 0 ? (totalHandled / totalItems) * 100 : 0;
 
     if (completionRate === 100) {
       return {
@@ -572,14 +599,14 @@ Best regards,
     } else if (completionRate >= 80) {
       return {
         title: "Great Progress! 👏",
-        message: `You've processed ${processedCount + approvedCount} of ${totalItems} invoices.`,
+        message: `You've processed ${totalHandled} of ${totalItems} invoices.`,
         subtitle: `${reviewCount} items need review, ${approvedCount} ready for batch sending.`,
         isComplete: false
       };
     } else {
       return {
         title: "See You Later! 👋",
-        message: `You've processed ${processedCount + approvedCount} of ${totalItems} invoices.`,
+        message: `You've processed ${totalHandled} of ${totalItems} invoices.`,
         subtitle: "You can continue where you left off anytime.",
         isComplete: false
       };
@@ -1029,7 +1056,15 @@ Best regards,
           <div className="mt-4 space-y-2">
             <div className="text-center">
               <span className="text-sm text-gray-600">
-                {Math.max(0, queue.length - processed.length - approvedForBatch.length - needsReview.length)} of {queue.length} remaining
+                {(() => {
+                  const uniqueHandledIds = new Set([
+                    ...processed.map(inv => inv.id),
+                    ...approvedForBatch.map(inv => inv.id),
+                    ...needsReview.map(inv => inv.id)
+                  ]);
+                  const totalHandled = uniqueHandledIds.size;
+                  return Math.max(0, queue.length - totalHandled);
+                })()} of {queue.length} remaining
               </span>
             </div>
             <div className="flex items-center justify-center">
