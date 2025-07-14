@@ -98,14 +98,18 @@ export default function LoginPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 24px auto'
+            margin: '0 auto 24px auto',
+            padding: '12px'
           }}>
-            <span style={{
-              color: 'white',
-              fontFamily: 'Poppins, sans-serif',
-              fontWeight: 700,
-              fontSize: '24px'
-            }}>M</span>
+            <img 
+              src="/mobius-logo-light.png" 
+              alt="Mobius Logo" 
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain'
+              }}
+            />
           </div>
           
           <h1 style={{

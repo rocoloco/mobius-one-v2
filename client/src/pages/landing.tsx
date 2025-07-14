@@ -77,9 +77,11 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-white" />
-              </div>
+              <img 
+                src="/mobius-logo-dark.png" 
+                alt="Mobius Logo" 
+                className="h-8 w-8 object-contain"
+              />
               <span className="text-xl font-semibold text-gray-900">Mobius One</span>
             </div>
             <Link to="/login">
@@ -385,9 +387,11 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-white" />
-                </div>
+                <img 
+                  src="/mobius-logo-light.png" 
+                  alt="Mobius Logo" 
+                  className="h-8 w-8 object-contain"
+                />
                 <span className="text-xl font-semibold">Mobius One</span>
               </div>
               <p className="text-gray-400 mb-4">
