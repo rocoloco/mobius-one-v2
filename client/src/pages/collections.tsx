@@ -154,7 +154,7 @@ export default function CollectionsPage() {
 
   // Auto-redirect countdown for completed sessions
   useEffect(() => {
-    if (isQueueComplete) {
+    if (isQueueComplete && queue.length > 0) {
       // Calculate completion status
       const uniqueHandledIds = new Set([
         ...processed.map(inv => inv.id),
@@ -162,12 +162,16 @@ export default function CollectionsPage() {
         ...needsReview.map(inv => inv.id)
       ]);
       const totalHandled = uniqueHandledIds.size;
-      const completionRate = queue.length > 0 ? (totalHandled / queue.length) * 100 : 0;
+      const completionRate = (totalHandled / queue.length) * 100;
       
       if (completionRate === 100) {
+        console.log('Starting auto-redirect countdown');
+        setRedirectCountdown(5); // Reset countdown
         const timer = setInterval(() => {
           setRedirectCountdown(prev => {
+            console.log('Countdown:', prev);
             if (prev <= 1) {
+              console.log('Auto-redirecting to home');
               clearInterval(timer);
               navigate('/');
               return 0;
@@ -653,7 +657,11 @@ Best regards,
             </div>
             
             <button
-              onClick={() => navigate('/')}
+              onClick={() => {
+                console.log('Button clicked - clearing progress and navigating');
+                localStorage.removeItem('collectionsProgress');
+                navigate('/');
+              }}
               className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200"
             >
               See you tomorrow!
