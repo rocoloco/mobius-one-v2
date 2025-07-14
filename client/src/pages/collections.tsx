@@ -36,6 +36,7 @@ export default function CollectionsPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState(5);
   const { logout } = useAuth();
   const [metrics, setMetrics] = useState<CollectionMetrics>({
     revenueAccelerated: 127500,
@@ -142,6 +143,24 @@ export default function CollectionsPage() {
       remainingQueue: remaining
     }));
   }, [totalQueueSize, processed, approvedForBatch]);
+
+  // Auto-redirect countdown for completed sessions
+  useEffect(() => {
+    if (isQueueComplete && getCelebrationMessage().isComplete) {
+      const timer = setInterval(() => {
+        setRedirectCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            navigate('/');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [isQueueComplete, navigate]);
 
   // Mock data for demonstration - in real app this would come from API
   const invoices: Invoice[] = [
@@ -569,95 +588,115 @@ Best regards,
 
   if (!currentInvoice || isQueueComplete) {
     const celebration = getCelebrationMessage();
+    const totalValue = [...processed, ...approvedForBatch].reduce((sum, invoice) => sum + invoice.amount, 0);
+    const totalHandled = processed.length + approvedForBatch.length;
     
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-8">
-          <div className="w-20 h-20 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-white" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{celebration.title}</h2>
-          <p className="text-lg text-gray-700 mb-2">{celebration.message}</p>
-          <p className="text-gray-600 mb-8">{celebration.subtitle}</p>
-          
-          <div className="bg-white rounded-lg p-6 shadow-lg mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Impact</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{processed.length}</div>
-                <div className="text-gray-600">Processed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {formatCurrency(processed.reduce((sum, invoice) => sum + invoice.amount, 0))}
+    if (celebration.isComplete) {
+      // Complete session - celebration with auto-redirect
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+          <div className="text-center max-w-lg mx-auto p-8">
+            <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+              <CheckCircle className="w-12 h-12 text-white" />
+            </div>
+            
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">✨ Queue Clear! ✨</h1>
+            <p className="text-xl text-gray-700 mb-6">
+              You've handled {totalHandled} invoices worth {formatCurrency(totalValue)}
+            </p>
+            <p className="text-lg text-green-700 mb-8 font-medium">
+              They'll be sent in the next batch run
+            </p>
+            
+            <div className="bg-white rounded-lg p-6 shadow-lg mb-8">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-600 mb-1">{metrics.timeSaved.toFixed(0)} min</div>
+                  <div className="text-gray-600">Time saved today</div>
                 </div>
-                <div className="text-gray-600">Revenue</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">{approvedForBatch.length}</div>
-                <div className="text-gray-600">Approved</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">{needsReview.length}</div>
-                <div className="text-gray-600">Needs Review</div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-600 mb-1">7 days</div>
+                  <div className="text-gray-600">Expected acceleration</div>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            {celebration.isComplete ? (
-              // Complete session - offer to start fresh
-              <>
-                <button
-                  onClick={() => {
-                    setCurrentIndex(0);
-                    setProcessed([]);
-                    setApprovedForBatch([]);
-                    setNeedsReview([]);
-                    setIsQueueComplete(false);
-                    localStorage.removeItem('collectionsProgress');
-                  }}
-                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
-                >
-                  Start Fresh Session
-                </button>
-                <button
-                  onClick={() => navigate('/')}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
-                >
-                  Return to Dashboard
-                </button>
-              </>
-            ) : (
-              // Partial session - offer to continue or go home
-              <>
-                <button
-                  onClick={() => {
-                    setIsQueueComplete(false);
-                    // Find next unprocessed invoice
-                    const nextIndex = queue.findIndex(invoice => 
-                      !processed.some(p => p.id === invoice.id) && 
-                      !approvedForBatch.some(a => a.id === invoice.id) &&
-                      !needsReview.some(n => n.id === invoice.id)
-                    );
-                    setCurrentIndex(nextIndex >= 0 ? nextIndex : currentIndex);
-                  }}
-                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
-                >
-                  Continue Session
-                </button>
-                <button
-                  onClick={() => navigate('/')}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
-                >
-                  Return to Dashboard
-                </button>
-              </>
-            )}
+            
+            <div className="text-gray-600 mb-4">
+              Redirecting in {redirectCountdown} seconds...
+            </div>
+            
+            <button
+              onClick={() => navigate('/')}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200"
+            >
+              See you tomorrow!
+            </button>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      // Partial session - offer to continue
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto p-8">
+            <div className="w-20 h-20 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{celebration.title}</h2>
+            <p className="text-lg text-gray-700 mb-2">{celebration.message}</p>
+            <p className="text-gray-600 mb-8">{celebration.subtitle}</p>
+            
+            <div className="bg-white rounded-lg p-6 shadow-lg mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress So Far</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{processed.length}</div>
+                  <div className="text-gray-600">Sent</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400">{approvedForBatch.length}</div>
+                  <div className="text-gray-600">Approved</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-yellow-600">{needsReview.length}</div>
+                  <div className="text-gray-600">Needs Review</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {formatCurrency(totalValue)}
+                  </div>
+                  <div className="text-gray-600">Total Value</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  setIsQueueComplete(false);
+                  // Find next unprocessed invoice
+                  const nextIndex = queue.findIndex(invoice => 
+                    !processed.some(p => p.id === invoice.id) && 
+                    !approvedForBatch.some(a => a.id === invoice.id) &&
+                    !needsReview.some(n => n.id === invoice.id)
+                  );
+                  setCurrentIndex(nextIndex >= 0 ? nextIndex : currentIndex);
+                }}
+                className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+              >
+                Continue Session
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+              >
+                Return to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
   }
 
   return (
