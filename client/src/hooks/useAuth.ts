@@ -195,12 +195,15 @@ export function useAuth() {
     } finally {
       localStorage.removeItem('authToken');
       localStorage.removeItem('refreshToken');
+      localStorage.setItem('logout', 'true');
       setAuthState({
         user: null,
         isLoading: false,
         isAuthenticated: false,
         error: null
       });
+      // Force navigation to landing page
+      window.location.href = '/';
     }
   };
 

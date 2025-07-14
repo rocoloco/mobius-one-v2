@@ -304,7 +304,11 @@ export default function CollectionsPage() {
 
               <div className="border-t border-gray-200">
                 <button
-                  onClick={() => setIsProfileDropdownOpen(false)}
+                  onClick={async () => {
+                    const { logout } = await import('../hooks/useAuth');
+                    await logout();
+                    setIsProfileDropdownOpen(false);
+                  }}
                   className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3"
                 >
                   <LogOut className="w-4 h-4 text-gray-500" />
