@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import mobiusLogo from "@assets/Icon for dark background_1751426557804.png";
+// Logo will be loaded from public directory
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -74,7 +74,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "",
             <div className="flex flex-col items-center space-y-2 w-full">
               <div className="w-12 h-12 flex items-center justify-center">
                 <img 
-                  src={mobiusLogo} 
+                  src="/mobius-logo-dark.png" 
                   alt="Mobius Logo" 
                   className="w-10 h-10 object-contain"
                 />
@@ -98,7 +98,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, className = "",
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
                   <img 
-                    src={mobiusLogo} 
+                    src="/mobius-logo-dark.png" 
                     alt="Mobius Logo" 
                     className="w-10 h-10 object-contain"
                   />
