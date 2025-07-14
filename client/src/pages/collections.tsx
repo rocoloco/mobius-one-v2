@@ -577,12 +577,12 @@ export default function CollectionsPage() {
                 <div className="text-gray-600">Revenue</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">{skipped.length}</div>
-                <div className="text-gray-600">Skipped</div>
+                <div className="text-2xl font-bold text-green-400">{approvedForBatch.length}</div>
+                <div className="text-gray-600">Approved</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">{metrics.timeSaved.toFixed(1)}h</div>
-                <div className="text-gray-600">Time Saved</div>
+                <div className="text-2xl font-bold text-yellow-600">{needsReview.length}</div>
+                <div className="text-gray-600">Needs Review</div>
               </div>
             </div>
           </div>
@@ -592,7 +592,8 @@ export default function CollectionsPage() {
               onClick={() => {
                 setCurrentIndex(0);
                 setProcessed([]);
-                setSkipped([]);
+                setApprovedForBatch([]);
+                setNeedsReview([]);
                 setIsQueueComplete(false);
               }}
               className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
@@ -941,14 +942,15 @@ export default function CollectionsPage() {
           <div className="mt-4 space-y-2">
             <div className="text-center">
               <span className="text-sm text-gray-600">
-                {Math.max(0, queue.length - processed.length - skipped.length)} of {queue.length} remaining
+                {Math.max(0, queue.length - processed.length - approvedForBatch.length - needsReview.length)} of {queue.length} remaining
               </span>
             </div>
             <div className="flex items-center justify-center">
               <div className="flex gap-2">
                 {queue.map((_, index) => {
                   const isProcessed = processed.some(p => p.id === queue[index]?.id);
-                  const isSkipped = skipped.some(s => s.id === queue[index]?.id);
+                  const isApproved = approvedForBatch.some(a => a.id === queue[index]?.id);
+                  const isNeedsReview = needsReview.some(n => n.id === queue[index]?.id);
                   const isCurrent = index === currentIndex;
                   
                   return (
@@ -957,11 +959,13 @@ export default function CollectionsPage() {
                       className={`w-2 h-2 rounded-full transition-colors duration-200 ${
                         isProcessed 
                           ? 'bg-green-500' 
-                          : isSkipped 
-                            ? 'bg-yellow-500' 
-                            : isCurrent 
-                              ? 'bg-blue-600' 
-                              : 'bg-gray-300'
+                          : isApproved 
+                            ? 'bg-green-300' 
+                            : isNeedsReview 
+                              ? 'bg-yellow-500' 
+                              : isCurrent 
+                                ? 'bg-blue-600' 
+                                : 'bg-gray-300'
                       }`}
                     />
                   );
