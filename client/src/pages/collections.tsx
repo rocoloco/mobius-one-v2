@@ -261,7 +261,19 @@ export default function CollectionsPage() {
   const handleWrite = () => {
     if (!currentInvoice) return;
     
-    setEditorContent(currentInvoice.aiMessage);
+    // Provide a draft template for the user to start with
+    const draftTemplate = `Hi ${currentInvoice.contactName},
+
+I hope this message finds you well. I wanted to reach out regarding invoice ${currentInvoice.invoiceNumber} for $${currentInvoice.amount.toLocaleString()} which is currently ${currentInvoice.daysPastDue} days past due.
+
+[Add your personalized message here]
+
+Please let me know if you have any questions or if there's anything I can help with to resolve this.
+
+Best regards,
+[Your Name]`;
+    
+    setEditorContent(draftTemplate);
     setShowInlineEditor(true);
     setIsMobileMenuOpen(false);
   };
