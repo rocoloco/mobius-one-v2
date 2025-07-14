@@ -74,7 +74,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="border-b border-gray-200 bg-white">
-        <div className="max-w-6xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
@@ -108,7 +108,7 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center gap-2 mb-6">
@@ -116,16 +116,16 @@ export default function LandingPage() {
                   Collections Acceleration Engine
                 </div>
               </div>
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                 Reduce DSO by 15+ Days
                 <span className="text-blue-600"> Without Losing Customers</span>
               </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              <p className="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed">
                 Autonomous revenue optimization that accelerates collections while preserving customer relationships. 
                 Free up $100K+ in working capital with AI-powered collection recommendations.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Link to="/login">
+                <Link to="/login" className="w-full sm:w-auto">
                   <button style={{
                     background: 'linear-gradient(135deg, #048BA8 0%, #061A40 100%)',
                     color: 'white',
@@ -138,8 +138,14 @@ export default function LandingPage() {
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: '8px',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.2s ease',
+                    width: '100%',
+                    maxWidth: '100%',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
                   }}>
                     Start 30-Day Trial
                     <ArrowRight className="h-5 w-5" />
@@ -155,22 +161,27 @@ export default function LandingPage() {
                   fontSize: '16px',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}>
+                  transition: 'all 0.2s ease',
+                  width: '100%',
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }} className="w-full sm:w-auto">
                   Watch Demo
                 </button>
               </div>
-              <div className="flex items-center gap-6 text-sm text-gray-600">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
                   <span>30-day implementation</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
                   <span>No professional services</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
                   <span>Zero relationship damage</span>
                 </div>
               </div>
@@ -308,15 +319,15 @@ export default function LandingPage() {
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-700">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight">
             Ready to Free Up $100K+ in Working Capital?
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
+          <p className="text-lg sm:text-xl text-blue-100 mb-8 leading-relaxed">
             Join SaaS CFOs who've reduced DSO by 15+ days in 30 days. Zero relationship damage guaranteed.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/login">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link to="/login" className="w-full sm:w-auto">
               <button style={{
                 background: 'white',
                 color: '#048BA8',
@@ -329,8 +340,14 @@ export default function LandingPage() {
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '8px',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                width: '100%',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
               }}>
                 Start 30-Day Trial
                 <ArrowRight className="h-5 w-5" />
@@ -346,8 +363,13 @@ export default function LandingPage() {
               fontSize: '16px',
               fontWeight: '600',
               cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}>
+              transition: 'all 0.2s ease',
+              width: '100%',
+              maxWidth: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }} className="w-full sm:w-auto">
               Schedule Demo
             </button>
           </div>
@@ -359,7 +381,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
