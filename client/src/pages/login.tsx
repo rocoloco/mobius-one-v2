@@ -22,18 +22,34 @@ export default function LoginPage() {
         body: JSON.stringify({ username: data.username, password: data.password }),
       });
 
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.error || errorData.message || 'Registration failed');
-        return;
+        throw new Error(responseData.error || responseData.message || 'Authentication failed');
       }
 
-      return response.json();
+      return responseData;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Store authentication tokens
+      if (data.accessToken) {
+        localStorage.setItem('authToken', data.accessToken);
+      }
+      if (data.refreshToken) {
+        localStorage.setItem('refreshToken', data.refreshToken);
+      }
+      
       localStorage.removeItem('logout');
       queryClient.invalidateQueries({ queryKey: ['/api/user'] });
-      navigate('/dashboard');
+      
+      // Show success message
+      if (isSignUp) {
+        setError(""); // Clear any previous errors
+        // You could show a success toast here instead
+        setTimeout(() => navigate('/dashboard'), 100);
+      } else {
+        navigate('/dashboard');
+      }
     },
     onError: (error: Error) => {
       setError(error.message);
@@ -52,7 +68,11 @@ export default function LoginPage() {
       return;
     }
 
-    authMutation.mutate({ username, password, isSignUp });
+    try {
+      await authMutation.mutateAsync({ username, password, isSignUp });
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleAuth = () => {
@@ -262,6 +282,20 @@ export default function LoginPage() {
               fontFamily: 'Inter, sans-serif'
             }}>
               {error}
+            </div>
+          )}
+
+          {authMutation.isSuccess && isSignUp && (
+            <div style={{
+              background: 'rgba(34, 197, 94, 0.1)',
+              color: '#16A34A',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              fontSize: '14px',
+              marginBottom: '24px',
+              fontFamily: 'Inter, sans-serif'
+            }}>
+              Account created successfully! Redirecting to dashboard...
             </div>
           )}
 

@@ -113,7 +113,7 @@ router.post('/register', async (req, res) => {
       username,
       name: name || username,
       email: email || `${username}@example.com`,
-      passwordHash,
+      password: passwordHash, // Use password field to match database schema
       role: 'user',
       companyName: companyName || 'Unknown Company',
       permissions: ['read', 'write'],
@@ -191,13 +191,16 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Verify password - check both new and old password fields
+    // Verify password
     let isPasswordValid = false;
-    if (user.passwordHash) {
-      isPasswordValid = await verifyPassword(password, user.passwordHash);
-    } else if (user.password) {
-      // Fallback to plain text comparison for demo
-      isPasswordValid = password === user.password;
+    if (user.password) {
+      // Check if it's a hashed password (starts with $2b$)
+      if (user.password.startsWith('$2b$')) {
+        isPasswordValid = await verifyPassword(password, user.password);
+      } else {
+        // Fallback to plain text comparison for demo accounts
+        isPasswordValid = password === user.password;
+      }
     }
 
     if (!isPasswordValid) {
