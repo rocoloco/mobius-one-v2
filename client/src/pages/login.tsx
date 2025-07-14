@@ -102,7 +102,7 @@ export default function LoginPage() {
             padding: '12px'
           }}>
             <img 
-              src="/mobius-logo-light.png" 
+              src="/logos/mobius-logo-dark.png" 
               alt="Mobius Logo" 
               style={{
                 width: '100%',

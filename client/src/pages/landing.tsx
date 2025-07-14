@@ -78,7 +78,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img 
-                src="/mobius-logo-dark.png" 
+                src="/logos/mobius-logo-light.png" 
                 alt="Mobius Logo" 
                 className="h-8 w-8 object-contain"
               />
@@ -388,7 +388,7 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <img 
-                  src="/mobius-logo-light.png" 
+                  src="/logos/mobius-logo-dark.png" 
                   alt="Mobius Logo" 
                   className="h-8 w-8 object-contain"
                 />
