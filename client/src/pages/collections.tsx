@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DollarSign, Clock, Shield, BarChart3, ArrowRight, CheckCircle, Menu, X, User, Settings, CreditCard, LogOut, ChevronDown } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '../hooks/useAuth';
 
 interface Invoice {
   id: number;
@@ -33,6 +34,7 @@ export default function CollectionsPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const { logout } = useAuth();
   const [metrics, setMetrics] = useState<CollectionMetrics>({
     revenueAccelerated: 127500,
     timeSaved: 12.5,
@@ -305,9 +307,7 @@ export default function CollectionsPage() {
               <div className="border-t border-gray-200">
                 <button
                   onClick={async () => {
-                    const { useAuth } = await import('../hooks/useAuth');
-                    // For now, just redirect to login - we'll need to properly implement auth context
-                    window.location.href = '/login';
+                    await logout();
                     setIsProfileDropdownOpen(false);
                   }}
                   className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3"
