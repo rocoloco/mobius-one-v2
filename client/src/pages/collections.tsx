@@ -37,6 +37,7 @@ export default function CollectionsPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState(5);
+  const [isComplete, setIsComplete] = useState(false);
   const { logout } = useAuth();
   const [metrics, setMetrics] = useState<CollectionMetrics>({
     revenueAccelerated: 127500,
@@ -152,10 +153,9 @@ export default function CollectionsPage() {
     }));
   }, [queue.length, processed, approvedForBatch, needsReview]);
 
-  // Auto-redirect countdown for completed sessions
+  // Check completion status
   useEffect(() => {
-    if (isQueueComplete && queue.length > 0) {
-      // Calculate completion status
+    if (queue.length > 0) {
       const uniqueHandledIds = new Set([
         ...processed.map(inv => inv.id),
         ...approvedForBatch.map(inv => inv.id),
@@ -163,27 +163,33 @@ export default function CollectionsPage() {
       ]);
       const totalHandled = uniqueHandledIds.size;
       const completionRate = (totalHandled / queue.length) * 100;
-      
-      if (completionRate === 100) {
-        console.log('Starting auto-redirect countdown');
-        setRedirectCountdown(5); // Reset countdown
-        const timer = setInterval(() => {
-          setRedirectCountdown(prev => {
-            console.log('Countdown:', prev);
-            if (prev <= 1) {
-              console.log('Auto-redirecting to home');
-              clearInterval(timer);
-              navigate('/');
-              return 0;
-            }
-            return prev - 1;
-          });
-        }, 1000);
-
-        return () => clearInterval(timer);
-      }
+      setIsComplete(completionRate === 100);
     }
-  }, [isQueueComplete, navigate, queue.length, processed, approvedForBatch, needsReview]);
+  }, [queue.length, processed, approvedForBatch, needsReview]);
+
+  // Auto-redirect countdown for completed sessions
+  useEffect(() => {
+    if (isQueueComplete && isComplete) {
+      console.log('Starting auto-redirect countdown');
+      setRedirectCountdown(5);
+      
+      const timer = setInterval(() => {
+        setRedirectCountdown(prev => {
+          console.log('Countdown:', prev);
+          if (prev <= 1) {
+            console.log('Auto-redirecting to home');
+            clearInterval(timer);
+            // Use window.location instead of navigate for more reliable redirect
+            window.location.href = '/';
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [isQueueComplete, isComplete]);
 
   // Mock data for demonstration - in real app this would come from API
   const invoices: Invoice[] = [
@@ -579,7 +585,7 @@ Best regards,
   );
 
   const getCelebrationMessage = () => {
-    const totalItems = queue.length; // Use actual queue length, not totalQueueSize
+    const totalItems = queue.length;
     const processedCount = processed.length;
     const approvedCount = approvedForBatch.length;
     const reviewCount = needsReview.length;
@@ -593,7 +599,7 @@ Best regards,
     const totalHandled = uniqueHandledIds.size;
     const completionRate = totalItems > 0 ? (totalHandled / totalItems) * 100 : 0;
 
-    if (completionRate === 100) {
+    if (isComplete) {
       return {
         title: "Perfect Day! 🎉",
         message: "You've processed every invoice in your queue.",
@@ -660,7 +666,7 @@ Best regards,
               onClick={() => {
                 console.log('Button clicked - clearing progress and navigating');
                 localStorage.removeItem('collectionsProgress');
-                navigate('/');
+                window.location.href = '/';
               }}
               className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200"
             >
