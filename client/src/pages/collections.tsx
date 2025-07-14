@@ -47,9 +47,11 @@ export default function CollectionsPage() {
   const [showInlineEditor, setShowInlineEditor] = useState(false);
   const [editorContent, setEditorContent] = useState('');
   const [processed, setProcessed] = useState<Invoice[]>([]);
-  const [skipped, setSkipped] = useState<Invoice[]>([]);
+  const [approvedForBatch, setApprovedForBatch] = useState<Invoice[]>([]);
+  const [needsReview, setNeedsReview] = useState<Invoice[]>([]);
   const [queue, setQueue] = useState<Invoice[]>([]);
   const [isQueueComplete, setIsQueueComplete] = useState(false);
+  const [totalQueueSize, setTotalQueueSize] = useState(0);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -71,18 +73,73 @@ export default function CollectionsPage() {
     };
   }, [isProfileDropdownOpen]);
 
-  // Initialize queue with mock data
+  // Save/Load progress from localStorage
+  const saveProgressToStorage = (data: any) => {
+    const progressData = {
+      ...data,
+      timestamp: Date.now(),
+      expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+    };
+    localStorage.setItem('collectionsProgress', JSON.stringify(progressData));
+  };
+
+  const loadProgressFromStorage = () => {
+    try {
+      const stored = localStorage.getItem('collectionsProgress');
+      if (stored) {
+        const data = JSON.parse(stored);
+        if (data.expiresAt > Date.now()) {
+          return data;
+        } else {
+          localStorage.removeItem('collectionsProgress');
+        }
+      }
+    } catch (e) {
+      console.error('Error loading progress:', e);
+    }
+    return null;
+  };
+
+  // Initialize queue with mock data and restore progress
   useEffect(() => {
+    const savedProgress = loadProgressFromStorage();
+    
+    if (savedProgress) {
+      setCurrentIndex(savedProgress.currentIndex || 0);
+      setProcessed(savedProgress.processed || []);
+      setApprovedForBatch(savedProgress.approvedForBatch || []);
+      setNeedsReview(savedProgress.needsReview || []);
+      setTotalQueueSize(savedProgress.totalQueueSize || invoices.length);
+      setMetrics(savedProgress.metrics || metrics);
+    } else {
+      setTotalQueueSize(invoices.length);
+    }
+    
     setQueue(invoices);
   }, []);
 
+  // Auto-save progress on state changes
+  useEffect(() => {
+    if (queue.length > 0) {
+      saveProgressToStorage({
+        currentIndex,
+        processed,
+        approvedForBatch,
+        needsReview,
+        totalQueueSize,
+        metrics
+      });
+    }
+  }, [currentIndex, processed, approvedForBatch, needsReview, metrics, queue.length, totalQueueSize]);
+
   // Update metrics when queue changes
   useEffect(() => {
+    const remaining = Math.max(0, totalQueueSize - processed.length - approvedForBatch.length);
     setMetrics(prev => ({
       ...prev,
-      remainingQueue: queue.length - processed.length - skipped.length
+      remainingQueue: remaining
     }));
-  }, [queue, processed, skipped]);
+  }, [totalQueueSize, processed, approvedForBatch]);
 
   // Mock data for demonstration - in real app this would come from API
   const invoices: Invoice[] = [
@@ -177,7 +234,26 @@ export default function CollectionsPage() {
     }, 1000);
 
     toast({
-      title: 'AI message sent successfully!',
+      title: 'Message sent immediately!',
+      description: `${currentInvoice.customer} - $${currentInvoice.amount.toLocaleString()}`,
+    });
+  };
+
+  const handleApprove = () => {
+    if (!currentInvoice) return;
+    
+    setApprovedForBatch([...approvedForBatch, currentInvoice]);
+    updateMetrics('send');
+    setShowSuccessAnimation(true);
+    setIsMobileMenuOpen(false);
+
+    setTimeout(() => {
+      setShowSuccessAnimation(false);
+      moveToNext();
+    }, 1000);
+
+    toast({
+      title: 'Message approved for batch sending!',
       description: `${currentInvoice.customer} - $${currentInvoice.amount.toLocaleString()}`,
     });
   };
@@ -193,7 +269,7 @@ export default function CollectionsPage() {
   const handleWriteSubmit = () => {
     if (!currentInvoice) return;
     
-    setProcessed([...processed, currentInvoice]);
+    setApprovedForBatch([...approvedForBatch, currentInvoice]);
     updateMetrics('write');
     setShowSuccessAnimation(true);
     setShowInlineEditor(false);
@@ -204,7 +280,7 @@ export default function CollectionsPage() {
     }, 1000);
 
     toast({
-      title: 'Custom message sent successfully!',
+      title: 'Custom message approved for batch!',
       description: `${currentInvoice.customer} - $${currentInvoice.amount.toLocaleString()}`,
     });
   };
@@ -214,10 +290,10 @@ export default function CollectionsPage() {
     setEditorContent('');
   };
 
-  const handleSkip = () => {
+  const handleReviewLater = () => {
     if (!currentInvoice) return;
     
-    setSkipped([...skipped, currentInvoice]);
+    setNeedsReview([...needsReview, currentInvoice]);
     setIsMobileMenuOpen(false);
     
     setTimeout(() => {
@@ -225,8 +301,20 @@ export default function CollectionsPage() {
     }, 300);
 
     toast({
-      title: 'Invoice skipped for later review',
+      title: 'Moved to review later',
       description: `${currentInvoice.customer} - $${currentInvoice.amount.toLocaleString()}`,
+    });
+  };
+
+  const handleBatchSend = () => {
+    if (approvedForBatch.length === 0) return;
+    
+    setProcessed([...processed, ...approvedForBatch]);
+    setApprovedForBatch([]);
+    
+    toast({
+      title: `Batch sent successfully!`,
+      description: `${approvedForBatch.length} messages sent to customers`,
     });
   };
 
@@ -257,13 +345,36 @@ export default function CollectionsPage() {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-4">
           <img 
             src="/logos/mobius-logo-light.png" 
             alt="Mobius Logo" 
             className="w-8 h-8 object-contain"
           />
           <h1 className="text-xl font-bold text-gray-900">Collections</h1>
+        </div>
+        
+        {/* Persistent Progress Bar */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-600">Queue Progress</span>
+            <span className="font-semibold text-gray-900">
+              {processed.length + approvedForBatch.length} of {totalQueueSize}
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-cyan-600 to-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${totalQueueSize > 0 ? ((processed.length + approvedForBatch.length) / totalQueueSize) * 100 : 0}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <span>Sent: {processed.length}</span>
+            <span>Approved: {approvedForBatch.length}</span>
+            {needsReview.length > 0 && (
+              <span className="text-yellow-600 font-medium">Review: {needsReview.length}</span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -331,8 +442,27 @@ export default function CollectionsPage() {
         </div>
       </div>
 
-      {/* Queue Status */}
+      {/* Batch Send & Queue Status */}
       <div className="flex-1 flex flex-col justify-end p-6 space-y-4">
+        {/* Batch Send Button */}
+        {approvedForBatch.length >= 3 && (
+          <button 
+            onClick={handleBatchSend}
+            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <CheckCircle className="w-5 h-5" />
+            Send All Reviewed ({approvedForBatch.length})
+          </button>
+        )}
+        
+        {/* Needs Review Button */}
+        {needsReview.length > 0 && (
+          <button className="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+            <Clock className="w-5 h-5" />
+            Needs Review ({needsReview.length})
+          </button>
+        )}
+        
         <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
           <BarChart3 className="w-5 h-5" />
           See Full Queue ({metrics.remainingQueue} remaining)
@@ -393,10 +523,11 @@ export default function CollectionsPage() {
   );
 
   const getCelebrationMessage = () => {
-    const totalItems = queue.length;
+    const totalItems = totalQueueSize;
     const processedCount = processed.length;
-    const skippedCount = skipped.length;
-    const completionRate = totalItems > 0 ? (processedCount / totalItems) * 100 : 0;
+    const approvedCount = approvedForBatch.length;
+    const reviewCount = needsReview.length;
+    const completionRate = totalItems > 0 ? ((processedCount + approvedCount) / totalItems) * 100 : 0;
 
     if (completionRate === 100) {
       return {
@@ -407,13 +538,13 @@ export default function CollectionsPage() {
     } else if (completionRate >= 80) {
       return {
         title: "Great Progress! 👏",
-        message: `You've processed ${processedCount} of ${totalItems} invoices.`,
-        subtitle: `${skippedCount} items were skipped for later review.`
+        message: `You've processed ${processedCount + approvedCount} of ${totalItems} invoices.`,
+        subtitle: `${reviewCount} items need review, ${approvedCount} ready for batch sending.`
       };
     } else {
       return {
         title: "See You Later! 👋",
-        message: `You've processed ${processedCount} of ${totalItems} invoices.`,
+        message: `You've processed ${processedCount + approvedCount} of ${totalItems} invoices.`,
         subtitle: "You can continue where you left off anytime."
       };
     }
@@ -543,7 +674,7 @@ export default function CollectionsPage() {
                 {!showInlineEditor ? (
                   <div className="space-y-3">
                     <button
-                      onClick={handleSend}
+                      onClick={handleApprove}
                       className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 transform hover:scale-105"
                     >
                       {showSuccessAnimation ? (
@@ -551,7 +682,14 @@ export default function CollectionsPage() {
                       ) : (
                         <ArrowRight className="w-5 h-5" />
                       )}
-                      Send This Message
+                      Approve for Batch
+                    </button>
+
+                    <button
+                      onClick={handleSend}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
+                    >
+                      Send Immediately
                     </button>
 
                     <button
@@ -563,10 +701,10 @@ export default function CollectionsPage() {
 
                     <div className="text-center pt-2 space-y-2">
                       <button
-                        onClick={handleSkip}
+                        onClick={handleReviewLater}
                         className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors duration-200 block"
                       >
-                        Skip for now
+                        Review Later
                       </button>
                       <button
                         onClick={handleDoneForToday}
@@ -614,14 +752,15 @@ export default function CollectionsPage() {
             <div className="mt-6 space-y-3">
               <div className="text-center">
                 <span className="text-sm text-gray-600">
-                  {Math.max(0, queue.length - processed.length - skipped.length)} of {queue.length} remaining
+                  {Math.max(0, queue.length - processed.length - approvedForBatch.length - needsReview.length)} of {queue.length} remaining
                 </span>
               </div>
               <div className="flex items-center justify-center">
                 <div className="flex gap-2">
                   {queue.map((_, index) => {
                     const isProcessed = processed.some(p => p.id === queue[index]?.id);
-                    const isSkipped = skipped.some(s => s.id === queue[index]?.id);
+                    const isApproved = approvedForBatch.some(a => a.id === queue[index]?.id);
+                    const isNeedsReview = needsReview.some(n => n.id === queue[index]?.id);
                     const isCurrent = index === currentIndex;
                     
                     return (
@@ -630,11 +769,13 @@ export default function CollectionsPage() {
                         className={`w-2 h-2 rounded-full transition-colors duration-200 ${
                           isProcessed 
                             ? 'bg-green-500' 
-                            : isSkipped 
-                              ? 'bg-yellow-500' 
-                              : isCurrent 
-                                ? 'bg-blue-600' 
-                                : 'bg-gray-300'
+                            : isApproved 
+                              ? 'bg-green-300' 
+                              : isNeedsReview 
+                                ? 'bg-yellow-500' 
+                                : isCurrent 
+                                  ? 'bg-blue-600' 
+                                  : 'bg-gray-300'
                         }`}
                       />
                     );
@@ -722,7 +863,7 @@ export default function CollectionsPage() {
               {!showInlineEditor ? (
                 <div className="space-y-3">
                   <button
-                    onClick={handleSend}
+                    onClick={handleApprove}
                     className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
                   >
                     {showSuccessAnimation ? (
@@ -730,7 +871,14 @@ export default function CollectionsPage() {
                     ) : (
                       <ArrowRight className="w-5 h-5" />
                     )}
-                    Send This Message
+                    Approve for Batch
+                  </button>
+
+                  <button
+                    onClick={handleSend}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
+                  >
+                    Send Immediately
                   </button>
 
                   <button
@@ -742,10 +890,10 @@ export default function CollectionsPage() {
 
                   <div className="text-center pt-2 space-y-2">
                     <button
-                      onClick={handleSkip}
+                      onClick={handleReviewLater}
                       className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors duration-200 block"
                     >
-                      Skip for now
+                      Review Later
                     </button>
                     <button
                       onClick={handleDoneForToday}
