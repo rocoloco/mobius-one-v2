@@ -115,11 +115,25 @@ router.post('/analyze', async (req, res) => {
   try {
     const { customer, invoice } = req.body;
     
+    // Ensure required fields exist for scoring
+    const scoringCustomer = {
+      ...customer,
+      createdAt: customer.createdAt || new Date(Date.now() - (365 * 24 * 60 * 60 * 1000)), // Default to 1 year ago
+      relationshipScore: customer.relationshipScore || 0
+    };
+    
+    const scoringInvoice = {
+      ...invoice,
+      dueDate: invoice.dueDate || new Date(Date.now() - (invoice.daysPastDue * 24 * 60 * 60 * 1000)),
+      totalAmount: invoice.totalAmount || invoice.amount || 0
+    };
+    
     // Run analysis through the services
-    const scoring = scoringService.calculateRelationshipScore(customer, invoice);
+    const scoring = scoringService.calculateRelationshipScore(scoringCustomer, scoringInvoice);
+    
     const routing = routingService.routeCollectionRequest({
-      customer,
-      invoice,
+      customer: scoringCustomer,
+      invoice: scoringInvoice,
       relationshipScore: scoring.score,
       riskLevel: scoring.riskLevel,
       confidence: scoring.confidence
@@ -127,8 +141,8 @@ router.post('/analyze', async (req, res) => {
     
     const recommendation = await recommendationService.generateRecommendation(
       {
-        customer,
-        invoice,
+        customer: scoringCustomer,
+        invoice: scoringInvoice,
         relationshipScore: scoring.score,
         riskLevel: scoring.riskLevel,
         confidence: scoring.confidence
@@ -145,7 +159,7 @@ router.post('/analyze', async (req, res) => {
     });
   } catch (error) {
     console.error('Analysis error:', error);
-    res.status(500).json({ error: 'Failed to analyze invoice' });
+    res.status(500).json({ error: 'Failed to analyze invoice', details: error.message });
   }
 });
 

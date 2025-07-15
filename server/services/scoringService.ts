@@ -111,10 +111,11 @@ export class ScoringService {
    * Calculate payment history score using weighted factors
    */
   private calculatePaymentHistoryScore(history: ScoringFactors['paymentHistory']): number {
-    const onTimeRate = history.onTimePayments / (history.onTimePayments + history.latePayments);
-    const defaultPenalty = history.defaultHistory * 50; // Severe penalty for defaults
-    const latePenalty = Math.min(history.avgDaysLate * 5, 70); // Aggressive penalty for late payments
-    const frequencyBonus = Math.min(history.paymentFrequency * 10, 20); // Regular payments bonus
+    const totalPayments = history.onTimePayments + history.latePayments;
+    const onTimeRate = totalPayments > 0 ? history.onTimePayments / totalPayments : 0.5; // Default to 50% if no data
+    const defaultPenalty = (history.defaultHistory || 0) * 50; // Severe penalty for defaults
+    const latePenalty = Math.min((history.avgDaysLate || 0) * 5, 70); // Aggressive penalty for late payments
+    const frequencyBonus = Math.min((history.paymentFrequency || 0) * 10, 20); // Regular payments bonus
     
     const baseScore = onTimeRate * 100;
     const adjustedScore = baseScore - defaultPenalty - latePenalty + frequencyBonus;
@@ -126,11 +127,11 @@ export class ScoringService {
    * Calculate financial health score
    */
   private calculateFinancialHealthScore(financial: ScoringFactors['financialHealth']): number {
-    const utilizationScore = Math.max(0, 100 - (financial.creditUtilization * 100));
-    const debtRatioScore = Math.max(0, 100 - (financial.debtToIncomeRatio * 50));
-    const stabilityScore = financial.cashFlowStability * 100;
-    const balanceScore = Math.min(100, Math.log10(financial.accountBalance + 1) * 20);
-    const growthScore = Math.min(100, Math.max(0, financial.revenueGrowth * 50 + 50));
+    const utilizationScore = Math.max(0, 100 - ((financial.creditUtilization || 0) * 100));
+    const debtRatioScore = Math.max(0, 100 - ((financial.debtToIncomeRatio || 0) * 50));
+    const stabilityScore = (financial.cashFlowStability || 0.5) * 100;
+    const balanceScore = Math.min(100, Math.log10((financial.accountBalance || 0) + 1) * 20);
+    const growthScore = Math.min(100, Math.max(0, (financial.revenueGrowth || 0) * 50 + 50));
     
     return Math.round((utilizationScore + debtRatioScore + stabilityScore + balanceScore + growthScore) / 5);
   }
@@ -139,11 +140,11 @@ export class ScoringService {
    * Calculate relationship factor score
    */
   private calculateRelationshipFactorScore(relationship: ScoringFactors['relationship']): number {
-    const ageScore = Math.min(100, relationship.accountAge * 10); // Longer relationship = better
-    const responsivenessScore = relationship.communicationResponsiveness * 100;
-    const resolutionScore = Math.min(100, relationship.previousResolutions * 20);
-    const complianceScore = relationship.contractCompliance * 100;
-    const partnershipScore = relationship.businessPartnership * 100;
+    const ageScore = Math.min(100, (relationship.accountAge || 1) * 10); // Longer relationship = better
+    const responsivenessScore = (relationship.communicationResponsiveness || 0.5) * 100;
+    const resolutionScore = Math.min(100, (relationship.previousResolutions || 0) * 20);
+    const complianceScore = (relationship.contractCompliance || 0.5) * 100;
+    const partnershipScore = (relationship.businessPartnership || 0.5) * 100;
     
     return Math.round((ageScore + responsivenessScore + resolutionScore + complianceScore + partnershipScore) / 5);
   }
@@ -152,10 +153,10 @@ export class ScoringService {
    * Calculate behavioral score
    */
   private calculateBehavioralScore(behavioral: ScoringFactors['behavioral']): number {
-    const contactScore = Math.max(0, 100 - (behavioral.contactAttempts * 10)); // Fewer attempts = better
-    const responseScore = Math.max(0, 100 - (behavioral.responseTime * 20)); // Faster response = better
-    const disputeScore = Math.max(0, 100 - (behavioral.disputeHistory * 25)); // Fewer disputes = better
-    const engagementScore = behavioral.engagementLevel * 100;
+    const contactScore = Math.max(0, 100 - ((behavioral.contactAttempts || 0) * 10)); // Fewer attempts = better
+    const responseScore = Math.max(0, 100 - ((behavioral.responseTime || 0) * 20)); // Faster response = better
+    const disputeScore = Math.max(0, 100 - ((behavioral.disputeHistory || 0) * 25)); // Fewer disputes = better
+    const engagementScore = (behavioral.engagementLevel || 0.5) * 100;
     
     return Math.round((contactScore + responseScore + disputeScore + engagementScore) / 4);
   }
@@ -164,9 +165,9 @@ export class ScoringService {
    * Calculate external factors score
    */
   private calculateExternalScore(external: ScoringFactors['external']): number {
-    const industryScore = (1 - external.industryRisk) * 100;
-    const economicScore = external.economicIndicators * 100;
-    const seasonalScore = external.seasonalFactors * 100;
+    const industryScore = (1 - (external.industryRisk || 0.3)) * 100;
+    const economicScore = (external.economicIndicators || 0.7) * 100;
+    const seasonalScore = (external.seasonalFactors || 0.8) * 100;
     
     return Math.round((industryScore + economicScore + seasonalScore) / 3);
   }

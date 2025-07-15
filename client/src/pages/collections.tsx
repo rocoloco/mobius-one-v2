@@ -139,7 +139,14 @@ export default function CollectionsPage() {
         inv.id === variables.invoice.id 
           ? { 
               ...inv, 
-              ...data.analysis.summary,
+              relationshipScore: data.analysis.scoring.score || inv.relationshipScore,
+              riskLevel: data.analysis.scoring.riskLevel || inv.riskLevel,
+              aiMessage: data.analysis.recommendation.reasoning || 'Analysis complete',
+              aiRecommendation: data.analysis.recommendation.reasoning || 'Analysis complete',
+              recommendationConfidence: data.analysis.recommendation.confidence || 75,
+              aiModel: data.analysis.routing.aiModel || 'gpt-4o-mini',
+              estimatedCost: data.analysis.routing.estimatedCost || 0.001,
+              estimatedReviewTime: data.analysis.routing.estimatedReviewTime || 0.5,
               analysisComplete: true 
             }
           : inv
