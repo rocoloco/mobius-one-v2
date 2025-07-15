@@ -3,6 +3,7 @@ import { storage } from '../storage';
 import { scoringService } from '../services/scoringService';
 import { routingService } from '../services/routing-service';
 import { recommendationService } from '../services/recommendation-service';
+import { AIService } from '../services/aiService';
 
 const router = Router();
 
@@ -115,51 +116,26 @@ router.post('/analyze', async (req, res) => {
   try {
     const { customer, invoice } = req.body;
     
-    // Ensure required fields exist for scoring
-    const scoringCustomer = {
-      ...customer,
-      createdAt: customer.createdAt || new Date(Date.now() - (365 * 24 * 60 * 60 * 1000)), // Default to 1 year ago
-      relationshipScore: customer.relationshipScore || 0
-    };
+    if (!customer || !invoice) {
+      return res.status(400).json({ 
+        error: 'Both customer and invoice data are required' 
+      });
+    }
+
+    console.log('Analyzing invoice:', invoice.id, 'for customer:', customer.name);
     
-    const scoringInvoice = {
-      ...invoice,
-      dueDate: invoice.dueDate || new Date(Date.now() - (invoice.daysPastDue * 24 * 60 * 60 * 1000)),
-      totalAmount: invoice.totalAmount || invoice.amount || 0
-    };
+    // Use the real AI service for analysis
+    const result = await AIService.analyzeInvoice(customer, invoice);
     
-    // Run analysis through the services
-    const scoring = scoringService.calculateRelationshipScore(scoringCustomer, scoringInvoice);
+    console.log('Analysis complete for invoice:', invoice.id);
     
-    const routing = routingService.routeCollectionRequest({
-      customer: scoringCustomer,
-      invoice: scoringInvoice,
-      relationshipScore: scoring.score,
-      riskLevel: scoring.riskLevel,
-      confidence: scoring.confidence
-    });
-    
-    const recommendation = await recommendationService.generateRecommendation(
-      {
-        customer: scoringCustomer,
-        invoice: scoringInvoice,
-        relationshipScore: scoring.score,
-        riskLevel: scoring.riskLevel,
-        confidence: scoring.confidence
-      },
-      routing
-    );
-    
-    res.json({
-      analysis: {
-        scoring,
-        routing,
-        recommendation
-      }
-    });
+    res.json(result);
   } catch (error) {
-    console.error('Analysis error:', error);
-    res.status(500).json({ error: 'Failed to analyze invoice', details: error.message });
+    console.error('AI Analysis failed:', error);
+    res.status(500).json({ 
+      error: 'Analysis failed', 
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
