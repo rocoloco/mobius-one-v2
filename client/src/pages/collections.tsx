@@ -855,12 +855,11 @@ Best regards,
                     {currentInvoice.contactName} at {currentInvoice.customer}
                   </h1>
 
-                  <p className="text-gray-600">
-                    {currentInvoice.analysisComplete 
-                      ? getRelationshipDescription(currentInvoice.score || currentInvoice.relationshipScore, currentInvoice.riskLevel)
-                      : `${currentInvoice.relationship} ${currentInvoice.situation}`
-                    }
-                  </p>
+                  {currentInvoice.analysisComplete && (
+                    <p className="text-gray-600">
+                      {getRelationshipDescription(currentInvoice.score || currentInvoice.relationshipScore, currentInvoice.riskLevel)}
+                    </p>
+                  )}
                 </div>
 
                 {/* AI Message */}
