@@ -438,6 +438,82 @@ Best regards,
     }).format(amount);
   };
 
+  // Progress Stats Component
+  const ProgressStats = () => (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-gray-900">Queue Progress</h2>
+        <span className="text-sm text-gray-600">
+          {processed.length + approvedForBatch.length} of {totalQueueSize}
+        </span>
+      </div>
+      
+      <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+        <div 
+          className="bg-gradient-to-r from-cyan-600 to-blue-600 h-2 rounded-full transition-all duration-300"
+          style={{ width: `${totalQueueSize > 0 ? ((processed.length + approvedForBatch.length) / totalQueueSize) * 100 : 0}%` }}
+        />
+      </div>
+      
+      <div className="grid grid-cols-3 gap-4">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-green-600">{processed.length}</div>
+          <div className="text-sm text-gray-600">Sent</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-600">{approvedForBatch.length}</div>
+          <div className="text-sm text-gray-600">Approved</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-yellow-600">{needsReview.length}</div>
+          <div className="text-sm text-gray-600">Review</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Impact Metrics Component
+  const ImpactMetrics = () => (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">Today's Impact</h2>
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+            <DollarSign className="w-5 h-5 text-green-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Revenue Accelerated</p>
+            <p className={`text-lg font-semibold text-gray-900 transition-transform duration-500 ${isAnimating ? 'scale-110' : ''}`}>
+              {formatCurrency(metrics.revenueAccelerated)}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+            <Clock className="w-5 h-5 text-blue-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Time Saved</p>
+            <p className={`text-lg font-semibold text-gray-900 transition-transform duration-500 ${isAnimating ? 'scale-110' : ''}`}>
+              {metrics.timeSaved} hours
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+            <Shield className="w-5 h-5 text-purple-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Relationships Protected</p>
+            <p className="text-lg font-semibold text-gray-900">
+              {metrics.relationshipsProtected}%
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   // Sidebar Content Component
   const SidebarContent = () => (
     <div className="h-full flex flex-col">
