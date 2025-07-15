@@ -114,6 +114,10 @@ export default function CollectionsPage() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  // Debug the query result
+  console.log('overdueInvoicesData:', overdueInvoicesData);
+  console.log('loadingOverdue:', loadingOverdue);
+
   // Mutation for analyzing invoices
   const analyzeMutation = useMutation({
     mutationFn: async (invoiceData: any) => {
@@ -170,18 +174,18 @@ export default function CollectionsPage() {
 
   // Initialize queue with real data and restore progress
   useEffect(() => {
-    if (!overdueInvoicesData?.invoices) {
+    if (!overdueInvoicesData || !Array.isArray(overdueInvoicesData)) {
       console.log('No overdue invoices data yet');
       return;
     }
     
-    console.log('Processing overdue invoices data:', overdueInvoicesData.invoices);
+    console.log('Processing overdue invoices data:', overdueInvoicesData);
     
     // For debug: Clear localStorage to force fresh start
     localStorage.clear();
     
     // Transform backend data to match frontend interface - don't filter by processed invoices for now
-    const availableInvoices = overdueInvoicesData.invoices.map((invoice: any) => ({
+    const availableInvoices = overdueInvoicesData.map((invoice: any) => ({
       ...invoice,
       id: invoice.id,
       invoiceNumber: invoice.invoiceNumber || 'Unknown',
