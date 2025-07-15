@@ -108,17 +108,94 @@ export default function CollectionsPage() {
     }
   };
 
-  // Initialize queue with mock data and restore progress
+  // Fetch real overdue invoices from backend
+  const { data: overdueInvoicesData, isLoading: loadingOverdue } = useQuery({
+    queryKey: ['/api/collections/overdue-invoices'],
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Mutation for analyzing invoices
+  const analyzeMutation = useMutation({
+    mutationFn: async (invoiceData: any) => {
+      const response = await apiRequest(`/api/collections/analyze`, {
+        method: 'POST',
+        body: JSON.stringify({
+          customer: invoiceData.customer,
+          invoice: invoiceData.invoice
+        })
+      });
+      return response;
+    },
+    onSuccess: (data, variables) => {
+      console.log('Analysis complete:', data);
+      // Update the queue with the analysis results
+      setQueue(prev => prev.map(inv => 
+        inv.id === variables.invoice.id 
+          ? { 
+              ...inv, 
+              ...data.analysis.summary,
+              analysisComplete: true 
+            }
+          : inv
+      ));
+    },
+    onError: (error) => {
+      console.error('Analysis failed:', error);
+      toast({
+        title: "Analysis Failed",
+        description: "Failed to analyze invoice. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Mutation for bulk approval
+  const bulkApproveMutation = useMutation({
+    mutationFn: async (invoiceIds: number[]) => {
+      const response = await apiRequest(`/api/collections/bulk-approve`, {
+        method: 'POST',
+        body: JSON.stringify({ invoiceIds })
+      });
+      return response;
+    },
+    onSuccess: (data) => {
+      console.log('Bulk approval complete:', data);
+      toast({
+        title: "Success",
+        description: `${data.approvedActions.length} collection actions approved successfully`,
+        variant: "default"
+      });
+    }
+  });
+
+  // Initialize queue with real data and restore progress
   useEffect(() => {
+    if (!overdueInvoicesData?.invoices) return;
+    
     const savedProgress = loadProgressFromStorage();
     const alreadyProcessed = loadProcessedInvoices();
     
     console.log('Already processed invoices:', alreadyProcessed);
     
-    // Filter out already processed invoices
-    const availableInvoices = invoices.filter(invoice => 
-      !alreadyProcessed.includes(invoice.id)
-    );
+    // Transform backend data to match frontend interface
+    const availableInvoices = overdueInvoicesData.invoices
+      .filter((invoice: any) => !alreadyProcessed.includes(invoice.id))
+      .map((invoice: any) => ({
+        ...invoice,
+        customer: invoice.customer || 'Unknown Customer',
+        contactName: invoice.contactName || 'Unknown Contact',
+        amount: invoice.totalAmount || invoice.amount || 0,
+        daysPastDue: invoice.daysPastDue || 0,
+        relationshipScore: invoice.relationshipScore || 0,
+        aiRecommendation: invoice.aiRecommendation || 'Pending analysis...',
+        recommendationConfidence: invoice.recommendationConfidence || 0,
+        approvalStatus: invoice.approvalStatus || 'pending',
+        riskLevel: invoice.riskLevel || 'medium',
+        relationship: invoice.relationship || 'Unknown',
+        situation: invoice.situation || 'Overdue payment',
+        aiMessage: invoice.aiMessage || 'Analysis in progress...',
+        analysisComplete: false
+      }));
     
     console.log('Available invoices after filtering:', availableInvoices.length);
     
@@ -142,7 +219,37 @@ export default function CollectionsPage() {
     }
     
     setQueue(availableInvoices);
-  }, []);
+  }, [overdueInvoicesData?.invoices]);
+
+  // Auto-analyze current invoice when it changes
+  useEffect(() => {
+    if (queue.length > 0 && currentIndex < queue.length) {
+      const currentInvoice = queue[currentIndex];
+      if (currentInvoice && !currentInvoice.analysisComplete) {
+        // Trigger analysis for current invoice
+        analyzeMutation.mutate({
+          customer: {
+            id: currentInvoice.customerId,
+            name: currentInvoice.customer,
+            email: currentInvoice.contactEmail || 'unknown@example.com',
+            relationshipScore: currentInvoice.relationshipScore,
+            totalOverdueAmount: currentInvoice.amount,
+            averagePaymentDays: currentInvoice.daysPastDue,
+            createdAt: new Date()
+          },
+          invoice: {
+            id: currentInvoice.id,
+            invoiceNumber: currentInvoice.invoiceNumber,
+            customerId: currentInvoice.customerId,
+            totalAmount: currentInvoice.amount,
+            dueDate: new Date(Date.now() - (currentInvoice.daysPastDue * 24 * 60 * 60 * 1000)),
+            daysPastDue: currentInvoice.daysPastDue,
+            approvalStatus: currentInvoice.approvalStatus
+          }
+        });
+      }
+    }
+  }, [currentIndex, queue]);
 
   // Auto-save progress on state changes
   useEffect(() => {
@@ -280,6 +387,22 @@ export default function CollectionsPage() {
   ];
 
   const currentInvoice = queue[currentIndex];
+
+  // Show loading state while fetching overdue invoices
+  if (loadingOverdue) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <TopHeader />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Loading collections queue...</h2>
+            <p className="text-gray-600">Fetching overdue invoices for analysis</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const moveToNext = () => {
     if (currentIndex >= queue.length - 1) {
@@ -914,17 +1037,49 @@ Best regards,
                       <span className="text-white font-semibold text-sm">AI</span>
                     </div>
                     <div className="flex-1">
-                      <p className="text-gray-800 italic">
-                        "{currentInvoice.aiMessage}"
-                      </p>
-                      <div className="mt-3 flex items-center gap-2">
-                        <div className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                          {currentInvoice.recommendationConfidence}% confidence
+                      {currentInvoice.analysisComplete ? (
+                        <div>
+                          <p className="text-gray-800 italic mb-3">
+                            "{currentInvoice.aiMessage}"
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2 mb-3">
+                            <div className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                              {currentInvoice.recommendationConfidence}% confidence
+                            </div>
+                            <div className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                              Score: {currentInvoice.score || currentInvoice.relationshipScore}
+                            </div>
+                            {currentInvoice.aiModel && (
+                              <div className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
+                                {currentInvoice.aiModel === 'gpt-4o-mini' ? 'GPT-4o Mini' : 
+                                 currentInvoice.aiModel === 'claude-3.5-sonnet' ? 'Claude 3.5 Sonnet' :
+                                 currentInvoice.aiModel === 'claude-opus-4' ? 'Claude Opus-4' : 
+                                 currentInvoice.aiModel}
+                              </div>
+                            )}
+                            {currentInvoice.riskLevel && (
+                              <div className={`px-3 py-1 text-xs font-medium rounded-full ${
+                                currentInvoice.riskLevel === 'low' ? 'bg-green-100 text-green-800' :
+                                currentInvoice.riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
+                                {currentInvoice.riskLevel.toUpperCase()} Risk
+                              </div>
+                            )}
+                          </div>
+                          {currentInvoice.estimatedCost && (
+                            <div className="text-xs text-gray-600">
+                              Analysis cost: ${currentInvoice.estimatedCost.toFixed(3)} • 
+                              Review time: {currentInvoice.estimatedReviewTime || 0.5} min
+                            </div>
+                          )}
                         </div>
-                        <div className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                          Relationship Score: {currentInvoice.relationshipScore}%
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          <span className="text-gray-600">Analyzing with AI routing system...</span>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
