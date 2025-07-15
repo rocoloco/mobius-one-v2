@@ -7,76 +7,71 @@ import { AIService } from '../services/aiService';
 
 const router = Router();
 
+// Generate random invoices with varied risk profiles
+const generateRandomInvoice = (id: number) => {
+  const companies = ["TechFlow", "DataCorp", "CloudSys", "StartupABC", "MegaCorp", "SmallBiz"];
+  const names = ["Sarah Johnson", "Michael Chen", "Lisa Wang", "David Park", "Emma Wilson"];
+  
+  // Generate varied risk profiles
+  const riskType = Math.random();
+  let amount, daysPastDue, relationshipScore;
+  
+  if (riskType < 0.4) { // 40% low risk
+    amount = Math.floor(Math.random() * 20000) + 5000; // $5K-25K
+    daysPastDue = Math.floor(Math.random() * 25) + 10; // 10-35 days
+    relationshipScore = Math.floor(Math.random() * 30) + 70; // 70-100
+  } else if (riskType < 0.7) { // 30% medium risk  
+    amount = Math.floor(Math.random() * 75000) + 25000; // $25K-100K
+    daysPastDue = Math.floor(Math.random() * 30) + 30; // 30-60 days
+    relationshipScore = Math.floor(Math.random() * 30) + 40; // 40-70
+  } else { // 30% high risk
+    amount = Math.floor(Math.random() * 100000) + 50000; // $50K-150K
+    daysPastDue = Math.floor(Math.random() * 40) + 60; // 60-100 days
+    relationshipScore = Math.floor(Math.random() * 40) + 5; // 5-45
+  }
+  
+  return {
+    id,
+    customer: companies[Math.floor(Math.random() * companies.length)],
+    contactName: names[Math.floor(Math.random() * names.length)],
+    totalAmount: amount,
+    daysPastDue,
+    relationshipScore,
+    invoiceNumber: `INV-2024-${String(id).padStart(3, '0')}`
+  };
+};
+
 /**
  * GET /api/collections/overdue-invoices  
  * Get demo overdue invoices for testing
  */
 router.get('/overdue-invoices', async (req, res) => {
   try {
-    // Mock customer data for proper scoring
-    const mockCustomers = [
-      {
-        id: 1,
-        name: 'Acme Corp',
-        contactName: 'Sarah Johnson',
-        email: 'finance@acme.com',
-        relationshipScore: 0,
-        createdAt: new Date('2023-01-15'),
-        averagePaymentDays: 35,
-        totalOverdueAmount: 15750
-      },
-      {
-        id: 2,
-        name: 'TechFlow Solutions',
-        contactName: 'Michael Chen',
-        email: 'accounting@techflow.com',
-        relationshipScore: 0,
-        createdAt: new Date('2023-03-20'),
-        averagePaymentDays: 28,
-        totalOverdueAmount: 8500
-      },
-      {
-        id: 3,
-        name: 'StartupXYZ',
-        contactName: 'David Park',
-        email: 'finance@startupxyz.com',
-        relationshipScore: 0,
-        createdAt: new Date('2023-08-10'),
-        averagePaymentDays: 55,
-        totalOverdueAmount: 22000
-      }
-    ];
+    // Generate 10 random invoices with varied risk profiles
+    const randomInvoices = Array.from({ length: 10 }, (_, i) => generateRandomInvoice(i + 1));
     
-    // Mock invoice data
-    const mockInvoices = [
-      {
-        id: 1,
-        customerId: 1,
-        invoiceNumber: 'INV-2024-001',
-        totalAmount: 15750,
-        dueDate: new Date('2024-11-28'),
-        daysPastDue: 45,
-        approvalStatus: 'pending'
-      },
-      {
-        id: 2,
-        customerId: 2,
-        invoiceNumber: 'INV-2024-002',
-        totalAmount: 8500,
-        dueDate: new Date('2024-12-11'),
-        daysPastDue: 30,
-        approvalStatus: 'pending'
-      },
-      {
-        id: 3,
-        customerId: 3,
-        invoiceNumber: 'INV-2024-003',
-        totalAmount: 22000,
-        dueDate: new Date('2024-11-11'),
-        daysPastDue: 65,
-        approvalStatus: 'pending'
-      }
-    ];
+    // Create corresponding customer data
+    const mockCustomers = randomInvoices.map(invoice => ({
+      id: invoice.id,
+      name: invoice.customer,
+      contactName: invoice.contactName,
+      email: `finance@${invoice.customer.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`,
+      relationshipScore: invoice.relationshipScore,
+      createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000), // Random date within last year
+      averagePaymentDays: Math.floor(Math.random() * 30) + 15, // 15-45 days
+      totalOverdueAmount: invoice.totalAmount
+    }));
+    
+    // Create invoice data with proper structure
+    const mockInvoices = randomInvoices.map(invoice => ({
+      id: invoice.id,
+      customerId: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      totalAmount: invoice.totalAmount,
+      dueDate: new Date(Date.now() - (invoice.daysPastDue * 24 * 60 * 60 * 1000)),
+      daysPastDue: invoice.daysPastDue,
+      approvalStatus: 'pending'
+    }));
     
     // Calculate proper scores using the scoring service
     const demoInvoices = mockInvoices.map(invoice => {
