@@ -1,11 +1,16 @@
-
+Here's the Layout.tsx file that needs to be updated. Make these exact changes:
+1. Remove the Sidebar import and all sidebar-related code:
+jsximport { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Button } from "@heroui/react";
 import { Plus } from "lucide-react";
+// REMOVE: import Sidebar from "./Sidebar";
 import BreadcrumbNavigation from "./Breadcrumb";
 import { useNavigate } from "react-router-dom";
 
 export default function Layout() {
+  // REMOVE: const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // REMOVE: const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -16,8 +21,13 @@ export default function Layout() {
     navigate('/');
   };
   
+  // REMOVE: const toggleMobileMenu = () => { setMobileMenuOpen(!mobileMenuOpen); };
+  
   return (
     <div className="h-screen flex flex-col" style={{background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)'}}>
+      {/* REMOVE: Mobile Menu Overlay */}
+      {/* REMOVE: Sidebar */}
+      
       {/* Main Content Area - Now Full Width */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Breadcrumb Navigation */}
@@ -43,3 +53,5 @@ export default function Layout() {
     </div>
   );
 }
+2. Delete the Sidebar.tsx file completely
+3. Change the main container from flex (horizontal) to flex flex-col (vertical) for full-width layout
