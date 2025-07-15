@@ -186,7 +186,7 @@ export default function CollectionsPage() {
     // For debug: Clear localStorage to force fresh start
     localStorage.clear();
     
-    // Transform backend data to match frontend interface - don't filter by processed invoices for now
+    // Transform backend data - initially use existing data, then enhance with AI analysis
     const availableInvoices = overdueInvoicesData.map((invoice: any) => ({
       ...invoice,
       id: invoice.id,
@@ -195,18 +195,18 @@ export default function CollectionsPage() {
       contactName: invoice.contactName || 'Unknown Contact',
       amount: invoice.totalAmount || invoice.amount || 0,
       daysPastDue: invoice.daysPastDue || 0,
-      relationshipScore: invoice.relationshipScore || 30,
-      aiRecommendation: invoice.aiRecommendation || 'Friendly reminder call recommended',
+      relationshipScore: invoice.relationshipScore || 65,
+      aiRecommendation: invoice.aiRecommendation || 'Analyzing payment history and relationship patterns...',
       recommendationConfidence: invoice.recommendationConfidence || 75,
       approvalStatus: invoice.approvalStatus || 'pending',
       riskLevel: invoice.riskLevel || 'medium',
       relationship: invoice.relationship || 'valued client',
       situation: invoice.situation || 'likely oversight',
-      aiMessage: invoice.aiMessage || 'Based on payment history and relationship analysis, a friendly reminder would be most effective here.',
-      analysisComplete: true, // Mark as complete since we have the data
-      score: invoice.relationshipScore || 30,
+      aiMessage: invoice.aiRecommendation || 'Analyzing payment history and relationship patterns to provide personalized collection strategy...',
+      analysisComplete: false, // Will be updated by AI analysis
+      score: invoice.relationshipScore || 65,
       aiModel: invoice.aiModel || 'gpt-4o-mini',
-      estimatedCost: invoice.estimatedCost || 0.003,
+      estimatedCost: invoice.estimatedCost || 0.001,
       estimatedReviewTime: invoice.estimatedReviewTime || 0.5
     }));
     
