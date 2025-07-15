@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { Customer, Invoice } from '@shared/schema';
+import { storage } from '../storage';
 import { scoringService } from '../services/scoringService';
 import { routingService } from '../services/routing-service';
 import { recommendationService } from '../services/recommendation-service';
@@ -7,349 +7,259 @@ import { recommendationService } from '../services/recommendation-service';
 const router = Router();
 
 /**
+ * GET /api/collections/overdue-invoices  
+ * Get demo overdue invoices for testing
+ */
+router.get('/overdue-invoices', async (req, res) => {
+  try {
+    // Mock customer data for proper scoring
+    const mockCustomers = [
+      {
+        id: 1,
+        name: 'Acme Corp',
+        contactName: 'Sarah Johnson',
+        email: 'finance@acme.com',
+        relationshipScore: 0,
+        createdAt: new Date('2023-01-15'),
+        averagePaymentDays: 35,
+        totalOverdueAmount: 15750
+      },
+      {
+        id: 2,
+        name: 'TechFlow Solutions',
+        contactName: 'Michael Chen',
+        email: 'accounting@techflow.com',
+        relationshipScore: 0,
+        createdAt: new Date('2023-03-20'),
+        averagePaymentDays: 28,
+        totalOverdueAmount: 8500
+      },
+      {
+        id: 3,
+        name: 'StartupXYZ',
+        contactName: 'David Park',
+        email: 'finance@startupxyz.com',
+        relationshipScore: 0,
+        createdAt: new Date('2023-08-10'),
+        averagePaymentDays: 55,
+        totalOverdueAmount: 22000
+      }
+    ];
+    
+    // Mock invoice data
+    const mockInvoices = [
+      {
+        id: 1,
+        customerId: 1,
+        invoiceNumber: 'INV-2024-001',
+        totalAmount: 15750,
+        dueDate: new Date('2024-11-28'),
+        daysPastDue: 45,
+        approvalStatus: 'pending'
+      },
+      {
+        id: 2,
+        customerId: 2,
+        invoiceNumber: 'INV-2024-002',
+        totalAmount: 8500,
+        dueDate: new Date('2024-12-11'),
+        daysPastDue: 30,
+        approvalStatus: 'pending'
+      },
+      {
+        id: 3,
+        customerId: 3,
+        invoiceNumber: 'INV-2024-003',
+        totalAmount: 22000,
+        dueDate: new Date('2024-11-11'),
+        daysPastDue: 65,
+        approvalStatus: 'pending'
+      }
+    ];
+    
+    // Calculate proper scores using the scoring service
+    const demoInvoices = mockInvoices.map(invoice => {
+      const customer = mockCustomers.find(c => c.id === invoice.customerId);
+      if (customer) {
+        const scoreResult = scoringService.calculateRelationshipScore(customer as any, invoice as any);
+        return {
+          id: invoice.id,
+          invoiceNumber: invoice.invoiceNumber,
+          customer: customer.name,
+          contactName: customer.contactName,
+          amount: invoice.totalAmount,
+          daysPastDue: invoice.daysPastDue,
+          relationshipScore: scoreResult.score,
+          aiRecommendation: scoreResult.recommendation,
+          recommendationConfidence: scoreResult.confidence,
+          approvalStatus: invoice.approvalStatus,
+          riskLevel: scoreResult.riskLevel,
+          customerId: invoice.customerId
+        };
+      }
+      return invoice;
+    });
+
+    res.json(demoInvoices);
+  } catch (error) {
+    console.error('Demo invoices error:', error);
+    res.status(500).json({ error: 'Failed to load demo invoices' });
+  }
+});
+
+/**
  * POST /api/collections/analyze
- * Analyze a customer/invoice and generate collection recommendation
+ * Analyze invoice with AI recommendations
  */
 router.post('/analyze', async (req, res) => {
   try {
-    const { customer, invoice } = req.body as {
-      customer: Customer;
-      invoice: Invoice;
-    };
-
-    // Validate input
-    if (!customer || !invoice) {
-      return res.status(400).json({
-        error: 'Missing required fields: customer and invoice'
-      });
-    }
-
-    // Step 1: Calculate relationship score
-    const scoreResult = scoringService.calculateRelationshipScore(customer, invoice);
-
-    // Step 2: Determine AI routing
-    const routingContext = {
+    const { customer, invoice } = req.body;
+    
+    // Run analysis through the services
+    const scoring = scoringService.calculateRelationshipScore(customer, invoice);
+    const routing = routingService.routeCollectionRequest({
       customer,
       invoice,
-      relationshipScore: scoreResult.score,
-      riskLevel: scoreResult.riskLevel,
-      confidence: scoreResult.confidence
-    };
-
-    const routingDecision = routingService.routeCollectionRequest(routingContext);
-
-    // Step 3: Generate recommendation
+      relationshipScore: scoring.score,
+      riskLevel: scoring.riskLevel,
+      confidence: scoring.confidence
+    });
+    
     const recommendation = await recommendationService.generateRecommendation(
-      routingContext,
-      routingDecision
+      {
+        customer,
+        invoice,
+        relationshipScore: scoring.score,
+        riskLevel: scoring.riskLevel,
+        confidence: scoring.confidence
+      },
+      routing
     );
-
-    // Step 4: Return complete analysis
+    
     res.json({
-      success: true,
       analysis: {
-        scoring: scoreResult,
-        routing: routingDecision,
-        recommendation,
-        summary: {
-          score: scoreResult.score,
-          riskLevel: scoreResult.riskLevel,
-          aiModel: routingDecision.aiModel,
-          action: recommendation.recommendedAction,
-          confidence: recommendation.confidence,
-          approvalRequired: recommendation.approvalRequired,
-          estimatedCost: routingDecision.estimatedCost,
-          estimatedReviewTime: routingDecision.estimatedReviewTime
-        }
+        scoring,
+        routing,
+        recommendation
       }
     });
-
   } catch (error) {
-    console.error('Collection analysis error:', error);
-    res.status(500).json({
-      error: 'Failed to analyze collection scenario',
-      details: error instanceof Error ? error.message : 'Unknown error'
+    console.error('Analysis error:', error);
+    res.status(500).json({ error: 'Failed to analyze invoice' });
+  }
+});
+
+/**
+ * GET /api/collections/metrics
+ * Get collection metrics
+ */
+router.get('/metrics', async (req, res) => {
+  try {
+    const userId = 1; // Default user for demo
+    const latestMetric = await storage.getLatestDsoMetric(userId);
+    
+    const metrics = {
+      currentDso: latestMetric?.currentDso || 42,
+      targetDso: 38,
+      workingCapitalFreed: latestMetric?.workingCapitalFreed || 127000,
+      totalOverdue: 342000,
+      pendingActions: 12,
+      approvalRate: latestMetric?.approvalRate || 94,
+      relationshipScore: latestMetric?.relationshipScore || 87
+    };
+    
+    res.json(metrics);
+  } catch (error) {
+    console.error('Metrics error:', error);
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
+
+/**
+ * POST /api/collections/approve/:invoiceId
+ * Approve single collection action
+ */
+router.post('/approve/:invoiceId', async (req, res) => {
+  try {
+    const invoiceId = parseInt(req.params.invoiceId);
+    
+    console.log(`Approving collection action for invoice ${invoiceId}`);
+    
+    const mockAction = {
+      id: Date.now(),
+      invoiceId,
+      actionType: 'reminder',
+      strategy: 'gentle',
+      emailContent: 'AI-generated reminder content based on relationship score',
+      sentAt: new Date(),
+      responseReceived: false,
+      relationshipImpact: 0,
+      userId: 1
+    };
+    
+    console.log(`Mock approval created for invoice ${invoiceId}`);
+    
+    res.json({ 
+      message: "Collection action approved successfully", 
+      action: mockAction,
+      invoiceId,
+      status: 'approved',
+      timestamp: new Date()
+    });
+  } catch (error) {
+    console.error("Error approving collection action:", error);
+    res.status(500).json({ 
+      message: "Error approving collection action",
+      error: error.message 
     });
   }
 });
 
 /**
- * POST /api/collections/batch-analyze
- * Analyze multiple overdue invoices at once
+ * POST /api/collections/bulk-approve
+ * Bulk approve collection actions
  */
-router.post('/batch-analyze', async (req, res) => {
+router.post('/bulk-approve', async (req, res) => {
   try {
-    const { scenarios } = req.body as {
-      scenarios: { customer: Customer; invoice: Invoice }[];
-    };
-
-    if (!scenarios || !Array.isArray(scenarios)) {
-      return res.status(400).json({
-        error: 'Missing required field: scenarios array'
-      });
-    }
-
-    const results = [];
-    let totalCost = 0;
-    let totalReviewTime = 0;
-
-    for (const scenario of scenarios) {
+    const { invoiceIds } = req.body;
+    
+    console.log(`Bulk approving collection actions for invoices:`, invoiceIds);
+    
+    const approvedActions = [];
+    
+    for (const invoiceId of invoiceIds) {
       try {
-        // Process each scenario
-        const scoreResult = scoringService.calculateRelationshipScore(
-          scenario.customer, 
-          scenario.invoice
-        );
-
-        const routingContext = {
-          customer: scenario.customer,
-          invoice: scenario.invoice,
-          relationshipScore: scoreResult.score,
-          riskLevel: scoreResult.riskLevel,
-          confidence: scoreResult.confidence
+        const mockAction = {
+          id: Date.now() + invoiceId,
+          invoiceId,
+          actionType: 'reminder',
+          strategy: 'gentle',
+          emailContent: 'AI-generated reminder content based on relationship score',
+          sentAt: new Date(),
+          responseReceived: false,
+          relationshipImpact: 0,
+          userId: 1
         };
-
-        const routingDecision = routingService.routeCollectionRequest(routingContext);
-        const recommendation = await recommendationService.generateRecommendation(
-          routingContext,
-          routingDecision
-        );
-
-        totalCost += routingDecision.estimatedCost;
-        totalReviewTime += routingDecision.estimatedReviewTime;
-
-        results.push({
-          customerId: scenario.customer.id,
-          invoiceId: scenario.invoice.id,
-          analysis: {
-            scoring: scoreResult,
-            routing: routingDecision,
-            recommendation
-          }
-        });
-
-      } catch (scenarioError) {
-        results.push({
-          customerId: scenario.customer.id,
-          invoiceId: scenario.invoice.id,
-          error: scenarioError instanceof Error ? scenarioError.message : 'Analysis failed'
-        });
+        
+        console.log(`Mock bulk approval created for invoice ${invoiceId}`);
+        approvedActions.push({ invoiceId, action: mockAction });
+      } catch (error) {
+        console.error(`Error approving invoice ${invoiceId}:`, error);
       }
     }
-
-    // Batch summary
-    const summary = {
-      totalScenarios: scenarios.length,
-      successfulAnalyses: results.filter(r => !r.error).length,
-      failedAnalyses: results.filter(r => r.error).length,
-      totalEstimatedCost: Math.round(totalCost * 100) / 100,
-      totalEstimatedReviewTime: Math.round(totalReviewTime * 10) / 10,
-      riskDistribution: this.calculateRiskDistribution(results),
-      modelUsageDistribution: this.calculateModelDistribution(results)
-    };
-
-    res.json({
-      success: true,
-      results,
-      summary
+    
+    res.json({ 
+      message: `${invoiceIds.length} collection actions approved successfully`, 
+      approvedActions,
+      timestamp: new Date()
     });
-
   } catch (error) {
-    console.error('Batch analysis error:', error);
-    res.status(500).json({
-      error: 'Failed to perform batch analysis',
-      details: error instanceof Error ? error.message : 'Unknown error'
+    console.error('Bulk approval error:', error);
+    res.status(500).json({ 
+      message: "Error bulk approving collection actions",
+      error: error.message 
     });
   }
 });
-
-/**
- * GET /api/collections/overdue
- * Get all overdue invoices that need collection action
- */
-router.get('/overdue', async (req, res) => {
-  try {
-    // In a real implementation, this would query your database
-    // For now, we'll return a simulated response
-
-    const overdueInvoices = await this.getOverdueInvoices();
-
-    res.json({
-      success: true,
-      count: overdueInvoices.length,
-      invoices: overdueInvoices,
-      summary: {
-        totalAmount: overdueInvoices.reduce((sum, inv) => sum + inv.totalAmount, 0),
-        averageDaysOverdue: this.calculateAverageDaysOverdue(overdueInvoices),
-        riskDistribution: this.calculateOverdueRiskDistribution(overdueInvoices)
-      }
-    });
-
-  } catch (error) {
-    console.error('Overdue invoices error:', error);
-    res.status(500).json({
-      error: 'Failed to retrieve overdue invoices',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-});
-
-/**
- * POST /api/collections/approve
- * Approve and execute a collection recommendation
- */
-router.post('/approve', async (req, res) => {
-  try {
-    const { recommendationId, approved, modifications } = req.body;
-
-    if (!recommendationId) {
-      return res.status(400).json({
-        error: 'Missing required field: recommendationId'
-      });
-    }
-
-    // In a real implementation, this would:
-    // 1. Retrieve the recommendation from database
-    // 2. Apply any modifications
-    // 3. Execute the collection action (send email, create task, etc.)
-    // 4. Track the outcome
-
-    const result = {
-      recommendationId,
-      approved,
-      executedAt: new Date().toISOString(),
-      status: approved ? 'executed' : 'rejected',
-      modifications: modifications || null
-    };
-
-    res.json({
-      success: true,
-      result
-    });
-
-  } catch (error) {
-    console.error('Approval error:', error);
-    res.status(500).json({
-      error: 'Failed to process approval',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-});
-
-/**
- * GET /api/collections/dashboard
- * Get collections dashboard data
- */
-router.get('/dashboard', async (req, res) => {
-  try {
-    // In a real implementation, this would aggregate data from your database
-    const dashboardData = {
-      overview: {
-        totalOverdue: 47,
-        totalOverdueAmount: 892450,
-        averageDSO: 42,
-        collectionEfficiency: 0.73
-      },
-      riskDistribution: {
-        low: 18,
-        medium: 21,
-        high: 8
-      },
-      aiModelUsage: {
-        'gpt-4o-mini': 32,
-        'claude-3.5-sonnet': 12,
-        'claude-opus-4': 3
-      },
-      recentActivity: [
-        {
-          type: 'recommendation_generated',
-          customerId: 'cust_123',
-          aiModel: 'claude-3.5-sonnet',
-          confidence: 87,
-          timestamp: new Date().toISOString()
-        }
-      ],
-      performance: {
-        averageRecommendationAccuracy: 0.84,
-        humanApprovalRate: 0.91,
-        averageTimeToApproval: 2.3, // minutes
-        successfulCollections: 0.68
-      }
-    };
-
-    res.json({
-      success: true,
-      dashboard: dashboardData
-    });
-
-  } catch (error) {
-    console.error('Dashboard error:', error);
-    res.status(500).json({
-      error: 'Failed to load dashboard data',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-});
-
-// Helper methods (in a real implementation, these would be in a service class)
-
-function calculateRiskDistribution(results: any[]): any {
-  const successful = results.filter(r => !r.error);
-  const distribution = { low: 0, medium: 0, high: 0 };
-
-  successful.forEach(result => {
-    const risk = result.analysis?.scoring?.riskLevel;
-    if (risk && distribution.hasOwnProperty(risk)) {
-      distribution[risk as keyof typeof distribution]++;
-    }
-  });
-
-  return distribution;
-}
-
-function calculateModelDistribution(results: any[]): any {
-  const successful = results.filter(r => !r.error);
-  const distribution: Record<string, number> = {};
-
-  successful.forEach(result => {
-    const model = result.analysis?.routing?.aiModel;
-    if (model) {
-      distribution[model] = (distribution[model] || 0) + 1;
-    }
-  });
-
-  return distribution;
-}
-
-async function getOverdueInvoices(): Promise<any[]> {
-  // In a real implementation, this would query your database
-  // For now, return simulated data
-  return [
-    {
-      id: 'inv_001',
-      customerId: 'cust_001',
-      invoiceNumber: 'INV-2024-001',
-      totalAmount: 15000,
-      daysOverdue: 35,
-      riskLevel: 'medium'
-    }
-  ];
-}
-
-function calculateAverageDaysOverdue(invoices: any[]): number {
-  if (invoices.length === 0) return 0;
-  const total = invoices.reduce((sum, inv) => sum + (inv.daysOverdue || 0), 0);
-  return Math.round(total / invoices.length);
-}
-
-function calculateOverdueRiskDistribution(invoices: any[]): any {
-  const distribution = { low: 0, medium: 0, high: 0 };
-  invoices.forEach(inv => {
-    if (inv.riskLevel && distribution.hasOwnProperty(inv.riskLevel)) {
-      distribution[inv.riskLevel as keyof typeof distribution]++;
-    }
-  });
-  return distribution;
-}
 
 export default router;

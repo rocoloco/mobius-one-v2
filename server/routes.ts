@@ -18,6 +18,7 @@ import {
 } from "@shared/schema";
 import { authenticateToken } from "./auth";
 import authRoutes from "./routes/auth";
+import collectionsRoutes from "./routes/collections";
 import { scoringService } from "./services/scoringService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -64,6 +65,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Authentication routes (no auth required)
   app.use('/api/auth', authRoutes);
+  
+  // Collections routes
+  app.use('/api/collections', collectionsRoutes);
 
   // Create demo user if none exists
   app.get("/api/setup-demo", async (req, res) => {
@@ -113,214 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Collections Dashboard API
-  app.get("/api/collections/metrics", async (req, res) => {
-    try {
-      const userId = 1; // Default user for demo
-      const latestMetric = await storage.getLatestDsoMetric(userId);
-      
-      // Mock data for demonstration
-      const metrics = {
-        currentDso: latestMetric?.dsoValue || 54,
-        targetDso: 38,
-        workingCapitalFreed: latestMetric?.workingCapitalFreed || 127000,
-        totalOverdue: 342000,
-        pendingActions: 12,
-        approvalRate: latestMetric?.approvalRate || 94,
-        relationshipScore: latestMetric?.relationshipScore || 87
-      };
-      
-      res.json(metrics);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching metrics" });
-    }
-  });
 
-  // Get overdue invoices with AI recommendations
-  app.get("/api/collections/overdue-invoices", async (req, res) => {
-    try {
-      const userId = 1; // Default user for demo
-      const overdueInvoices = await storage.getOverdueInvoices(userId, 30);
-      
-      // Mock customer data for proper scoring
-      const mockCustomers = [
-        {
-          id: 1,
-          name: 'Acme Corp',
-          contactName: 'Sarah Johnson',
-          email: 'finance@acme.com',
-          relationshipScore: 0,
-          createdAt: new Date('2023-01-15'),
-          averagePaymentDays: 35,
-          totalOverdueAmount: 15000
-        },
-        {
-          id: 2,
-          name: 'TechFlow Solutions',
-          contactName: 'Michael Chen',
-          email: 'accounting@techflow.com',
-          relationshipScore: 0,
-          createdAt: new Date('2023-03-20'),
-          averagePaymentDays: 28,
-          totalOverdueAmount: 8500
-        },
-        {
-          id: 3,
-          name: 'StartupXYZ',
-          contactName: 'David Park',
-          email: 'finance@startupxyz.com',
-          relationshipScore: 0,
-          createdAt: new Date('2023-08-10'),
-          averagePaymentDays: 55,
-          totalOverdueAmount: 22000
-        }
-      ];
-      
-      // Mock invoice data
-      const mockInvoices = [
-        {
-          id: 1,
-          customerId: 1,
-          invoiceNumber: 'INV-2024-001',
-          totalAmount: 15000,
-          dueDate: new Date('2024-11-28'),
-          daysPastDue: 45,
-          approvalStatus: 'pending'
-        },
-        {
-          id: 2,
-          customerId: 2,
-          invoiceNumber: 'INV-2024-002',
-          totalAmount: 8500,
-          dueDate: new Date('2024-12-11'),
-          daysPastDue: 32,
-          approvalStatus: 'pending'
-        },
-        {
-          id: 3,
-          customerId: 3,
-          invoiceNumber: 'INV-2024-003',
-          totalAmount: 22000,
-          dueDate: new Date('2024-11-11'),
-          daysPastDue: 62,
-          approvalStatus: 'pending'
-        }
-      ];
-      
-      // Calculate proper scores using the scoring service
-      const scoredInvoices = mockInvoices.map(invoice => {
-        const customer = mockCustomers.find(c => c.id === invoice.customerId);
-        if (customer) {
-          const scoreResult = scoringService.calculateRelationshipScore(customer as any, invoice as any);
-          return {
-            id: invoice.id,
-            invoiceNumber: invoice.invoiceNumber,
-            customer: customer.name,
-            contactName: customer.contactName,
-            amount: invoice.totalAmount,
-            daysPastDue: invoice.daysPastDue,
-            relationshipScore: scoreResult.score,
-            aiRecommendation: scoreResult.recommendation,
-            recommendationConfidence: scoreResult.confidence,
-            approvalStatus: invoice.approvalStatus,
-            riskLevel: scoreResult.riskLevel
-          };
-        }
-        return invoice;
-      });
-      
-      res.json(scoredInvoices);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching overdue invoices" });
-    }
-  });
-
-  // Approve collection action
-  app.post("/api/collections/approve/:invoiceId", async (req, res) => {
-    try {
-      const invoiceId = parseInt(req.params.invoiceId);
-      
-      console.log(`Approving collection action for invoice ${invoiceId}`);
-      
-      // For mock data, we'll simulate the approval without database constraints
-      // In a real system, you'd ensure the invoice exists before creating the action
-      
-      // Since we're using mock invoices, let's create a simplified action record
-      // that doesn't rely on foreign key constraints
-      const mockAction = {
-        id: Date.now(), // Use timestamp as mock ID
-        invoiceId,
-        actionType: 'reminder',
-        strategy: 'gentle',
-        emailContent: 'AI-generated reminder content based on relationship score',
-        sentAt: new Date(),
-        responseReceived: false,
-        relationshipImpact: 0,
-        userId: req.user?.id || 1 // Use current user or default
-      };
-      
-      console.log(`Mock approval created for invoice ${invoiceId}`);
-      
-      res.json({ 
-        message: "Collection action approved successfully", 
-        action: mockAction,
-        invoiceId,
-        status: 'approved',
-        timestamp: new Date()
-      });
-    } catch (error) {
-      console.error("Error approving collection action:", error);
-      res.status(500).json({ 
-        message: "Error approving collection action",
-        error: error.message 
-      });
-    }
-  });
-
-  // Bulk approve collection actions
-  app.post("/api/collections/bulk-approve", async (req, res) => {
-    try {
-      const { invoiceIds } = req.body;
-      
-      console.log(`Bulk approving collection actions for invoices:`, invoiceIds);
-      
-      const approvedActions = [];
-      
-      for (const invoiceId of invoiceIds) {
-        try {
-          // Create mock action for each invoice
-          const mockAction = {
-            id: Date.now() + invoiceId, // Use timestamp + invoiceId as mock ID
-            invoiceId,
-            actionType: 'reminder',
-            strategy: 'gentle',
-            emailContent: 'AI-generated reminder content based on relationship score',
-            sentAt: new Date(),
-            responseReceived: false,
-            relationshipImpact: 0,
-            userId: req.user?.id || 1 // Use current user or default
-          };
-          
-          console.log(`Mock bulk approval created for invoice ${invoiceId}`);
-          approvedActions.push({ invoiceId, action: mockAction });
-        } catch (error) {
-          console.error(`Error approving invoice ${invoiceId}:`, error);
-        }
-      }
-      
-      res.json({ 
-        message: `${invoiceIds.length} collection actions approved successfully`, 
-        approvedActions,
-        timestamp: new Date()
-      });
-    } catch (error) {
-      console.error("Error bulk approving collection actions:", error);
-      res.status(500).json({ 
-        message: "Error bulk approving collection actions",
-        error: error.message 
-      });
-    }
-  });
 
   // Get customers
   app.get("/api/customers", async (req, res) => {
