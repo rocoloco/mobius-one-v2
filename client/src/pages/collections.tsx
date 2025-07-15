@@ -170,49 +170,51 @@ export default function CollectionsPage() {
 
   // Initialize queue with real data and restore progress
   useEffect(() => {
-    if (!overdueInvoicesData?.invoices) return;
+    if (!overdueInvoicesData?.invoices) {
+      console.log('No overdue invoices data yet');
+      return;
+    }
+    
+    console.log('Processing overdue invoices data:', overdueInvoicesData.invoices);
     
     // For debug: Clear localStorage to force fresh start
     localStorage.clear();
     
-    const savedProgress = loadProgressFromStorage();
-    const alreadyProcessed = loadProcessedInvoices();
-    
-    console.log('Overdue invoices data:', overdueInvoicesData.invoices);
-    console.log('Already processed invoices:', alreadyProcessed);
-    
     // Transform backend data to match frontend interface - don't filter by processed invoices for now
-    const availableInvoices = overdueInvoicesData.invoices
-      .map((invoice: any) => ({
-        ...invoice,
-        customer: invoice.customer || 'Unknown Customer',
-        contactName: invoice.contactName || 'Unknown Contact',
-        amount: invoice.totalAmount || invoice.amount || 0,
-        daysPastDue: invoice.daysPastDue || 0,
-        relationshipScore: invoice.relationshipScore || 0,
-        aiRecommendation: invoice.aiRecommendation || 'Friendly reminder call recommended',
-        recommendationConfidence: invoice.recommendationConfidence || 75,
-        approvalStatus: invoice.approvalStatus || 'pending',
-        riskLevel: invoice.riskLevel || 'medium',
-        relationship: invoice.relationship || 'valued client',
-        situation: invoice.situation || 'likely oversight',
-        aiMessage: invoice.aiMessage || 'Based on payment history and relationship analysis, a friendly reminder would be most effective here.',
-        analysisComplete: true, // Mark as complete since we have the data
-        score: invoice.relationshipScore || 30,
-        aiModel: invoice.aiModel || 'gpt-4o-mini',
-        estimatedCost: invoice.estimatedCost || 0.003,
-        estimatedReviewTime: invoice.estimatedReviewTime || 0.5
-      }));
+    const availableInvoices = overdueInvoicesData.invoices.map((invoice: any) => ({
+      ...invoice,
+      id: invoice.id,
+      invoiceNumber: invoice.invoiceNumber || 'Unknown',
+      customer: invoice.customer || 'Unknown Customer',
+      contactName: invoice.contactName || 'Unknown Contact',
+      amount: invoice.totalAmount || invoice.amount || 0,
+      daysPastDue: invoice.daysPastDue || 0,
+      relationshipScore: invoice.relationshipScore || 30,
+      aiRecommendation: invoice.aiRecommendation || 'Friendly reminder call recommended',
+      recommendationConfidence: invoice.recommendationConfidence || 75,
+      approvalStatus: invoice.approvalStatus || 'pending',
+      riskLevel: invoice.riskLevel || 'medium',
+      relationship: invoice.relationship || 'valued client',
+      situation: invoice.situation || 'likely oversight',
+      aiMessage: invoice.aiMessage || 'Based on payment history and relationship analysis, a friendly reminder would be most effective here.',
+      analysisComplete: true, // Mark as complete since we have the data
+      score: invoice.relationshipScore || 30,
+      aiModel: invoice.aiModel || 'gpt-4o-mini',
+      estimatedCost: invoice.estimatedCost || 0.003,
+      estimatedReviewTime: invoice.estimatedReviewTime || 0.5
+    }));
     
-    console.log('Available invoices after filtering:', availableInvoices.length);
+    console.log('Transformed invoices:', availableInvoices.length);
+    console.log('First transformed invoice:', availableInvoices[0]);
     
     if (availableInvoices.length === 0) {
-      console.log('No new invoices to process, showing complete state');
+      console.log('No invoices to process, showing complete state');
       setIsQueueComplete(true);
       return;
     }
     
     // Force reset states to prevent stale data issues
+    console.log('Resetting queue states...');
     setIsQueueComplete(false);
     setCurrentIndex(0);
     setProcessed([]);
@@ -228,11 +230,11 @@ export default function CollectionsPage() {
       remainingQueue: availableInvoices.length
     });
     
+    console.log('Setting queue with', availableInvoices.length, 'invoices');
     setQueue(availableInvoices);
     
-    console.log('Queue set with', availableInvoices.length, 'invoices');
-    console.log('First invoice:', availableInvoices[0]);
-  }, [overdueInvoicesData?.invoices]);
+    console.log('Queue initialization complete');
+  }, [overdueInvoicesData]);
 
   // Auto-analyze current invoice when it changes
   useEffect(() => {
