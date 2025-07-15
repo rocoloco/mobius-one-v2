@@ -38,12 +38,13 @@ export default function CollectionsPage() {
   const [redirectCountdown, setRedirectCountdown] = useState(5);
   const [isComplete, setIsComplete] = useState(false);
   const { logout } = useAuth();
+  // Fix initial metrics - start at zero
   const [metrics, setMetrics] = useState<CollectionMetrics>({
-    revenueAccelerated: 127500,
-    timeSaved: 12.5,
-    relationshipsProtected: 100,
-    aiLearningProgress: 73,
-    remainingQueue: 8
+    revenueAccelerated: 0, // Start at 0, build up as invoices are processed
+    timeSaved: 0,          // Start at 0, add realistic time savings
+    relationshipsProtected: 95, // Start high, AI helps maintain this
+    aiLearningProgress: 73, // This can stay static for demo
+    remainingQueue: 0
   });
   const [isAnimating, setIsAnimating] = useState(false);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
@@ -230,8 +231,8 @@ export default function CollectionsPage() {
     setMetrics({
       revenueAccelerated: 0,
       timeSaved: 0,
-      relationshipsProtected: 0,
-      aiLearningProgress: 42,
+      relationshipsProtected: 95, // Start high, AI helps maintain this
+      aiLearningProgress: 73, // This can stay static for demo
       remainingQueue: availableInvoices.length
     });
     
@@ -433,17 +434,35 @@ export default function CollectionsPage() {
     }
   };
 
+  // Fix the updateMetrics function with realistic calculations
   const updateMetrics = (action: 'send' | 'write' | 'skip') => {
     setIsAnimating(true);
 
     if (action === 'send' || action === 'write') {
-      setMetrics(prev => ({
-        ...prev,
-        revenueAccelerated: prev.revenueAccelerated + currentInvoice.amount,
-        timeSaved: prev.timeSaved + (action === 'send' ? 2.5 : 1.5),
-        relationshipsProtected: prev.relationshipsProtected + 1,
-        aiLearningProgress: Math.min(prev.aiLearningProgress + 2, 100)
-      }));
+      setMetrics(prev => {
+        // REVENUE ACCELERATED: Actual invoice amount processed
+        const revenueIncrease = currentInvoice.amount;
+        
+        // TIME SAVED: Realistic estimates based on action type  
+        const timeSaved = action === 'send' 
+          ? 0.5  // 30 minutes saved vs manual email drafting
+          : 0.25; // 15 minutes saved vs completely manual process
+        
+        // RELATIONSHIPS PROTECTED: Based on risk level and AI confidence
+        const relationshipBonus = currentInvoice.riskLevel === 'high' 
+          ? 2 // High-risk situations benefit more from AI recommendations
+          : currentInvoice.riskLevel === 'medium' 
+            ? 1 
+            : 0.5;
+
+        return {
+          ...prev,
+          revenueAccelerated: prev.revenueAccelerated + revenueIncrease,
+          timeSaved: prev.timeSaved + timeSaved,
+          relationshipsProtected: Math.min(100, prev.relationshipsProtected + relationshipBonus),
+          aiLearningProgress: Math.min(prev.aiLearningProgress + 1, 100)
+        };
+      });
     }
 
     setTimeout(() => setIsAnimating(false), 500);
