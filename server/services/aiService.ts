@@ -137,7 +137,7 @@ Provide your response as valid JSON with this exact structure:
           }
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       // If the selected model fails, fallback to OpenAI
       console.log(`${modelConfig.provider} failed, falling back to OpenAI:`, error.message);
       
@@ -157,11 +157,13 @@ Provide your response as valid JSON with this exact structure:
             routing: {
               aiModel: 'gpt-4o-mini',
               estimatedCost: 0.001,
-              estimatedReviewTime: 0.5
+              estimatedReviewTime: 0.5,
+              fallbackUsed: true,
+              originalModel: modelConfig.model
             }
           }
         };
-      } catch (fallbackError) {
+      } catch (fallbackError: any) {
         throw new Error(`Both AI services failed: ${fallbackError.message}`);
       }
     }
