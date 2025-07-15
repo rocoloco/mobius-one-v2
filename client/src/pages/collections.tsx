@@ -251,6 +251,10 @@ export default function CollectionsPage() {
     },
     onSuccess: (data, variables) => {
       console.log('Real AI Analysis complete:', data);
+      console.log('AI Model from API:', data.analysis?.routing?.aiModel);
+      console.log('Fallback used:', data.analysis?.routing?.fallbackUsed);
+      console.log('Original model:', data.analysis?.routing?.originalModel);
+      
       dispatch({
         type: 'UPDATE_INVOICE_ANALYSIS',
         payload: {
@@ -264,7 +268,9 @@ export default function CollectionsPage() {
             aiModel: data.analysis?.routing?.aiModel || 'gpt-4o-mini',
             estimatedCost: data.analysis?.routing?.estimatedCost || 0.001,
             estimatedReviewTime: data.analysis?.routing?.estimatedReviewTime || 0.5,
-            draftEmail: data.analysis?.draftEmail || null
+            draftEmail: data.analysis?.draftEmail || null,
+            fallbackUsed: data.analysis?.routing?.fallbackUsed || false,
+            originalModel: data.analysis?.routing?.originalModel || null
           }
         }
       });
