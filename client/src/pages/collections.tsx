@@ -231,6 +231,7 @@ export default function CollectionsPage() {
     setQueue(availableInvoices);
     
     console.log('Queue set with', availableInvoices.length, 'invoices');
+    console.log('First invoice:', availableInvoices[0]);
   }, [overdueInvoicesData?.invoices]);
 
   // Auto-analyze current invoice when it changes
@@ -869,6 +870,11 @@ Best regards,
       };
     }
   };
+
+  console.log('DEBUG: currentInvoice:', currentInvoice);
+  console.log('DEBUG: isQueueComplete:', isQueueComplete);
+  console.log('DEBUG: queue.length:', queue.length);
+  console.log('DEBUG: currentIndex:', currentIndex);
 
   if (!currentInvoice || isQueueComplete) {
     const celebration = getCelebrationMessage();
