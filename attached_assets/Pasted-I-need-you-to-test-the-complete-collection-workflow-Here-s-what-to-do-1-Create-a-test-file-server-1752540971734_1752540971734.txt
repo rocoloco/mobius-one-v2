@@ -1,0 +1,152 @@
+I need you to test the complete collection workflow. Here's what to do:
+1. Create a test file server/test-collection-workflow.ts:
+typescriptimport { Customer, Invoice } from '@shared/schema';
+import { scoringService } from './services/scoringService';
+import { routingService } from './services/routing-service';
+import { recommendationService } from './services/recommendation-service';
+
+// Test the complete workflow
+async function testCollectionWorkflow() {
+  console.log('🧪 Testing Collection Workflow...\n');
+
+  // Create test customer and invoice
+  const testCustomer: Customer = {
+    id: 'test_customer_001',
+    name: 'Acme Corp',
+    email: 'billing@acme.com',
+    phone: '555-0123',
+    address: {
+      street: '123 Business St',
+      city: 'Tech City',
+      state: 'CA',
+      zip: '94105',
+      country: 'USA'
+    },
+    createdAt: '2023-01-15T00:00:00Z',
+    updatedAt: new Date().toISOString(),
+    arr: 75000,
+    segment: 'midmarket',
+    paymentTerms: 'NET15',
+    healthScore: 68
+  } as any;
+
+  // Create overdue invoice
+  const testInvoice: Invoice = {
+    id: 'test_invoice_001',
+    customerId: testCustomer.id,
+    invoiceNumber: 'INV-2024-001',
+    issueDate: '2024-06-01T00:00:00Z',
+    dueDate: '2024-06-16T00:00:00Z', // 28 days overdue
+    totalAmount: 12500,
+    paidAmount: 0,
+    status: 'overdue',
+    items: [{
+      description: 'Monthly SaaS Subscription',
+      quantity: 1,
+      unitPrice: 12500,
+      total: 12500
+    }]
+  };
+
+  try {
+    // Step 1: Test scoring
+    console.log('1️⃣ Testing Scoring Service...');
+    const scoreResult = scoringService.calculateRelationshipScore(testCustomer, testInvoice);
+    console.log(`   Score: ${scoreResult.score}/100`);
+    console.log(`   Risk Level: ${scoreResult.riskLevel}`);
+    console.log(`   Confidence: ${scoreResult.confidence}%\n`);
+
+    // Step 2: Test routing
+    console.log('2️⃣ Testing Routing Service...');
+    const routingContext = {
+      customer: testCustomer,
+      invoice: testInvoice,
+      relationshipScore: scoreResult.score,
+      riskLevel: scoreResult.riskLevel,
+      confidence: scoreResult.confidence
+    };
+    
+    const routingDecision = routingService.routeCollectionRequest(routingContext);
+    console.log(`   Model Tier: ${routingDecision.modelTier}`);
+    console.log(`   AI Model: ${routingDecision.aiModel}`);
+    console.log(`   Cost: $${routingDecision.estimatedCost}`);
+    console.log(`   Review Time: ${routingDecision.estimatedReviewTime} minutes`);
+    console.log(`   Reasoning: ${routingDecision.reasoning}\n`);
+
+    // Step 3: Test recommendation
+    console.log('3️⃣ Testing Recommendation Service...');
+    const recommendation = await recommendationService.generateRecommendation(
+      routingContext,
+      routingDecision
+    );
+    console.log(`   Action: ${recommendation.recommendedAction}`);
+    console.log(`   Confidence: ${recommendation.confidence}%`);
+    console.log(`   Tone: ${recommendation.tone}`);
+    console.log(`   Timing: ${recommendation.timing}`);
+    console.log(`   Revenue at Risk: $${recommendation.businessImpact.revenueAtRisk}`);
+    console.log(`   Churn Probability: ${(recommendation.businessImpact.churnProbability * 100).toFixed(1)}%`);
+    
+    if (recommendation.draftEmail) {
+      console.log(`\n   📧 Draft Email:`);
+      console.log(`   Subject: ${recommendation.draftEmail.subject}`);
+      console.log(`   Body Preview: ${recommendation.draftEmail.body.substring(0, 100)}...`);
+    }
+
+    console.log('\n✅ Workflow test completed successfully!');
+    
+    return {
+      scoring: scoreResult,
+      routing: routingDecision,
+      recommendation
+    };
+
+  } catch (error) {
+    console.error('❌ Workflow test failed:', error);
+    throw error;
+  }
+}
+
+// Run the test
+testCollectionWorkflow()
+  .then(result => {
+    console.log('\n🎉 All systems working!');
+  })
+  .catch(error => {
+    console.error('\n💥 Test failed:', error.message);
+    process.exit(1);
+  });
+2. Add this script to package.json:
+json"scripts": {
+  "test-workflow": "ts-node server/test-collection-workflow.ts"
+}
+3. Run the test:
+bashnpm run test-workflow
+4. Also test different scenarios by creating server/test-scenarios.ts:
+typescript// Import the same services and create these test cases:
+
+const scenarios = [
+  {
+    name: 'High-Value Enterprise (90 days overdue)',
+    customer: { arr: 250000, healthScore: 45, segment: 'enterprise' },
+    daysOverdue: 90
+  },
+  {
+    name: 'Small Business (15 days overdue, good history)',
+    customer: { arr: 8000, healthScore: 85, segment: 'smb' },
+    daysOverdue: 15
+  },
+  {
+    name: 'Mid-Market (45 days overdue, poor history)',
+    customer: { arr: 45000, healthScore: 52, segment: 'midmarket' },
+    daysOverdue: 45
+  }
+];
+
+// Test each scenario and show the routing decisions
+Expected Results:
+
+Enterprise 90 days overdue → SENSITIVE → Claude Opus → Executive Review
+SMB 15 days overdue → ROUTINE → GPT-4o mini → Quick Approval
+Mid-Market 45 days → STRATEGIC → Claude 3.5 → Strategic Review
+
+Run these tests and show me the output. This will verify your entire collection engine is working correctly.
