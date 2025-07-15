@@ -56,6 +56,7 @@ export default function CollectionsPage() {
   const [processedInvoices, setProcessedInvoices] = useState<number[]>([]);
   const [isQueueComplete, setIsQueueComplete] = useState(false);
   const [totalQueueSize, setTotalQueueSize] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
