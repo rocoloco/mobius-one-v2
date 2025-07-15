@@ -175,7 +175,11 @@ export default function CollectionsPage() {
     const savedProgress = loadProgressFromStorage();
     const alreadyProcessed = loadProcessedInvoices();
     
+    console.log('Overdue invoices data:', overdueInvoicesData.invoices);
     console.log('Already processed invoices:', alreadyProcessed);
+    
+    // For debug: Clear localStorage to force fresh start
+    localStorage.clear();
     
     // Transform backend data to match frontend interface
     const availableInvoices = overdueInvoicesData.invoices
