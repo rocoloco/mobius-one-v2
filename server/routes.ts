@@ -147,6 +147,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         {
           id: 1,
           name: 'Acme Corp',
+          contactName: 'Sarah Johnson',
           email: 'finance@acme.com',
           relationshipScore: 0,
           createdAt: new Date('2023-01-15'),
@@ -156,6 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         {
           id: 2,
           name: 'TechFlow Solutions',
+          contactName: 'Michael Chen',
           email: 'accounting@techflow.com',
           relationshipScore: 0,
           createdAt: new Date('2023-03-20'),
@@ -165,6 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         {
           id: 3,
           name: 'StartupXYZ',
+          contactName: 'David Park',
           email: 'finance@startupxyz.com',
           relationshipScore: 0,
           createdAt: new Date('2023-08-10'),
@@ -213,6 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             id: invoice.id,
             invoiceNumber: invoice.invoiceNumber,
             customer: customer.name,
+            contactName: customer.contactName,
             amount: invoice.totalAmount,
             daysPastDue: invoice.daysPastDue,
             relationshipScore: scoreResult.score,
