@@ -323,8 +323,8 @@ export default function CollectionsPage() {
         recommendationConfidence: invoice.recommendationConfidence || 75,
         approvalStatus: invoice.approvalStatus || 'pending',
         riskLevel: invoice.riskLevel || 'medium',
-        relationship: invoice.relationship || 'valued client',
-        situation: invoice.situation || 'likely oversight',
+        relationship: invoice.relationship || 'analyzing relationship',
+        situation: invoice.situation || 'status pending',
         aiMessage: invoice.aiRecommendation || 'Analyzing...',
         analysisComplete: false
       }));
