@@ -251,10 +251,7 @@ export default function CollectionsPage() {
     },
     onSuccess: (data, variables) => {
       console.log('Real AI Analysis complete:', data);
-      console.log('AI Model from API:', data.analysis?.routing?.aiModel);
-      console.log('Fallback used:', data.analysis?.routing?.fallbackUsed);
-      console.log('Original model:', data.analysis?.routing?.originalModel);
-      
+
       dispatch({
         type: 'UPDATE_INVOICE_ANALYSIS',
         payload: {
@@ -269,8 +266,7 @@ export default function CollectionsPage() {
             estimatedCost: data.analysis?.routing?.estimatedCost || 0.001,
             estimatedReviewTime: data.analysis?.routing?.estimatedReviewTime || 0.5,
             draftEmail: data.analysis?.draftEmail || null,
-            fallbackUsed: data.analysis?.routing?.fallbackUsed || false,
-            originalModel: data.analysis?.routing?.originalModel || null
+            score: data.analysis?.scoring?.score || 65
           }
         }
       });
@@ -340,120 +336,26 @@ export default function CollectionsPage() {
   // Auto-analyze current invoice
   useEffect(() => {
     if (currentInvoice && !currentInvoice.analysisComplete) {
-      // Generate mock analysis instead of API call
-      const generateMockAnalysis = (invoice: Invoice) => {
-        // Use invoice ID to generate consistent but varied results
-        const riskIndex = invoice.id % 3;
-        const riskLevels = ['low', 'medium', 'high'];
-        const models = ['gpt-4o-mini', 'claude-3.5-sonnet', 'claude-opus-4'];
-        const costs = [0.001, 0.05, 0.20];
-        const reviewTimes = [0.5, 3, 20];
-
-        const risk = riskLevels[riskIndex];
-        const model = models[riskIndex];
-        const cost = costs[riskIndex];
-        const reviewTime = reviewTimes[riskIndex];
-
-        // Generate varied relationship scores and confidence
-        const relationshipScore = 45 + ((invoice.id * 13) % 40); // 45-85 range
-        const confidence = 70 + ((invoice.id * 7) % 25); // 70-95 range
-
-        // Generate realistic draft emails based on risk level
-        const generateDraftEmail = (invoice: Invoice, riskLevel: string) => {
-          const baseSubject = `Payment reminder for Invoice #${invoice.invoiceNumber}`;
-
-          if (riskLevel === 'low') {
-            return {
-              subject: baseSubject,
-              body: `Hi ${invoice.contactName},
-
-I hope this message finds you well. I wanted to send a friendly reminder that Invoice #${invoice.invoiceNumber} for ${formatCurrency(invoice.amount)} is now ${invoice.daysPastDue} days past due.
-
-Given your excellent payment history with us, I'm sure this is just an oversight. You can make the payment securely using this link: [PAYMENT_LINK]
-
-If you have any questions or need to discuss payment terms, please don't hesitate to reach out.
-
-Best regards,
-Alex Rodriguez
-Accounts Receivable`
-            };
-          } else if (riskLevel === 'medium') {
-            return {
-              subject: `Important: ${baseSubject}`,
-              body: `Hi ${invoice.contactName},
-
-I hope you're doing well. I wanted to follow up regarding Invoice #${invoice.invoiceNumber} for ${formatCurrency(invoice.amount)}, which is currently ${invoice.daysPastDue} days past due.
-
-I understand that cash flow can sometimes be challenging. If you're experiencing any difficulties, I'd be happy to discuss payment plan options that work for both of us.
-
-Please let me know how we can resolve this together. You can reach me directly at this email or call me at (555) 123-4567.
-
-Payment link: [PAYMENT_LINK]
-
-Best regards,
-Alex Rodriguez
-Accounts Receivable`
-            };
-          } else {
-            return {
-              subject: `Urgent: Payment Required for Invoice #${invoice.invoiceNumber}`,
-              body: `Dear ${invoice.contactName},
-
-This is an urgent notice regarding Invoice #${invoice.invoiceNumber} for ${formatCurrency(invoice.amount)}, which is now ${invoice.daysPastDue} days past due.
-
-Despite previous reminders, this invoice remains outstanding. To avoid any impact on our business relationship and prevent this matter from escalating further, we need to resolve this immediately.
-
-Please contact me within 48 hours to discuss payment arrangements. I'm available to work with you on a solution that addresses this matter promptly.
-
-Payment options:
-- Online: [PAYMENT_LINK]
-- Phone: (555) 123-4567
-- Direct contact: alex.rodriguez@company.com
-
-I look forward to resolving this matter quickly.
-
-Regards,
-Alex Rodriguez
-Senior Accounts Receivable Manager`
-            };
-          }
-        };
-
-        const draftEmail = generateDraftEmail(invoice, risk);
-
-        // Generate reasoning based on risk level
-        const reasoning = {
-          low: `${invoice.customer} has excellent payment history and high relationship score (${relationshipScore}). A friendly, gentle reminder should resolve this quickly without any relationship damage. This approach maintains goodwill while addressing the overdue payment.`,
-          medium: `${invoice.customer} shows mixed payment patterns with moderate relationship score (${relationshipScore}). Recommend offering payment plan options and personal touch to preserve relationship while securing payment. Balance firmness with understanding.`,
-          high: `${invoice.customer} has concerning payment patterns and low relationship score (${relationshipScore}). Situation requires urgent attention with firm but professional tone. Clear deadlines and escalation path needed to protect company interests while attempting to preserve business relationship.`
-        };
-
-        return {
-          relationshipScore,
-          riskLevel: risk,
-          aiMessage: reasoning[risk as keyof typeof reasoning],
-          aiRecommendation: reasoning[risk as keyof typeof reasoning],
-          recommendationConfidence: confidence,
-          aiModel: model,
-          estimatedCost: cost,
-          estimatedReviewTime: reviewTime,
-          score: relationshipScore,
-          draftEmail: draftEmail
-        };
-      };
-
-      // Simulate API delay
-      setTimeout(() => {
-        const mockAnalysis = generateMockAnalysis(currentInvoice);
-
-        dispatch({
-          type: 'UPDATE_INVOICE_ANALYSIS',
-          payload: {
-            invoiceId: currentInvoice.id,
-            analysis: mockAnalysis
-          }
-        });
-      }, 1500); // 1.5 second delay to simulate real API
+      analyzeMutation.mutate({
+        customer: {
+          id: currentInvoice.customerId,
+          name: currentInvoice.customer,
+          email: currentInvoice.contactEmail || 'unknown@example.com',
+          relationshipScore: currentInvoice.relationshipScore,
+          totalOverdueAmount: currentInvoice.amount,
+          averagePaymentDays: currentInvoice.daysPastDue,
+          createdAt: new Date()
+        },
+        invoice: {
+          id: currentInvoice.id,
+          invoiceNumber: currentInvoice.invoiceNumber,
+          customerId: currentInvoice.customerId,
+          totalAmount: currentInvoice.amount,
+          dueDate: new Date(Date.now() - (currentInvoice.daysPastDue * 24 * 60 * 60 * 1000)),
+          daysPastDue: currentInvoice.daysPastDue,
+          approvalStatus: currentInvoice.approvalStatus
+        }
+      });
     }
   }, [state.currentIndex, state.queue]);
 
@@ -588,6 +490,12 @@ Best regards,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amount);
+  };
+
+  const getRelationshipDescription = (score: number, riskLevel: string) => {
+    if (score >= 70) return "valued client likely oversight";
+    if (score >= 40) return "established client payment delay";
+    return "problematic client requires immediate attention";
   };
 
   // Loading state
@@ -948,7 +856,10 @@ Best regards,
                   </h1>
 
                   <p className="text-gray-600">
-                    {currentInvoice.relationship} {currentInvoice.situation}
+                    {currentInvoice.analysisComplete 
+                      ? getRelationshipDescription(currentInvoice.score || currentInvoice.relationshipScore, currentInvoice.riskLevel)
+                      : `${currentInvoice.relationship} ${currentInvoice.situation}`
+                    }
                   </p>
                 </div>
 

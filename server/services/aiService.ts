@@ -42,7 +42,7 @@ export class AIService {
         reviewTime: 20
       };
     }
-    
+
     // Medium-risk: $25K-100K or moderate relationship issues
     if (accountValue > 25000 || riskScore < 70 || daysPastDue > 30) {
       return {
@@ -52,7 +52,7 @@ export class AIService {
         reviewTime: 3
       };
     }
-    
+
     // Low-risk: routine collections
     return {
       model: 'gpt-4o-mini',
@@ -64,28 +64,53 @@ export class AIService {
 
   static async analyzeInvoice(customer: Customer, invoice: Invoice) {
     const modelConfig = this.selectAIModel(invoice, customer);
-    
-    const prompt = `Analyze this collections situation and generate a professional collection email.
+
+    const prompt = `You are an expert collections specialist. Analyze this situation and generate an appropriate collection email.
 
 CUSTOMER: ${customer.name}
-RELATIONSHIP SCORE: ${customer.relationshipScore}/100
+RELATIONSHIP SCORE: ${customer.relationshipScore}/100 (0=worst, 100=excellent)
 INVOICE: #${invoice.invoiceNumber} 
 AMOUNT: $${invoice.totalAmount}
 DAYS OVERDUE: ${invoice.daysPastDue}
 
+CRITICAL: Email tone MUST match the relationship score:
+
+RELATIONSHIP SCORE 70-100 (Good relationship):
+- Tone: Friendly, assuming oversight
+- Language: "I'm sure this is just an oversight", "given your excellent payment history"
+- Approach: Gentle reminder with payment link
+
+RELATIONSHIP SCORE 40-69 (Moderate relationship):
+- Tone: Professional but understanding
+- Language: "We understand cash flow can be challenging", offer payment plans
+- Approach: Firm but supportive, provide options
+
+RELATIONSHIP SCORE 0-39 (Poor relationship):
+- Tone: Firm, consequence-focused, urgent
+- Language: "Immediate payment required", "failure to respond may result in..."
+- Approach: Clear deadlines, consequences, escalation threats
+- NO understanding language about "circumstances" or "oversights"
+
+RISK LEVEL DETERMINATION:
+- HIGH: Score <40 OR >60 days overdue OR >$100K
+- MEDIUM: Score 40-69 OR 30-60 days overdue OR $25K-100K  
+- LOW: Score 70+ AND <30 days overdue AND <$25K
+
+Generate a professional email that matches the relationship score severity.
+
 Provide your response as valid JSON with this exact structure:
 {
   "scoring": {
-    "score": [relationship score 0-100],
-    "riskLevel": "[low/medium/high]"
+    "score": ${customer.relationshipScore},
+    "riskLevel": "[low/medium/high based on criteria above]"
   },
   "recommendation": {
-    "reasoning": "[brief explanation of your approach]",
+    "reasoning": "[explain why you chose this tone based on the relationship score and risk factors]",
     "confidence": [confidence percentage 0-100]
   },
   "draftEmail": {
-    "subject": "[email subject line]",
-    "body": "[complete email body with professional tone]"
+    "subject": "[email subject line matching the tone severity]",
+    "body": "[complete email body with tone appropriate for score ${customer.relationshipScore}]"
   }
 }`;
 
@@ -100,7 +125,7 @@ Provide your response as valid JSON with this exact structure:
         });
 
         const analysis = JSON.parse(response.choices[0].message.content!);
-        
+
         return {
           analysis: {
             ...analysis,
@@ -125,7 +150,7 @@ Provide your response as valid JSON with this exact structure:
         }
 
         const analysis = JSON.parse(content.text);
-        
+
         return {
           analysis: {
             ...analysis,
@@ -140,7 +165,7 @@ Provide your response as valid JSON with this exact structure:
     } catch (error: any) {
       // If the selected model fails, fallback to OpenAI
       console.log(`${modelConfig.provider} failed, falling back to OpenAI:`, error.message);
-      
+
       try {
         const response = await openai.chat.completions.create({
           model: 'gpt-4o-mini',
@@ -150,7 +175,7 @@ Provide your response as valid JSON with this exact structure:
         });
 
         const analysis = JSON.parse(response.choices[0].message.content!);
-        
+
         return {
           analysis: {
             ...analysis,
