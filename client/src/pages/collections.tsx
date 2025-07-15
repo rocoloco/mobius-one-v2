@@ -995,7 +995,10 @@ Best regards,
                 Continue Session
               </button>
               <button
-                onClick={() => navigate('/')}
+                onClick={() => {
+                  console.log('Navigating to dashboard...');
+                  navigate('/');
+                }}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
               >
                 Return to Dashboard
