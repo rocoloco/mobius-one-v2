@@ -123,6 +123,12 @@ export default function CollectionsPage() {
   // Mutation for analyzing invoices
   const analyzeMutation = useMutation({
     mutationFn: async (invoiceData: any) => {
+      console.log('Sending analysis request for invoice:', invoiceData.invoice.id);
+      console.log('Request payload:', {
+        customer: invoiceData.customer,
+        invoice: invoiceData.invoice
+      });
+      
       const response = await apiRequest(`/api/collections/analyze`, {
         method: 'POST',
         body: JSON.stringify({
@@ -130,10 +136,25 @@ export default function CollectionsPage() {
           invoice: invoiceData.invoice
         })
       });
+      
+      console.log('Analysis API response:', response);
       return response;
     },
     onSuccess: (data, variables) => {
       console.log('Analysis complete:', data);
+      console.log('Analysis data structure:', JSON.stringify(data, null, 2));
+      
+      // Check if the response has the expected structure
+      if (!data || !data.analysis || !data.analysis.scoring || !data.analysis.recommendation) {
+        console.error('Invalid response structure:', data);
+        toast({
+          title: "Analysis Error",
+          description: "Received invalid response from analysis service",
+          variant: "destructive"
+        });
+        return;
+      }
+      
       // Update the queue with the analysis results
       setQueue(prev => prev.map(inv => 
         inv.id === variables.invoice.id 
@@ -153,10 +174,14 @@ export default function CollectionsPage() {
       ));
     },
     onError: (error) => {
-      console.error('Analysis failed:', error);
+      console.error('Analysis failed - Full error:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
       toast({
         title: "Analysis Failed",
-        description: "Failed to analyze invoice. Please try again.",
+        description: `Failed to analyze invoice: ${error.message || 'Unknown error'}`,
         variant: "destructive"
       });
     }
