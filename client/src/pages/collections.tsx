@@ -129,16 +129,14 @@ export default function CollectionsPage() {
         invoice: invoiceData.invoice
       });
       
-      const response = await apiRequest(`/api/collections/analyze`, {
-        method: 'POST',
-        body: JSON.stringify({
-          customer: invoiceData.customer,
-          invoice: invoiceData.invoice
-        })
+      const response = await apiRequest('POST', `/api/collections/analyze`, {
+        customer: invoiceData.customer,
+        invoice: invoiceData.invoice
       });
       
-      console.log('Analysis API response:', response);
-      return response;
+      const data = await response.json();
+      console.log('Analysis API response:', data);
+      return data;
     },
     onSuccess: (data, variables) => {
       console.log('Analysis complete:', data);
@@ -190,11 +188,8 @@ export default function CollectionsPage() {
   // Mutation for bulk approval
   const bulkApproveMutation = useMutation({
     mutationFn: async (invoiceIds: number[]) => {
-      const response = await apiRequest(`/api/collections/bulk-approve`, {
-        method: 'POST',
-        body: JSON.stringify({ invoiceIds })
-      });
-      return response;
+      const response = await apiRequest('POST', `/api/collections/bulk-approve`, { invoiceIds });
+      return await response.json();
     },
     onSuccess: (data) => {
       console.log('Bulk approval complete:', data);
