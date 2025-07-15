@@ -7,11 +7,11 @@ import { recommendationService } from './services/recommendation-service';
 async function testCollectionWorkflow() {
   console.log('🧪 Testing Collection Workflow...\n');
 
-  // Create test customer and invoice
+  // Use strategic demo scenario for consistent testing (High-risk example)
   const testCustomer: Customer = {
     id: 'test_customer_001',
-    name: 'Acme Corp',
-    email: 'billing@acme.com',
+    name: 'Problematic Corp',
+    email: 'billing@problematic.com',
     phone: '555-0123',
     address: {
       street: '123 Business St',
@@ -22,27 +22,28 @@ async function testCollectionWorkflow() {
     },
     createdAt: '2023-01-15T00:00:00Z',
     updatedAt: new Date().toISOString(),
-    arr: 75000,
-    segment: 'midmarket',
-    paymentTerms: 'NET15',
-    healthScore: 68
+    arr: 95000,
+    segment: 'enterprise',
+    paymentTerms: 'NET30',
+    healthScore: 18, // Low health score for high-risk scenario
+    relationshipScore: 18
   } as any;
 
-  // Create overdue invoice
+  // Create overdue invoice matching strategic demo scenario
   const testInvoice: Invoice = {
     id: 'test_invoice_001',
     customerId: testCustomer.id,
-    invoiceNumber: 'INV-2024-001',
-    issueDate: '2024-06-01T00:00:00Z',
-    dueDate: '2024-06-16T00:00:00Z', // 28 days overdue
-    totalAmount: 12500,
+    invoiceNumber: 'INV-2024-0756',
+    issueDate: '2024-04-15T00:00:00Z',
+    dueDate: '2024-05-15T00:00:00Z', // 92 days overdue
+    totalAmount: 95000,
     paidAmount: 0,
     status: 'overdue',
     items: [{
-      description: 'Monthly SaaS Subscription',
+      description: 'Enterprise SaaS Subscription',
       quantity: 1,
-      unitPrice: 12500,
-      total: 12500
+      unitPrice: 95000,
+      total: 95000
     }]
   };
 

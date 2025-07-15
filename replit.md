@@ -264,6 +264,15 @@ Changelog:
   * Generated real collection emails with personalized tone and professional language
   * Fixed frontend API request parameter ordering issue that was causing "Method is not a valid HTTP token" errors
   * Result: Authentic AI analysis replacing mock data with real intelligence and strategic recommendations
+- January 15, 2025. Strategic demo scenarios implementation:
+  * Replaced random invoice generation with strategic demo scenarios showcasing AI routing capabilities
+  * Created 10 strategic test cases: 3 low-risk (GPT-4o-mini), 4 medium-risk (Claude 3.5 Sonnet), 3 high-risk (Claude Opus)
+  * Each scenario designed to trigger specific AI model routing based on relationship score, amount, and days overdue
+  * Low-risk: Score 70+, amounts $8K-45K, 8-18 days overdue (friendly tone, quick approval)
+  * Medium-risk: Score 40-69, amounts $18K-32K, 28-42 days overdue (professional tone, strategic review)
+  * High-risk: Score 18-32, amounts $12K-95K, 68-92 days overdue (firm tone, executive review)
+  * Updated client-side transformations to handle strategic demo data with proper risk level indicators
+  * Result: Consistent test scenarios that properly demonstrate AI routing logic and relationship-based analysis
 ```
 
 ## User Preferences

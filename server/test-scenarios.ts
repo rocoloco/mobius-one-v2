@@ -3,22 +3,28 @@ import { scoringService } from './services/scoringService';
 import { routingService } from './services/routing-service';
 import { recommendationService } from './services/recommendation-service';
 
-// Test scenarios
+// Test scenarios aligned with strategic demo scenarios
 const scenarios = [
   {
-    name: 'High-Value Enterprise (90 days overdue)',
-    customer: { arr: 250000, healthScore: 45, segment: 'enterprise' },
-    daysOverdue: 90
+    name: 'Low Risk - Acme Corporation (12 days overdue)',
+    customer: { arr: 45000, healthScore: 85, segment: 'enterprise', relationshipScore: 85 },
+    daysOverdue: 12,
+    expectedRisk: 'low',
+    expectedModel: 'gpt-4o-mini'
   },
   {
-    name: 'Small Business (15 days overdue, good history)',
-    customer: { arr: 8000, healthScore: 85, segment: 'smb' },
-    daysOverdue: 15
+    name: 'Medium Risk - GlobalTech Industries (35 days overdue)',
+    customer: { arr: 32000, healthScore: 58, segment: 'midmarket', relationshipScore: 58 },
+    daysOverdue: 35,
+    expectedRisk: 'medium',
+    expectedModel: 'claude-3.5-sonnet'
   },
   {
-    name: 'Mid-Market (45 days overdue, poor history)',
-    customer: { arr: 45000, healthScore: 52, segment: 'midmarket' },
-    daysOverdue: 45
+    name: 'High Risk - Problematic Corp (92 days overdue)',
+    customer: { arr: 95000, healthScore: 18, segment: 'enterprise', relationshipScore: 18 },
+    daysOverdue: 92,
+    expectedRisk: 'high',
+    expectedModel: 'claude-opus-4'
   }
 ];
 
@@ -98,6 +104,8 @@ async function testScenarios() {
       console.log(`\n🔀 ROUTING:`);
       console.log(`   Model Tier: ${routingDecision.modelTier}`);
       console.log(`   AI Model: ${routingDecision.aiModel}`);
+      console.log(`   Expected Model: ${scenario.expectedModel}`);
+      console.log(`   Model Match: ${routingDecision.aiModel === scenario.expectedModel ? '✅' : '❌'}`);
       console.log(`   Cost: $${routingDecision.estimatedCost}`);
       console.log(`   Review Time: ${routingDecision.estimatedReviewTime} minutes`);
       console.log(`   Reasoning: ${routingDecision.reasoning}`);

@@ -325,7 +325,7 @@ export default function CollectionsPage() {
         riskLevel: invoice.riskLevel || 'medium',
         relationship: invoice.relationship || 'analyzing relationship',
         situation: invoice.situation || 'status pending',
-        aiMessage: invoice.aiRecommendation || 'Analyzing...',
+        aiMessage: `Ready to analyze ${invoice.customer} with ${invoice.riskLevel} risk routing`,
         analysisComplete: false
       }));
 
