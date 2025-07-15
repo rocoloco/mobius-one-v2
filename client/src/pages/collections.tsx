@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { DollarSign, Clock, Shield, BarChart3, ArrowRight, CheckCircle, Menu, X, User, Settings, CreditCard, LogOut, ChevronDown } from 'lucide-react';
+import { DollarSign, Clock, Shield, BarChart3, ArrowRight, CheckCircle } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '../hooks/useAuth';
+import TopHeader from '../components/layout/TopHeader';
 
 interface Invoice {
   id: number;
@@ -34,8 +35,6 @@ interface CollectionMetrics {
 export default function CollectionsPage() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState(5);
   const [isComplete, setIsComplete] = useState(false);
   const { logout } = useAuth();
@@ -59,24 +58,6 @@ export default function CollectionsPage() {
   const [totalQueueSize, setTotalQueueSize] = useState(0);
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsProfileDropdownOpen(false);
-      }
-    };
-
-    if (isProfileDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isProfileDropdownOpen]);
 
   // Save/Load progress from localStorage
   const saveProgressToStorage = (data: any) => {
@@ -810,17 +791,21 @@ Best regards,
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Desktop Layout */}
-      <div className="hidden md:flex min-h-screen">
-        {/* Left Sidebar - Fixed 280px */}
-        <div className="w-80 bg-white shadow-xl">
-          <SidebarContent />
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <TopHeader />
+      
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Stats */}
+          <div className="lg:col-span-1">
+            <ProgressStats />
+            <ImpactMetrics />
+          </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex items-center justify-center p-8">
-          <div className="w-full max-w-3xl">
+          {/* Right Column - Main Content */}
+          <div className="lg:col-span-2">
+            <div className="w-full max-w-3xl mx-auto">
             {/* Main Card */}
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               {/* Color-coded header bar */}
@@ -985,226 +970,29 @@ Best regards,
         </div>
       </div>
 
-      {/* Mobile Layout */}
-      <div className="md:hidden min-h-screen">
-        {/* Mobile Header with Hamburger */}
-        <div className="bg-white shadow-sm p-4 flex items-center justify-between">
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+      {/* Batch Actions */}
+      {approvedForBatch.length >= 3 && (
+        <div className="mt-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+          <button 
+            onClick={handleBatchSend}
+            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
           >
-            <Menu className="w-6 h-6 text-gray-600" />
+            <CheckCircle className="w-5 h-5" />
+            Send All Reviewed ({approvedForBatch.length})
           </button>
-
-          <div className="flex items-center gap-3">
-            <img 
-              src="/logos/mobius-logo-light.png" 
-              alt="Mobius Logo" 
-              className="w-6 h-6 object-contain"
-            />
-            <h1 className="text-lg font-bold text-gray-900">Collections</h1>
-          </div>
-
-          <div className="w-10" /> {/* Spacer for centering */}
         </div>
+      )}
 
-        {/* Mobile Content */}
-        <div className="p-4">
-          {/* Main Card */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            {/* Color-coded header bar */}
-            <div className={`h-2 ${getRiskColor(currentInvoice.riskLevel)}`} />
-
-            {/* Card Header */}
-            <div className="p-4 border-b border-gray-200">
-              <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 mb-3">
-                <span className="font-semibold">{formatCurrency(currentInvoice.amount)}</span>
-                <span>•</span>
-                <span>{currentInvoice.daysPastDue} days overdue</span>
-                <span>•</span>
-                <span className="capitalize">{currentInvoice.riskLevel} risk</span>
-              </div>
-
-              <h1 className="text-xl font-bold text-gray-900 mb-2">
-                {currentInvoice.contactName} at {currentInvoice.customer}
-              </h1>
-
-              <p className="text-gray-600">
-                {currentInvoice.relationship} {currentInvoice.situation}
-              </p>
-            </div>
-
-            {/* AI Message */}
-            <div className="p-4">
-              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 mb-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-semibold text-sm">AI</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-gray-800 italic text-sm">
-                      "{currentInvoice.aiMessage}"
-                    </p>
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <div className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                        {currentInvoice.recommendationConfidence}% confidence
-                      </div>
-                      <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                        Score: {currentInvoice.relationshipScore}%
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              {!showInlineEditor ? (
-                <div className="space-y-3">
-                  <button
-                    onClick={handleApprove}
-                    className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
-                  >
-                    {showSuccessAnimation ? (
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    ) : (
-                      <ArrowRight className="w-5 h-5" />
-                    )}
-                    Approve for Batch
-                  </button>
-
-                  <button
-                    onClick={handleSend}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3"
-                  >
-                    Send Immediately
-                  </button>
-
-                  <button
-                    onClick={handleWrite}
-                    className="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-3"
-                  >
-                    I'll Write My Own
-                  </button>
-
-                  <div className="text-center pt-2 space-y-2">
-                    <button
-                      onClick={handleReviewLater}
-                      className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors duration-200 block"
-                    >
-                      Review Later
-                    </button>
-                    <button
-                      onClick={handleDoneForToday}
-                      className="text-gray-400 hover:text-gray-600 text-xs font-medium transition-colors duration-200 block"
-                    >
-                      I'm done for now
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Edit your message:
-                    </label>
-                    <textarea
-                      value={editorContent}
-                      onChange={(e) => setEditorContent(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      rows={4}
-                      placeholder="Write your custom message..."
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleWriteSubmit}
-                      className="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-                    >
-                      <ArrowRight className="w-4 h-4" />
-                      Send
-                    </button>
-                    <button
-                      onClick={handleWriteCancel}
-                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Progress Indicator */}
-          <div className="mt-4 space-y-2">
-            <div className="text-center">
-              <span className="text-sm text-gray-600">
-                {(() => {
-                  const uniqueHandledIds = new Set([
-                    ...processed.map(inv => inv.id),
-                    ...approvedForBatch.map(inv => inv.id),
-                    ...needsReview.map(inv => inv.id)
-                  ]);
-                  const totalHandled = uniqueHandledIds.size;
-                  return Math.max(0, queue.length - totalHandled);
-                })()} of {queue.length} remaining
-              </span>
-            </div>
-            <div className="flex items-center justify-center">
-              <div className="flex gap-2">
-                {queue.map((_, index) => {
-                  const isProcessed = processed.some(p => p.id === queue[index]?.id);
-                  const isApproved = approvedForBatch.some(a => a.id === queue[index]?.id);
-                  const isNeedsReview = needsReview.some(n => n.id === queue[index]?.id);
-                  const isCurrent = index === currentIndex;
-                  
-                  return (
-                    <div
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                        isProcessed 
-                          ? 'bg-green-500' 
-                          : isApproved 
-                            ? 'bg-green-300' 
-                            : isNeedsReview 
-                              ? 'bg-yellow-500' 
-                              : isCurrent 
-                                ? 'bg-blue-600' 
-                                : 'bg-gray-300'
-                      }`}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+      {/* Needs Review */}
+      {needsReview.length > 0 && (
+        <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+          <button className="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+            <Clock className="w-5 h-5" />
+            Review Required ({needsReview.length})
+          </button>
         </div>
+      )}
 
-        {/* Mobile Menu Overlay */}
-        {isMobileMenuOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex">
-            <div className="bg-white w-80 h-full shadow-xl">
-              <div className="p-4 flex items-center justify-between border-b border-gray-200">
-                <h2 className="text-lg font-bold text-gray-900">Menu</h2>
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-                >
-                  <X className="w-6 h-6 text-gray-600" />
-                </button>
-              </div>
-
-              <div className="h-full overflow-y-auto">
-                <SidebarContent />
-              </div>
-            </div>
-
-            <div
-              className="flex-1"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-          </div>
-        )}
       </div>
     </div>
   );
