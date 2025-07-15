@@ -172,18 +172,17 @@ export default function CollectionsPage() {
   useEffect(() => {
     if (!overdueInvoicesData?.invoices) return;
     
+    // For debug: Clear localStorage to force fresh start
+    localStorage.clear();
+    
     const savedProgress = loadProgressFromStorage();
     const alreadyProcessed = loadProcessedInvoices();
     
     console.log('Overdue invoices data:', overdueInvoicesData.invoices);
     console.log('Already processed invoices:', alreadyProcessed);
     
-    // For debug: Clear localStorage to force fresh start
-    localStorage.clear();
-    
-    // Transform backend data to match frontend interface
+    // Transform backend data to match frontend interface - don't filter by processed invoices for now
     const availableInvoices = overdueInvoicesData.invoices
-      .filter((invoice: any) => !alreadyProcessed.includes(invoice.id))
       .map((invoice: any) => ({
         ...invoice,
         customer: invoice.customer || 'Unknown Customer',
@@ -213,20 +212,25 @@ export default function CollectionsPage() {
       return;
     }
     
-    setProcessedInvoices(alreadyProcessed);
-    
-    if (savedProgress) {
-      setCurrentIndex(savedProgress.currentIndex || 0);
-      setProcessed(savedProgress.processed || []);
-      setApprovedForBatch(savedProgress.approvedForBatch || []);
-      setNeedsReview(savedProgress.needsReview || []);
-      setTotalQueueSize(savedProgress.totalQueueSize || availableInvoices.length);
-      setMetrics(savedProgress.metrics || metrics);
-    } else {
-      setTotalQueueSize(availableInvoices.length);
-    }
+    // Force reset states to prevent stale data issues
+    setIsQueueComplete(false);
+    setCurrentIndex(0);
+    setProcessed([]);
+    setApprovedForBatch([]);
+    setNeedsReview([]);
+    setProcessedInvoices([]);
+    setTotalQueueSize(availableInvoices.length);
+    setMetrics({
+      revenueAccelerated: 0,
+      timeSaved: 0,
+      relationshipsProtected: 0,
+      aiLearningProgress: 42,
+      remainingQueue: availableInvoices.length
+    });
     
     setQueue(availableInvoices);
+    
+    console.log('Queue set with', availableInvoices.length, 'invoices');
   }, [overdueInvoicesData?.invoices]);
 
   // Auto-analyze current invoice when it changes
