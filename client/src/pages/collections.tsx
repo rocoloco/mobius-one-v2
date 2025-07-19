@@ -246,7 +246,10 @@ const CompletionExperience: React.FC<{
           </div>
 
           <button
-            onClick={onComplete}
+            onClick={() => {
+              console.log('Back to work button clicked in CompletionExperience');
+              onComplete();
+            }}
             className="group bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xl font-semibold px-12 py-6 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 mb-6"
           >
             Back to work
@@ -698,6 +701,13 @@ Best regards,
 
   // Completion state - Only show celebration when truly complete
   if (isActuallyComplete) {
+      console.log('Showing CompletionExperience - truly complete:', {
+        isActuallyComplete,
+        workflowState,
+        uniqueHandledIds: uniqueHandledIds.size,
+        queueLength: state.queue.length
+      });
+      
       // Calculate real business impact
       const totalApprovedValue = [...state.processed, ...state.approvedForBatch].reduce((sum, inv) => sum + inv.amount, 0);
       const workingCapitalFreed = Math.round(totalApprovedValue * 0.4); // ~40% becomes working capital
@@ -715,13 +725,19 @@ Best regards,
           daysAccelerated={daysAccelerated}
           sessionDuration={sessionDuration}
           onComplete={() => {
-            // Clear session data
-            localStorage.removeItem('collectionsProgress');
-            localStorage.removeItem('sessionStartTime');
-            localStorage.removeItem('processedInvoices');
-            
-            // Reset the collections state to check for new invoices
-            window.location.href = '/collections';
+            console.log('Back to work button clicked');
+            try {
+              // Clear session data
+              localStorage.removeItem('collectionsProgress');
+              localStorage.removeItem('sessionStartTime');
+              localStorage.removeItem('processedInvoices');
+              console.log('Storage cleared successfully');
+              
+              // Force page reload to collections
+              window.location.reload();
+            } catch (error) {
+              console.error('Error during navigation:', error);
+            }
           }}
         />
       );
@@ -795,6 +811,14 @@ Best regards,
 
   // Guard clause for when currentInvoice is undefined
   if (!currentInvoice) {
+    console.log('Showing fallback completion screen - currentInvoice is undefined:', {
+      currentIndex: state.currentIndex,
+      queueLength: state.queue.length,
+      workflowState,
+      isActuallyComplete,
+      uniqueHandledIds: uniqueHandledIds.size
+    });
+    
     return (
       <div className="min-h-screen bg-gray-50">
         <TopHeaderSimplified />
@@ -803,7 +827,18 @@ Best regards,
             <h2 className="text-xl font-semibold text-gray-900 mb-2">All invoices processed!</h2>
             <p className="text-gray-600">No more invoices to review right now.</p>
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => {
+                console.log('Return to Dashboard button clicked');
+                try {
+                  localStorage.removeItem('collectionsProgress');
+                  localStorage.removeItem('sessionStartTime');
+                  localStorage.removeItem('processedInvoices');
+                  console.log('Storage cleared, navigating to dashboard');
+                  navigate('/dashboard');
+                } catch (error) {
+                  console.error('Error during navigation:', error);
+                }
+              }}
               className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg"
             >
               Return to Dashboard
