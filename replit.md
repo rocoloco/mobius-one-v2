@@ -293,6 +293,9 @@ Changelog:
   * Enhanced user experience with gradient backgrounds, shadow effects, and micro-interactions
   * Fixed misleading "8 new invoices" hardcoded message to accurate "Daily batch complete" messaging
   * Clarified completion logic to recognize daily batch completion vs all-invoices-ever completion
+  * Fixed workflow completion logic to prevent premature celebration when users approve invoices for batch
+  * Replaced binary completion check with workflow-aware states (working, queue-exhausted, user-quit)
+  * Users can now approve multiple invoices without being forced into celebration screen
   * Result: Engaging 15-second completion experience that celebrates business achievements and guides next steps
 ```
 

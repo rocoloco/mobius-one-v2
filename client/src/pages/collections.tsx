@@ -556,7 +556,7 @@ export default function CollectionsPage() {
 
   // Auto-redirect countdown for completed sessions
   useEffect(() => {
-    if (state.ui.isQueueComplete && isComplete) {
+    if (state.ui.isQueueComplete && isActuallyComplete) {
       // Save all processed invoice IDs to persistent storage
       const allProcessedIds = [
         ...state.processed.map(inv => inv.id),
@@ -587,7 +587,7 @@ export default function CollectionsPage() {
 
       return () => clearInterval(timer);
     }
-  }, [state.ui.isQueueComplete, isComplete]);
+  }, [state.ui.isQueueComplete, isActuallyComplete]);
 
   // Event handlers with useCallback for performance
   const handleApprove = useCallback(() => {
