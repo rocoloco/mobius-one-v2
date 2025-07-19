@@ -576,30 +576,41 @@ Best regards,
             </div>
 
             {/* Main Impact Statement */}
-            <h1 className="text-6xl font-bold text-gray-900 mb-4 animate-fade-in">
+            <h1 className="text-5xl font-bold text-gray-900 mb-3 animate-fade-in">
               {formatCurrency(totalApprovedValue)} Accelerated
             </h1>
-            <p className="text-2xl text-gray-700 mb-8 font-medium animate-fade-in-delay impact-statement">
-              That's {averageDSOReduction} days of cash flow recovered in just {sessionDuration} minutes.
+            <p className="text-xl text-gray-600 mb-8 animate-fade-in-delay impact-statement">
+              That's ~12 days of cash flow recovered in {sessionDuration} minutes
             </p>
+
+            {/* Impact Highlight - Working Capital Value */}
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 mb-8 border border-green-200 animate-slide-up impact-highlight">
+              <div className="text-center">
+                <div className="text-5xl font-bold text-green-600 mb-2">
+                  {formatCurrency(Math.round(businessImpact))}
+                </div>
+                <div className="text-lg font-medium text-green-800 mb-1">Working Capital Value Created</div>
+                <div className="text-sm text-green-600">Annual cash flow acceleration at {((businessImpact/totalApprovedValue)*100).toFixed(1)}% yield</div>
+              </div>
+            </div>
 
             {/* Key Insight Card */}
             <div className="bg-white rounded-xl p-8 shadow-lg mb-8 animate-slide-up insight-card">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                 <div>
-                  <span className="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2 label">Your approval speed</span>
-                  <span className="block text-4xl font-bold text-green-600 mb-1 metric">{averageApprovalTime}s average</span>
-                  <span className="text-sm text-gray-600 comparison">{efficiency}% faster than manual</span>
+                  <span className="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2 label">Processing efficiency</span>
+                  <span className="block text-4xl font-bold text-blue-600 mb-1 metric">{averageApprovalTime}s average</span>
+                  <span className="text-sm text-gray-600 comparison">{efficiency}% faster than manual review</span>
                 </div>
                 <div>
-                  <span className="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2 label">Cash flow impact</span>
-                  <span className="block text-4xl font-bold text-blue-600 mb-1 metric">{formatCurrency(businessImpact)}</span>
-                  <span className="text-sm text-gray-600 comparison">Working capital freed</span>
+                  <span className="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2 label">Time investment</span>
+                  <span className="block text-4xl font-bold text-purple-600 mb-1 metric">{sessionDuration}min</span>
+                  <span className="text-sm text-gray-600 comparison">vs {Math.round(sessionDuration * 3)}min manual process</span>
                 </div>
                 <div>
-                  <span className="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2 label">Relationships</span>
-                  <span className="block text-4xl font-bold text-purple-600 mb-1 metric">100%</span>
-                  <span className="text-sm text-gray-600 comparison">Protected & strengthened</span>
+                  <span className="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2 label">ROI multiplier</span>
+                  <span className="block text-4xl font-bold text-green-600 mb-1 metric">{Math.round(businessImpact / (sessionDuration * 2))}x</span>
+                  <span className="text-sm text-gray-600 comparison">Value per minute invested</span>
                 </div>
               </div>
             </div>
@@ -627,7 +638,7 @@ Best regards,
                 }}
                 className="w-full max-w-md mx-auto block bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl primary-action"
               >
-                View Cash Flow Impact →
+                View Dashboard →
               </button>
 
               {/* Secondary Action */}
@@ -642,7 +653,7 @@ Best regards,
                 }}
                 className="block mx-auto text-gray-600 hover:text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-button"
               >
-                Process more invoices
+                Check for New Invoices
               </button>
             </div>
 
