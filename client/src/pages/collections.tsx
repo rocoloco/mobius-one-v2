@@ -791,6 +791,27 @@ Best regards,
       );
   }
 
+  // Guard clause for when currentInvoice is undefined
+  if (!currentInvoice) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <TopHeaderSimplified />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">All invoices processed!</h2>
+            <p className="text-gray-600">No more invoices to review right now.</p>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg"
+            >
+              Return to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <TopHeaderSimplified />
