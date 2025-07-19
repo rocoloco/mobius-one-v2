@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
 import LandingPage from "@/pages/landing";
 import LoginPage from "./pages/login";
+import ChatPage from "@/pages/chat";
 import CollectionsPage from "@/pages/collections";
 import SettingsPage from "@/pages/settings";
 
@@ -19,6 +20,8 @@ function AuthenticatedApp() {
       <Route path="/" element={<Layout />}>
         <Route index element={<CollectionsPage />} />
         <Route path="collections" element={<CollectionsPage />} />
+        <Route path="dashboard" element={<CollectionsPage />} />
+        <Route path="chat" element={<ChatPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<CollectionsPage />} />
       </Route>

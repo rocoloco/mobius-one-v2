@@ -457,29 +457,91 @@ function collectionsReducer(state: CollectionsState, action: CollectionsAction):
   }
 }
 
-// Simplified TopHeader component (inline) with demo indicator
-const TopHeaderSimplified = ({ isDemoMode }: { isDemoMode?: boolean }) => (
-  <div className="bg-white border-b border-gray-200">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center justify-between h-16">
-        <div className="flex items-center gap-3">
-          <img 
-            src="/logos/mobius-logo-light.png" 
-            alt="Mobius One" 
-            className="w-8 h-8 object-contain"
-          />
-          <span className="text-xl font-bold text-gray-900">Mobius One</span>
-          {isDemoMode && (
-            <div className="flex items-center gap-2 ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-              <Play className="w-4 h-4" />
-              Demo Mode
-            </div>
-          )}
+// Simplified TopHeader component (inline) with demo indicator and navigation
+const TopHeaderSimplified = ({ isDemoMode }: { isDemoMode?: boolean }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
+  return (
+    <div className="bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/logos/mobius-logo-light.png" 
+              alt="Mobius One" 
+              className="w-8 h-8 object-contain"
+            />
+            <span className="text-xl font-bold text-gray-900">Mobius One</span>
+            {isDemoMode && (
+              <div className="flex items-center gap-2 ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                <Play className="w-4 h-4" />
+                Demo Mode
+              </div>
+            )}
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center gap-6">
+            <nav className="flex items-center gap-6">
+              <button
+                onClick={() => navigate('/')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  isActive('/') || isActive('/collections')
+                    ? 'bg-blue-50 text-blue-700' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Collections
+              </button>
+              <button
+                onClick={() => navigate('/settings')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  isActive('/settings') 
+                    ? 'bg-blue-50 text-blue-700' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Settings
+              </button>
+              <a 
+                href="https://docs.mobiusone.com" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              >
+                Help
+              </a>
+            </nav>
+
+            {/* Demo mode doesn't need profile menu */}
+            {!isDemoMode && (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={async () => {
+                    try {
+                      await logout();
+                    } catch (error) {
+                      console.error('Logout error:', error);
+                      window.location.href = '/';
+                    }
+                  }}
+                  className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default function CollectionsPage() {
   const navigate = useNavigate();
@@ -917,10 +979,10 @@ Best regards,
                 Continue Session
               </button>
               <button
-                onClick={() => window.location.reload()}
+                onClick={() => navigate('/dashboard')}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
               >
-                Start New Session
+                Return to Dashboard
               </button>
             </div>
           </div>
@@ -928,19 +990,14 @@ Best regards,
       );
   }
 
-  // Guard clause for when currentInvoice is undefined - differentiate between empty queue and completed queue
+  // Guard clause for when currentInvoice is undefined
   if (!currentInvoice) {
-    const hasProcessedInvoices = state.processed.length > 0 || state.approvedForBatch.length > 0 || state.needsReview.length > 0;
-    const isInitialEmptyState = state.queue.length === 0 && !hasProcessedInvoices;
-    
-    console.log('Showing fallback screen - currentInvoice is undefined:', {
+    console.log('Showing fallback completion screen - currentInvoice is undefined:', {
       currentIndex: state.currentIndex,
       queueLength: state.queue.length,
       workflowState,
       isActuallyComplete,
-      uniqueHandledIds: uniqueHandledIds.size,
-      hasProcessedInvoices,
-      isInitialEmptyState
+      uniqueHandledIds: uniqueHandledIds.size
     });
     
     return (
@@ -948,87 +1005,49 @@ Best regards,
         <TopHeaderSimplified isDemoMode={isDemoMode} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            {isInitialEmptyState && !isDemoMode ? (
-              // Show welcome screen for empty queue on first load
-              <>
-                <div className="mb-8">
-                  <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <DollarSign className="w-10 h-10 text-blue-600" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Collections</h2>
-                  <p className="text-gray-600 max-w-md mx-auto">
-                    Ready to process overdue invoices with AI-powered analysis and recommendations.
-                  </p>
-                </div>
-                <div className="space-y-4 max-w-sm mx-auto">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              {isDemoMode ? 'Demo completed!' : 'All invoices processed!'}
+            </h2>
+            <p className="text-gray-600">
+              {isDemoMode ? 'Try the full version to process real invoices.' : 'No more invoices to review right now.'}
+            </p>
+            <div className="space-y-2 mt-4">
+              {isDemoMode ? (
+                <>
                   <button
-                    onClick={() => {
-                      // Clear any cached data and reload to fetch fresh invoices
-                      localStorage.removeItem('processedInvoices');
+                    onClick={() => navigate('/?signup=true')}
+                    className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Start Free Trial
+                  </button>
+                  <br />
+                  <button
+                    onClick={() => window.location.href = '/collections?demo=true'}
+                    className="w-full sm:w-auto bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    Try Demo Again
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    console.log('Return to Dashboard button clicked');
+                    try {
                       localStorage.removeItem('collectionsProgress');
                       localStorage.removeItem('sessionStartTime');
-                      window.location.reload();
-                    }}
-                    className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    Load Invoice Queue
-                  </button>
-                  <button
-                    onClick={() => navigate('/settings')}
-                    className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-                  >
-                    Configure Integrations
-                  </button>
-                </div>
-              </>
-            ) : (
-              // Show completion screen for finished processing
-              <>
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  {isDemoMode ? 'Demo completed!' : 'All invoices processed!'}
-                </h2>
-                <p className="text-gray-600">
-                  {isDemoMode ? 'Try the full version to process real invoices.' : 'No more invoices to review right now.'}
-                </p>
-                <div className="space-y-2 mt-4">
-                  {isDemoMode ? (
-                    <>
-                      <button
-                        onClick={() => navigate('/?signup=true')}
-                        className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                      >
-                        Start Free Trial
-                      </button>
-                      <br />
-                      <button
-                        onClick={() => window.location.href = '/collections?demo=true'}
-                        className="w-full sm:w-auto bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-                      >
-                        Try Demo Again
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        console.log('Back to Collections button clicked');
-                        try {
-                          localStorage.removeItem('collectionsProgress');
-                          localStorage.removeItem('sessionStartTime');
-                          localStorage.removeItem('processedInvoices');
-                          console.log('Storage cleared, reloading page');
-                          window.location.reload();
-                        } catch (error) {
-                          console.error('Error during reload:', error);
-                        }
-                      }}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                    >
-                      Back to Collections
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
+                      localStorage.removeItem('processedInvoices');
+                      console.log('Storage cleared, navigating to dashboard');
+                      navigate('/dashboard');
+                    } catch (error) {
+                      console.error('Error during navigation:', error);
+                    }
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                >
+                  Return to Dashboard
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
