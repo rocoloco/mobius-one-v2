@@ -1001,7 +1001,7 @@ Best regards,
                     <span>•</span>
                     <span>{currentInvoice.daysPastDue} days overdue</span>
                     <span>•</span>
-                    <span className="capitalize">{currentInvoice.riskLevel} risk</span>
+                    <span className="capitalize">{currentInvoice.riskLevel || 'unknown'} risk</span>
                   </div>
 
                   <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -1010,7 +1010,7 @@ Best regards,
 
                   {currentInvoice.analysisComplete && (
                     <p className="text-gray-600">
-                      {getRelationshipDescription(currentInvoice.score || currentInvoice.relationshipScore, currentInvoice.riskLevel)}
+                      {getRelationshipDescription(currentInvoice.score || currentInvoice.relationshipScore, currentInvoice.riskLevel || 'unknown')}
                     </p>
                   )}
                 </div>
@@ -1066,11 +1066,11 @@ Best regards,
                                 </div>
                               )}
                               <div className={`px-3 py-1 text-xs font-medium rounded-full ${
-                                currentInvoice.riskLevel === 'low' ? 'bg-green-100 text-green-800' :
-                                currentInvoice.riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                (currentInvoice.riskLevel || 'unknown') === 'low' ? 'bg-green-100 text-green-800' :
+                                (currentInvoice.riskLevel || 'unknown') === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                                 'bg-red-100 text-red-800'
                               }`}>
-                                {currentInvoice.riskLevel.toUpperCase()} Risk
+                                {(currentInvoice.riskLevel || 'unknown').toUpperCase()} Risk
                               </div>
                             </div>
                             {currentInvoice.estimatedCost && (
