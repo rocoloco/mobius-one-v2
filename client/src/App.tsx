@@ -9,13 +9,9 @@ import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
 import LandingPage from "@/pages/landing";
 import LoginPage from "./pages/login";
-import HomePage from "@/pages/home";
+import ChatPage from "@/pages/chat";
 import CollectionsPage from "@/pages/collections";
-import EmptyQueuePage from "@/pages/empty-queue";
-import HistoryPage from "@/pages/history";
 import SettingsPage from "@/pages/settings";
-import HelpPage from "@/pages/help";
-import NotFound from "@/pages/not-found";
 
 function AuthenticatedApp() {
   return (
@@ -25,13 +21,10 @@ function AuthenticatedApp() {
         <Route index element={<CollectionsPage />} />
         <Route path="collections" element={<CollectionsPage />} />
         <Route path="dashboard" element={<CollectionsPage />} />
-        <Route path="chat" element={<HomePage />} />
-        <Route path="history" element={<HistoryPage />} />
+        <Route path="chat" element={<ChatPage />} />
         <Route path="settings" element={<SettingsPage />} />
-        <Route path="help" element={<HelpPage />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<CollectionsPage />} />
       </Route>
-      <Route path="/empty-queue" element={<EmptyQueuePage />} />
     </Routes>
   );
 }

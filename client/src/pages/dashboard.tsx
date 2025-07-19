@@ -249,10 +249,10 @@ export default function DashboardPage() {
             <div className="card p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <Link to="/query" className="block">
+                <Link to="/chat" className="block">
                   <button className="btn-secondary w-full justify-start">
                     <Plus className="h-4 w-4" />
-                    New Query
+                    New Conversation
                   </button>
                 </Link>
                 <button className="btn-secondary w-full justify-start">
@@ -337,9 +337,9 @@ export default function DashboardPage() {
                 </span>
               </div>
             </div>
-            <Link to="/help">
+            <a href="https://docs.mobiusone.com" target="_blank" rel="noopener noreferrer">
               <button className="btn-ghost text-sm">Need Help?</button>
-            </Link>
+            </a>
           </div>
         </div>
       </div>

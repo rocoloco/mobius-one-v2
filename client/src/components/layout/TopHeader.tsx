@@ -73,16 +73,14 @@ export default function TopHeader() {
               >
                 Settings
               </Link>
-              <Link 
-                to="/help" 
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isActive('/help') 
-                    ? 'bg-blue-50 text-blue-700' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+              <a 
+                href="https://docs.mobiusone.com" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               >
                 Help
-              </Link>
+              </a>
             </nav>
           </div>
 

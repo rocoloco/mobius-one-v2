@@ -273,6 +273,14 @@ Changelog:
   * High-risk: Score 18-32, amounts $12K-95K, 68-92 days overdue (firm tone, executive review)
   * Updated client-side transformations to handle strategic demo data with proper risk level indicators
   * Result: Consistent test scenarios that properly demonstrate AI routing logic and relationship-based analysis
+- January 19, 2025. Application cleanup and page consolidation:
+  * Removed unnecessary pages: empty-queue.tsx, home.tsx, query.tsx, history.tsx, help.tsx, not-found.tsx
+  * Streamlined routing to focus on core functionality: collections, chat, settings, dashboard, landing, login
+  * Updated navigation components to remove references to deleted pages
+  * Replaced help page links with external documentation links (https://docs.mobiusone.com)
+  * Consolidated empty state handling directly within collections.tsx instead of separate empty-queue page
+  * Updated dashboard.tsx to reference /chat instead of deleted /query route
+  * Result: Cleaner, more focused application structure with fewer redundant pages and simplified navigation
 ```
 
 ## User Preferences
