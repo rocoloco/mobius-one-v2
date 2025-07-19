@@ -928,8 +928,8 @@ Best regards,
       );
   }
 
-  // Guard clause for when currentInvoice is undefined
-  if (!currentInvoice) {
+  // Guard clause for when currentInvoice is undefined - only after queue is initialized
+  if (!currentInvoice && state.queue.length > 0 && workflowState === 'queue-exhausted') {
     console.log('Showing fallback completion screen - currentInvoice is undefined:', {
       currentIndex: state.currentIndex,
       queueLength: state.queue.length,
@@ -980,6 +980,42 @@ Best regards,
                       console.error('Error during navigation:', error);
                     }
                   }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                >
+                  Return to Dashboard
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If we have no invoices and no data is loading, show appropriate message
+  if (!loading && (!state.queue.length || workflowState === 'no-invoices')) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <TopHeaderSimplified isDemoMode={isDemoMode} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              {isDemoMode ? 'Ready for demo!' : 'No overdue invoices found'}
+            </h2>
+            <p className="text-gray-600">
+              {isDemoMode ? 'Click below to start the collections demonstration.' : 'All invoices are current. Great job!'}
+            </p>
+            <div className="space-y-2 mt-4">
+              {isDemoMode ? (
+                <button
+                  onClick={() => window.location.href = '/collections?demo=true'}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Start Demo
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate('/dashboard')}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg"
                 >
                   Return to Dashboard
