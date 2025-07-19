@@ -9,6 +9,7 @@ import {
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '../hooks/useAuth';
+import '../styles/collections-animations.css';
 
 interface Invoice {
   id: number;
