@@ -150,7 +150,7 @@ function collectionsReducer(state: CollectionsState, action: CollectionsAction):
     case 'APPROVE_INVOICE':
       const newApprovedBatch = [...state.approvedForBatch, action.payload.invoice];
       const totalProcessedAfterApproval = state.processed.length + newApprovedBatch.length + state.needsReview.length;
-      
+
       return {
         ...state,
         approvedForBatch: newApprovedBatch,
@@ -168,7 +168,7 @@ function collectionsReducer(state: CollectionsState, action: CollectionsAction):
     case 'SEND_INVOICE':
       const newProcessed = [...state.processed, action.payload.invoice];
       const totalProcessedAfterSend = newProcessed.length + state.approvedForBatch.length + state.needsReview.length;
-      
+
       return {
         ...state,
         processed: newProcessed,
@@ -184,7 +184,7 @@ function collectionsReducer(state: CollectionsState, action: CollectionsAction):
     case 'REVIEW_LATER':
       const newNeedsReview = [...state.needsReview, action.payload.invoice];
       const totalProcessedAfterReview = state.processed.length + state.approvedForBatch.length + newNeedsReview.length;
-      
+
       return {
         ...state,
         needsReview: newNeedsReview,
@@ -554,11 +554,11 @@ Best regards,
       const totalApprovedValue = [...state.processed, ...state.approvedForBatch].reduce((sum, inv) => sum + inv.amount, 0);
       const averageDSOReduction = 15; // Average days sales outstanding reduction
       const businessImpact = (totalApprovedValue / 30) * averageDSOReduction;
-      
+
       // Calculate session duration
       const sessionStart = getSessionStartTime();
       const sessionDuration = Math.round((Date.now() - sessionStart.getTime()) / (1000 * 60)); // minutes
-      
+
       // Calculate additional metrics for enhanced completion screen
       const averageApprovalTime = sessionDuration > 0 ? Math.round((sessionDuration * 60) / (state.processed.length + state.approvedForBatch.length)) : 18; // seconds
       const manualProcessTime = averageApprovalTime * 3; // 3x slower manually
@@ -1159,6 +1159,3 @@ Best regards,
           </div>
         </div>
       </div>
-    </div>
-  );
-}
