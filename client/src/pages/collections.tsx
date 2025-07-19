@@ -718,8 +718,10 @@ Best regards,
             // Clear session data
             localStorage.removeItem('collectionsProgress');
             localStorage.removeItem('sessionStartTime');
-            // Navigate to dashboard
-            navigate('/dashboard');
+            localStorage.removeItem('processedInvoices');
+            
+            // Reset the collections state to check for new invoices
+            window.location.href = '/collections';
           }}
         />
       );
