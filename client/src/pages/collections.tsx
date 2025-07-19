@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { 
   DollarSign, Clock, Shield, ArrowRight, CheckCircle, 
-  User, ChevronDown, Settings, CreditCard, LogOut 
+  User, ChevronDown, Settings, CreditCard, LogOut,
+  Zap, TrendingUp
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -114,6 +115,156 @@ const getSessionStartTime = () => {
 
 const setSessionStartTime = () => {
   localStorage.setItem('sessionStartTime', new Date().toISOString());
+};
+
+// Completion Experience Component
+const CompletionExperience: React.FC<{
+  totalProcessed: number;
+  totalValue: number;
+  workingCapitalFreed: number;
+  daysAccelerated: number;
+  sessionDuration: number;
+  onComplete: () => void;
+}> = ({ totalProcessed, totalValue, workingCapitalFreed, daysAccelerated, sessionDuration, onComplete }) => {
+  const [stage, setStage] = useState<'celebration' | 'impact' | 'next'>('celebration');
+  const [confettiPieces, setConfettiPieces] = useState<JSX.Element[]>([]);
+
+  useEffect(() => {
+    // Generate confetti
+    const colors = ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444'];
+    const pieces = Array.from({ length: 50 }, (_, i) => (
+      <div
+        key={i}
+        className="absolute w-3 h-3 rounded-sm animate-fall"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: '-20px',
+          backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+          transform: `rotate(${Math.random() * 360}deg)`,
+          animationDelay: `${Math.random() * 3}s`,
+          animationDuration: `${3 + Math.random() * 2}s`
+        }}
+      />
+    ));
+    setConfettiPieces(pieces);
+
+    // Progress through stages
+    const timer1 = setTimeout(() => setStage('impact'), 3000);
+    const timer2 = setTimeout(() => setStage('next'), 6000);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-gradient-to-br from-green-50 via-emerald-50 to-blue-50 flex items-center justify-center p-4">
+      {/* Confetti Container */}
+      {stage === 'celebration' && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          {confettiPieces}
+        </div>
+      )}
+
+      <div className="max-w-2xl w-full">
+        {/* Stage 1: Celebration */}
+        {stage === 'celebration' && (
+          <div className="text-center animate-fade-in-simple">
+            <div className="relative mb-8 inline-block">
+              <div className="absolute inset-0 bg-green-400 rounded-full blur-3xl opacity-30 animate-pulse" />
+              <div className="relative bg-white rounded-full p-8 shadow-2xl animate-bounce">
+                <CheckCircle className="w-24 h-24 text-green-500" strokeWidth={2} />
+              </div>
+            </div>
+            
+            <h1 className="text-6xl font-bold mb-4 animate-scale-up">
+              <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                {formatCurrency(workingCapitalFreed)}
+              </span>
+            </h1>
+            <p className="text-2xl text-gray-700 animate-slide-up-immediate">
+              freed up for your business
+            </p>
+          </div>
+        )}
+
+        {/* Stage 2: Business Impact */}
+        {stage === 'impact' && (
+          <div className="animate-fade-in-simple">
+            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+              You just gave your business superpowers
+            </h2>
+            
+            <div className="grid grid-cols-3 gap-6 mb-12">
+              <div className="text-center bg-white rounded-2xl p-6 shadow-lg animate-slide-up-immediate delay-100">
+                <Zap className="w-12 h-12 text-green-600 mx-auto mb-4" />
+                <div className="text-4xl font-bold text-green-600 mb-2">{daysAccelerated}</div>
+                <div className="text-sm text-gray-600">Days faster cash</div>
+              </div>
+              
+              <div className="text-center bg-white rounded-2xl p-6 shadow-lg animate-slide-up-immediate delay-200">
+                <TrendingUp className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                <div className="text-4xl font-bold text-blue-600 mb-2">
+                  {formatCurrency(workingCapitalFreed)}
+                </div>
+                <div className="text-sm text-gray-600">Working capital</div>
+              </div>
+              
+              <div className="text-center bg-white rounded-2xl p-6 shadow-lg animate-slide-up-immediate delay-300">
+                <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                <div className="text-4xl font-bold text-purple-600 mb-2">100%</div>
+                <div className="text-sm text-gray-600">Relationships safe</div>
+              </div>
+            </div>
+
+            <div className="bg-white/50 backdrop-blur rounded-xl p-4 text-center animate-fade-in-simple">
+              <p className="text-gray-600">
+                {totalProcessed} invoices • {sessionDuration} minutes • 
+                <span className="font-semibold"> Zero stress</span>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Stage 3: Next Actions */}
+        {stage === 'next' && (
+          <div className="text-center animate-fade-in-simple">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-6 mb-8 shadow-xl animate-slide-up-immediate">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <Clock className="w-5 h-5" />
+                <span className="text-lg font-semibold">Batch Run Tonight</span>
+              </div>
+              <p className="text-blue-100">
+                Your approved messages will be sent at 6:00 PM PST
+              </p>
+            </div>
+
+            <button
+              onClick={onComplete}
+              className="group bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xl font-semibold px-12 py-6 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 mb-6"
+            >
+              Back to work
+              <ArrowRight className="inline-block ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </button>
+
+            <p className="text-gray-600 animate-fade-in-simple delay-300">
+              <span className="font-semibold text-gray-900">8 new invoices</span> waiting for tomorrow
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 function collectionsReducer(state: CollectionsState, action: CollectionsAction): CollectionsState {
@@ -550,81 +701,30 @@ Best regards,
   // Completion state
   if (!currentInvoice || state.ui.isQueueComplete) {
     if (isComplete) {
-      // Calculate impact metrics
+      // Calculate real business impact
       const totalApprovedValue = [...state.processed, ...state.approvedForBatch].reduce((sum, inv) => sum + inv.amount, 0);
-      const averageDSOReduction = 15; // Average days sales outstanding reduction
-      const businessImpact = (totalApprovedValue / 30) * averageDSOReduction;
+      const workingCapitalFreed = Math.round(totalApprovedValue * 0.4); // ~40% becomes working capital
+      const daysAccelerated = 15; // Average DSO reduction
       
       // Calculate session duration
       const sessionStart = getSessionStartTime();
       const sessionDuration = Math.round((Date.now() - sessionStart.getTime()) / (1000 * 60)); // minutes
       
-      // Complete session - celebration with auto-redirect
       return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
-          <div className="text-center max-w-lg mx-auto p-8">
-            <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-              <CheckCircle className="w-12 h-12 text-white animate-pulse" />
-            </div>
-
-            <h1 className="text-4xl font-bold text-gray-900 mb-2 animate-fade-in">✨ Queue Clear! ✨</h1>
-            <p className="text-xl text-gray-700 mb-6 animate-fade-in-delay">
-              You've handled {state.processed.length + state.approvedForBatch.length} invoices worth {formatCurrency(totalApprovedValue)}
-            </p>
-            <p className="text-lg text-green-700 mb-8 font-medium animate-fade-in-delay-2">
-              They'll be sent in the next batch run
-            </p>
-
-            <div className="bg-white rounded-lg p-6 shadow-lg mb-8 animate-slide-up">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Impact Today</h3>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-1">{formatCurrency(businessImpact)}</div>
-                  <div className="text-gray-600 text-sm">Cash flow acceleration</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600 mb-1">{sessionDuration} min</div>
-                  <div className="text-gray-600 text-sm">Time invested</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600 mb-1">{averageDSOReduction} days</div>
-                  <div className="text-gray-600 text-sm">Expected acceleration</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-indigo-600 mb-1">100%</div>
-                  <div className="text-gray-600 text-sm">Relationships protected</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-gray-600 mb-4">
-              Redirecting in {state.ui.redirectCountdown} seconds...
-            </div>
-
-            <button
-              onClick={() => {
-                // Clear any running timers by forcing navigation
-                localStorage.removeItem('collectionsProgress');
-                localStorage.removeItem('sessionStartTime');
-
-                // Save all processed invoice IDs to persistent storage
-                const allProcessedIds = [
-                  ...state.processed.map(inv => inv.id),
-                  ...state.approvedForBatch.map(inv => inv.id),
-                  ...state.needsReview.map(inv => inv.id)
-                ];
-
-                localStorage.setItem('processedInvoices', JSON.stringify(allProcessedIds));
-
-                // Navigate to dashboard
-                navigate('/dashboard');
-              }}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105"
-            >
-              See you tomorrow!
-            </button>
-          </div>
-        </div>
+        <CompletionExperience
+          totalProcessed={state.processed.length + state.approvedForBatch.length}
+          totalValue={totalApprovedValue}
+          workingCapitalFreed={workingCapitalFreed}
+          daysAccelerated={daysAccelerated}
+          sessionDuration={sessionDuration}
+          onComplete={() => {
+            // Clear session data
+            localStorage.removeItem('collectionsProgress');
+            localStorage.removeItem('sessionStartTime');
+            // Navigate to dashboard
+            navigate('/dashboard');
+          }}
+        />
       );
     } else {
       // Partial session - offer to continue
