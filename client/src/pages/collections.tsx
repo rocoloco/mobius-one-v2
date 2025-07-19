@@ -482,10 +482,18 @@ export default function CollectionsPage() {
     [uniqueHandledIds.size, state.queue.length]
   );
 
-  const isComplete = useMemo(() => 
-    state.queue.length > 0 && uniqueHandledIds.size === state.queue.length,
-    [state.queue.length, uniqueHandledIds.size]
-  );
+  const isComplete = useMemo(() => {
+    const complete = state.queue.length > 0 && uniqueHandledIds.size === state.queue.length;
+    console.log('Completion check:', {
+      queueLength: state.queue.length,
+      handledCount: uniqueHandledIds.size,
+      processed: state.processed.length,
+      approved: state.approvedForBatch.length,
+      needsReview: state.needsReview.length,
+      isComplete: complete
+    });
+    return complete;
+  }, [state.queue.length, uniqueHandledIds.size, state.processed.length, state.approvedForBatch.length, state.needsReview.length]);
 
   // Initialize queue when data loads
   useEffect(() => {
@@ -699,9 +707,8 @@ Best regards,
     );
   }
 
-  // Completion state
-  if (!currentInvoice || state.ui.isQueueComplete) {
-    if (isComplete) {
+  // Completion state - Always prioritize isComplete check
+  if (isComplete) {
       // Calculate real business impact
       const totalApprovedValue = [...state.processed, ...state.approvedForBatch].reduce((sum, inv) => sum + inv.amount, 0);
       const workingCapitalFreed = Math.round(totalApprovedValue * 0.4); // ~40% becomes working capital
@@ -727,7 +734,10 @@ Best regards,
           }}
         />
       );
-    } else {
+  }
+
+  // Handle partial completion or user quitting early
+  if (!currentInvoice || state.ui.isQueueComplete) {
       // Partial session - offer to continue
       const totalValue = [...state.processed, ...state.approvedForBatch].reduce((sum, invoice) => sum + invoice.amount, 0);
       const totalHandled = state.processed.length + state.approvedForBatch.length;
@@ -790,7 +800,6 @@ Best regards,
           </div>
         </div>
       );
-    }
   }
 
   return (
