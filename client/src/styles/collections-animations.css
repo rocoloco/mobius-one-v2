@@ -1,47 +1,48 @@
-/* Confetti falling animation */
+/* Confetti fall animation */
 @keyframes fall {
   to {
-    transform: translateY(100vh) rotate(720deg);
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
   }
 }
 
-/* Scale up animation for the big number */
+/* Scale up animation that persists */
 @keyframes scale-up {
-  0% {
-    transform: scale(0);
+  from {
+    transform: scale(0.8);
     opacity: 0;
   }
-  100% {
+  to {
     transform: scale(1);
     opacity: 1;
   }
 }
 
-/* Slide up animation */
-@keyframes slide-up {
-  0% {
+/* Slide up animation that persists */
+@keyframes slide-up-immediate {
+  from {
     transform: translateY(20px);
     opacity: 0;
   }
-  100% {
+  to {
     transform: translateY(0);
     opacity: 1;
   }
 }
 
-/* Fade in animation */
-@keyframes fade-in {
-  0% {
+/* Fade in animation that persists */
+@keyframes fade-in-simple {
+  from {
     opacity: 0;
   }
-  100% {
+  to {
     opacity: 1;
   }
 }
 
 /* Animation classes */
 .animate-fall {
-  animation: fall 3s linear infinite;
+  animation: fall linear forwards;
 }
 
 .animate-scale-up {
@@ -49,29 +50,24 @@
 }
 
 .animate-slide-up-immediate {
-  animation: slide-up 0.8s ease-out forwards;
+  animation: slide-up-immediate 0.8s ease-out forwards;
 }
 
 .animate-fade-in-simple {
-  animation: fade-in 1s ease-out forwards;
+  animation: fade-in-simple 1s ease-out forwards;
 }
 
-/* Delay classes */
+
+
+/* Animation delay classes */
 .delay-100 {
-  animation-delay: 0.1s;
+  animation-delay: 100ms;
 }
 
 .delay-200 {
-  animation-delay: 0.2s;
+  animation-delay: 200ms;
 }
 
 .delay-300 {
-  animation-delay: 0.3s;
-}
-
-/* Ensure elements start hidden before animation */
-.animate-scale-up,
-.animate-slide-up-immediate,
-.animate-fade-in-simple {
-  opacity: 0;
+  animation-delay: 300ms;
 }
