@@ -739,7 +739,7 @@ Best regards,
               <CheckCircle className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Great Progress! 👏</h2>
-            <p className="text-lg text-gray-700 mb-2">You've processed {totalHandled} of {state.persistence.totalQueueSize} invoices.</p>
+            <p className="text-lg text-gray-700 mb-2">You've processed {totalHandled} of {state.queue.length} invoices.</p>
             <p className="text-gray-600 mb-8">You can continue where you left off anytime.</p>
 
             <div className="bg-white rounded-lg p-6 shadow-lg mb-6">
@@ -819,13 +819,13 @@ Best regards,
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Queue Progress</span>
                       <span className="font-semibold text-gray-900">
-                        {state.processed.length + state.approvedForBatch.length} of {state.persistence.totalQueueSize}
+                        {uniqueHandledIds.size} of {state.queue.length}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
                         className="bg-gradient-to-r from-cyan-600 to-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${state.persistence.totalQueueSize > 0 ? ((state.processed.length + state.approvedForBatch.length) / state.persistence.totalQueueSize) * 100 : 0}%` }}
+                        style={{ width: `${state.queue.length > 0 ? (uniqueHandledIds.size / state.queue.length) * 100 : 0}%` }}
                       />
                     </div>
                     <div className="flex items-center justify-between text-xs text-gray-500">
