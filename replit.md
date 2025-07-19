@@ -274,12 +274,13 @@ Changelog:
   * Updated client-side transformations to handle strategic demo data with proper risk level indicators
   * Result: Consistent test scenarios that properly demonstrate AI routing logic and relationship-based analysis
 - January 19, 2025. Application cleanup and page consolidation:
-  * Removed unnecessary pages: empty-queue.tsx, home.tsx, query.tsx, history.tsx, help.tsx, not-found.tsx
-  * Streamlined routing to focus on core functionality: collections, chat, settings, dashboard, landing, login
+  * Removed unnecessary pages: empty-queue.tsx, home.tsx, query.tsx, history.tsx, help.tsx, not-found.tsx, dashboard.tsx, chat.tsx
+  * Streamlined routing to focus on core functionality: collections, settings, landing, login
   * Updated navigation components to remove references to deleted pages
+  * Fixed all import errors and navigation references to deleted pages
   * Replaced help page links with external documentation links (https://docs.mobiusone.com)
   * Consolidated empty state handling directly within collections.tsx instead of separate empty-queue page
-  * Updated dashboard.tsx to reference /chat instead of deleted /query route
+  * Updated all dashboard navigation to redirect to collections page instead
   * Result: Cleaner, more focused application structure with fewer redundant pages and simplified navigation
 - January 19, 2025. Enhanced completion experience with celebration stages:
   * Implemented multi-stage completion experience: celebration, impact visualization, next actions
@@ -297,6 +298,16 @@ Changelog:
   * Replaced binary completion check with workflow-aware states (working, queue-exhausted, user-quit)
   * Users can now approve multiple invoices without being forced into celebration screen
   * Result: Engaging 15-second completion experience that celebrates business achievements and guides next steps
+- January 19, 2025. Complete demo mode implementation with authentication bypass:
+  * Added comprehensive demo mode accessible via /collections?demo=true URL parameter
+  * Created static DEMO_INVOICES with realistic collections scenarios and pre-completed AI analysis
+  * Implemented authentication bypass in App.tsx router to skip login screen for demo mode
+  * Modified useAuth hook to provide mock demo user when ?demo=true is detected
+  * Added demo indicator UI with blue "Demo Mode" badge in TopHeader component
+  * Bypassed all API calls when in demo mode - uses static data instead of backend requests
+  * Updated completion screens to show trial signup options for demo users with call-to-action buttons
+  * Demo works without backend dependencies, authentication, or API setup requirements
+  * Result: Complete collections workflow experience accessible to users without any setup or authentication barriers
 ```
 
 ## User Preferences

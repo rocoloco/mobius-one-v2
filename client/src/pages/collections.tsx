@@ -917,10 +917,10 @@ Best regards,
                 Continue Session
               </button>
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => window.location.reload()}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
               >
-                Return to Dashboard
+                Start New Session
               </button>
             </div>
           </div>
@@ -975,14 +975,14 @@ Best regards,
                       localStorage.removeItem('sessionStartTime');
                       localStorage.removeItem('processedInvoices');
                       console.log('Storage cleared, navigating to dashboard');
-                      navigate('/dashboard');
+                      navigate('/collections');
                     } catch (error) {
                       console.error('Error during navigation:', error);
                     }
                   }}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg"
                 >
-                  Return to Dashboard
+                  Back to Collections
                 </button>
               )}
             </div>
