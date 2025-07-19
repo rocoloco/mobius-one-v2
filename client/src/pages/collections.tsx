@@ -354,7 +354,6 @@ function collectionsReducer(state: CollectionsState, action: CollectionsAction):
         currentIndex: nextIndex,
         ui: {
           ...state.ui,
-          isQueueComplete: nextIndex >= state.queue.length,
           showSuccessAnimation: false
         }
       };
@@ -727,7 +726,7 @@ Best regards,
   }
 
   // Handle partial completion or user quitting early
-  if (workflowState === 'user-quit' || (workflowState === 'queue-exhausted' && !isActuallyComplete) || (!currentInvoice && !isActuallyComplete)) {
+  if (workflowState === 'user-quit') {
       // Partial session - offer to continue
       const totalValue = [...state.processed, ...state.approvedForBatch].reduce((sum, invoice) => sum + invoice.amount, 0);
       const totalHandled = state.processed.length + state.approvedForBatch.length;
