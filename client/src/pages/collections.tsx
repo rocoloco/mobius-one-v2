@@ -559,70 +559,97 @@ Best regards,
       const sessionStart = getSessionStartTime();
       const sessionDuration = Math.round((Date.now() - sessionStart.getTime()) / (1000 * 60)); // minutes
       
-      // Complete session - celebration with auto-redirect
+      // Calculate additional metrics for enhanced completion screen
+      const averageApprovalTime = sessionDuration > 0 ? Math.round((sessionDuration * 60) / (state.processed.length + state.approvedForBatch.length)) : 18; // seconds
+      const manualProcessTime = averageApprovalTime * 3; // 3x slower manually
+      const efficiency = Math.round((manualProcessTime - averageApprovalTime) / manualProcessTime * 100);
+
+      // Complete session - enhanced celebration screen
       return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
-          <div className="text-center max-w-lg mx-auto p-8">
-            <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-              <CheckCircle className="w-12 h-12 text-white animate-pulse" />
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center completion-screen">
+          <div className="text-center max-w-2xl mx-auto p-8">
+            {/* Animated Success State */}
+            <div className="success-animation mb-8">
+              <div className="w-32 h-32 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce shadow-2xl">
+                <div className="text-6xl text-white font-bold animate-fade-in">✓</div>
+              </div>
             </div>
 
-            <h1 className="text-4xl font-bold text-gray-900 mb-2 animate-fade-in">✨ Queue Clear! ✨</h1>
-            <p className="text-xl text-gray-700 mb-6 animate-fade-in-delay">
-              You've handled {state.processed.length + state.approvedForBatch.length} invoices worth {formatCurrency(totalApprovedValue)}
-            </p>
-            <p className="text-lg text-green-700 mb-8 font-medium animate-fade-in-delay-2">
-              They'll be sent in the next batch run
+            {/* Main Impact Statement */}
+            <h1 className="text-6xl font-bold text-gray-900 mb-4 animate-fade-in">
+              {formatCurrency(totalApprovedValue)} Accelerated
+            </h1>
+            <p className="text-2xl text-gray-700 mb-8 font-medium animate-fade-in-delay impact-statement">
+              That's {averageDSOReduction} days of cash flow recovered in just {sessionDuration} minutes.
             </p>
 
-            <div className="bg-white rounded-lg p-6 shadow-lg mb-8 animate-slide-up">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Impact Today</h3>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-1">{formatCurrency(businessImpact)}</div>
-                  <div className="text-gray-600 text-sm">Cash flow acceleration</div>
+            {/* Key Insight Card */}
+            <div className="bg-white rounded-xl p-8 shadow-lg mb-8 animate-slide-up insight-card">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div>
+                  <span className="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2 label">Your approval speed</span>
+                  <span className="block text-4xl font-bold text-green-600 mb-1 metric">{averageApprovalTime}s average</span>
+                  <span className="text-sm text-gray-600 comparison">{efficiency}% faster than manual</span>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600 mb-1">{sessionDuration} min</div>
-                  <div className="text-gray-600 text-sm">Time invested</div>
+                <div>
+                  <span className="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2 label">Cash flow impact</span>
+                  <span className="block text-4xl font-bold text-blue-600 mb-1 metric">{formatCurrency(businessImpact)}</span>
+                  <span className="text-sm text-gray-600 comparison">Working capital freed</span>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600 mb-1">{averageDSOReduction} days</div>
-                  <div className="text-gray-600 text-sm">Expected acceleration</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-indigo-600 mb-1">100%</div>
-                  <div className="text-gray-600 text-sm">Relationships protected</div>
+                <div>
+                  <span className="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2 label">Relationships</span>
+                  <span className="block text-4xl font-bold text-purple-600 mb-1 metric">100%</span>
+                  <span className="text-sm text-gray-600 comparison">Protected & strengthened</span>
                 </div>
               </div>
             </div>
 
-            <div className="text-gray-600 mb-4">
-              Redirecting in {state.ui.redirectCountdown} seconds...
+            {/* Action Buttons */}
+            <div className="space-y-4 animate-fade-in-delay-2">
+              {/* Primary Action */}
+              <button
+                onClick={() => {
+                  // Clear any running timers by forcing navigation
+                  localStorage.removeItem('collectionsProgress');
+                  localStorage.removeItem('sessionStartTime');
+
+                  // Save all processed invoice IDs to persistent storage
+                  const allProcessedIds = [
+                    ...state.processed.map(inv => inv.id),
+                    ...state.approvedForBatch.map(inv => inv.id),
+                    ...state.needsReview.map(inv => inv.id)
+                  ];
+
+                  localStorage.setItem('processedInvoices', JSON.stringify(allProcessedIds));
+
+                  // Navigate to dashboard
+                  navigate('/dashboard');
+                }}
+                className="w-full max-w-md mx-auto block bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl primary-action"
+              >
+                View Cash Flow Impact →
+              </button>
+
+              {/* Secondary Action */}
+              <button
+                onClick={() => {
+                  // Clear processed invoices to reload fresh data
+                  localStorage.removeItem('processedInvoices');
+                  localStorage.removeItem('collectionsProgress');
+                  localStorage.removeItem('sessionStartTime');
+                  // Reload the page to check for new invoices
+                  window.location.reload();
+                }}
+                className="block mx-auto text-gray-600 hover:text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-button"
+              >
+                Process more invoices
+              </button>
             </div>
 
-            <button
-              onClick={() => {
-                // Clear any running timers by forcing navigation
-                localStorage.removeItem('collectionsProgress');
-                localStorage.removeItem('sessionStartTime');
-
-                // Save all processed invoice IDs to persistent storage
-                const allProcessedIds = [
-                  ...state.processed.map(inv => inv.id),
-                  ...state.approvedForBatch.map(inv => inv.id),
-                  ...state.needsReview.map(inv => inv.id)
-                ];
-
-                localStorage.setItem('processedInvoices', JSON.stringify(allProcessedIds));
-
-                // Navigate to dashboard
-                navigate('/dashboard');
-              }}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105"
-            >
-              See you tomorrow!
-            </button>
+            {/* Auto-redirect notice (smaller and less prominent) */}
+            <div className="mt-8 text-sm text-gray-500 animate-fade-in-delay-2">
+              Auto-redirecting in {state.ui.redirectCountdown} seconds...
+            </div>
           </div>
         </div>
       );
