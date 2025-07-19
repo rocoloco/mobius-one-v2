@@ -143,15 +143,15 @@ const CompletionExperience: React.FC<{
           backgroundColor: colors[Math.floor(Math.random() * colors.length)],
           transform: `rotate(${Math.random() * 360}deg)`,
           animationDelay: `${Math.random() * 3}s`,
-          animationDuration: `${3 + Math.random() * 2}s`
+          animationDuration: `${5 + Math.random() * 3}s`
         }}
       />
     ));
     setConfettiPieces(pieces);
 
-    // Progress through stages
-    const timer1 = setTimeout(() => setStage('impact'), 3000);
-    const timer2 = setTimeout(() => setStage('next'), 6000);
+    // Progress through stages - much slower for emotional impact
+    const timer1 = setTimeout(() => setStage('impact'), 7000);  // 7 seconds for celebration
+    const timer2 = setTimeout(() => setStage('next'), 15000);   // 15 seconds total before final stage
 
     return () => {
       clearTimeout(timer1);

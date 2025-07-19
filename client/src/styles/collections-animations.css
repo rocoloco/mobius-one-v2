@@ -45,15 +45,15 @@
 }
 
 .animate-scale-up {
-  animation: scale-up 0.6s ease-out forwards;
+  animation: scale-up 1.2s ease-out forwards;
 }
 
 .animate-slide-up-immediate {
-  animation: slide-up 0.6s ease-out forwards;
+  animation: slide-up 0.8s ease-out forwards;
 }
 
 .animate-fade-in-simple {
-  animation: fade-in 0.6s ease-out forwards;
+  animation: fade-in 1s ease-out forwards;
 }
 
 /* Delay classes */
