@@ -1,10 +1,10 @@
 import { useReducer, useEffect, useMemo, useCallback, useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   DollarSign, Clock, Shield, ArrowRight, CheckCircle, 
   User, ChevronDown, Settings, CreditCard, LogOut,
-  Zap, TrendingUp
+  Zap, TrendingUp, Play
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +38,85 @@ interface Invoice {
     body: string;
   };
 }
+
+// Static demo data that mimics the strategic test cases
+const DEMO_INVOICES: Invoice[] = [
+  {
+    id: 1,
+    invoiceNumber: "INV-2024-001",
+    customer: "TechStart Solutions",
+    contactName: "Sarah Chen",
+    amount: 8500,
+    daysPastDue: 8,
+    relationshipScore: 85,
+    riskLevel: "low",
+    relationship: "Strong partnership",
+    situation: "Likely administrative oversight",
+    aiRecommendation: "Send friendly reminder with payment link. Emphasize continued partnership value.",
+    aiMessage: "This appears to be a simple oversight from a valued client. Sarah has an excellent payment history and strong relationship score. A gentle, friendly reminder should resolve this quickly.",
+    recommendationConfidence: 92,
+    approvalStatus: "pending",
+    analysisComplete: true,
+    aiModel: "gpt-4o-mini",
+    estimatedCost: 0.001,
+    estimatedReviewTime: 0.3,
+    score: 85,
+    draftEmail: {
+      subject: "Friendly Payment Reminder - Invoice INV-2024-001",
+      body: "Hi Sarah,\n\nI hope you're doing well! I wanted to reach out regarding Invoice INV-2024-001 for $8,500, which is now 8 days past due.\n\nI know how busy things can get, and this might have just slipped through the cracks. Could you help us get this processed when you have a moment?\n\nAs always, we truly appreciate our partnership with TechStart Solutions and look forward to continuing our great work together.\n\nBest regards,\n[Your Name]"
+    }
+  },
+  {
+    id: 2,
+    invoiceNumber: "INV-2024-002", 
+    customer: "MidScale Corp",
+    contactName: "James Rodriguez",
+    amount: 25000,
+    daysPastDue: 35,
+    relationshipScore: 55,
+    riskLevel: "medium",
+    relationship: "Professional but distant",
+    situation: "Payment process delays",
+    aiRecommendation: "Professional follow-up with clear next steps and escalation timeline.",
+    aiMessage: "This client has moderate relationship score with some payment delays. The amount is significant and we're past 30 days. Professional but firm approach needed with clear escalation timeline.",
+    recommendationConfidence: 78,
+    approvalStatus: "pending",
+    analysisComplete: true,
+    aiModel: "claude-3.5-sonnet",
+    estimatedCost: 0.008,
+    estimatedReviewTime: 1.2,
+    score: 55,
+    draftEmail: {
+      subject: "Important: Payment Required - Invoice INV-2024-002",
+      body: "Dear James,\n\nI'm writing regarding Invoice INV-2024-002 for $25,000, which is now 35 days overdue.\n\nWe understand that payment processing can sometimes experience delays, but we need to resolve this matter promptly. Please let us know:\n\n1. The expected payment date\n2. Any issues preventing payment\n3. Who else should be involved in resolving this\n\nIf we don't receive payment or a concrete plan by [Date + 7 days], we'll need to escalate this matter internally.\n\nI'm available to discuss this directly at your convenience.\n\nBest regards,\n[Your Name]"
+    }
+  },
+  {
+    id: 3,
+    invoiceNumber: "INV-2024-003",
+    customer: "Problematic Corp",
+    contactName: "David Kim",
+    amount: 45000,
+    daysPastDue: 78,
+    relationshipScore: 25,
+    riskLevel: "high",
+    relationship: "Strained with payment issues",
+    situation: "Chronic non-payment pattern",
+    aiRecommendation: "Firm demand letter with immediate escalation to legal/collections. Set hard deadline.",
+    aiMessage: "Critical situation: High-value invoice significantly overdue with problematic client history. Relationship score indicates chronic payment issues. Immediate escalation required with legal implications clearly stated.",
+    recommendationConfidence: 88,
+    approvalStatus: "pending", 
+    analysisComplete: true,
+    aiModel: "claude-3.5-sonnet",
+    estimatedCost: 0.015,
+    estimatedReviewTime: 2.5,
+    score: 25,
+    draftEmail: {
+      subject: "URGENT: Immediate Payment Required - Invoice INV-2024-003",
+      body: "Mr. Kim,\n\nInvoice INV-2024-003 for $45,000 is now 78 days overdue. This is unacceptable.\n\nDespite multiple previous communications, this matter remains unresolved. We require immediate payment within 5 business days.\n\nFailure to remit payment or establish an acceptable payment plan will result in:\n- Immediate escalation to our legal department\n- Suspension of all services\n- Potential collection agency involvement\n\nThis is your final notice before legal action. Please treat this matter with the urgency it demands.\n\nContact me immediately to resolve this.\n\n[Your Name]\nSenior Collections Manager"
+    }
+  }
+];
 
 interface CollectionMetrics {
   revenueAccelerated: number;
@@ -378,8 +457,8 @@ function collectionsReducer(state: CollectionsState, action: CollectionsAction):
   }
 }
 
-// Simplified TopHeader component (inline)
-const TopHeaderSimplified = () => (
+// Simplified TopHeader component (inline) with demo indicator
+const TopHeaderSimplified = ({ isDemoMode }: { isDemoMode?: boolean }) => (
   <div className="bg-white border-b border-gray-200">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between h-16">
@@ -390,6 +469,12 @@ const TopHeaderSimplified = () => (
             className="w-8 h-8 object-contain"
           />
           <span className="text-xl font-bold text-gray-900">Mobius One</span>
+          {isDemoMode && (
+            <div className="flex items-center gap-2 ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+              <Play className="w-4 h-4" />
+              Demo Mode
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -398,9 +483,16 @@ const TopHeaderSimplified = () => (
 
 export default function CollectionsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Check if we're in demo mode
+  const isDemoMode = useMemo(() => {
+    const urlParams = new URLSearchParams(location.search);
+    return urlParams.get('demo') === 'true';
+  }, [location.search]);
 
   // Main state using useReducer
   const [state, dispatch] = useReducer(collectionsReducer, initialState);
@@ -410,15 +502,26 @@ export default function CollectionsPage() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch overdue invoices
+  // Fetch overdue invoices (or use demo data)
   const { data: overdueInvoicesData, isLoading } = useQuery({
-    queryKey: ['/api/collections/overdue-invoices'],
+    queryKey: isDemoMode ? ['demo-invoices'] : ['/api/collections/overdue-invoices'],
+    queryFn: isDemoMode ? () => Promise.resolve(DEMO_INVOICES) : undefined,
     staleTime: 5 * 60 * 1000,
+    enabled: !isDemoMode, // Disable API call in demo mode
   });
 
-  // Analysis mutation
+  // Use demo data when in demo mode
+  const invoicesData = isDemoMode ? DEMO_INVOICES : overdueInvoicesData;
+  const loading = isDemoMode ? false : isLoading;
+
+  // Analysis mutation (bypass in demo mode)
   const analyzeMutation = useMutation({
     mutationFn: async (invoiceData: any) => {
+      if (isDemoMode) {
+        // In demo mode, just return the existing analysis data
+        return { analysis: invoiceData.invoice };
+      }
+      
       const response = await apiRequest('POST', `/api/collections/analyze`, {
         customer: invoiceData.customer,
         invoice: invoiceData.invoice
@@ -426,6 +529,11 @@ export default function CollectionsPage() {
       return await response.json();
     },
     onSuccess: (data, variables) => {
+      if (isDemoMode) {
+        // Demo invoices already have analysis data
+        return;
+      }
+
       console.log('Real AI Analysis complete:', data);
 
       dispatch({
@@ -456,9 +564,14 @@ export default function CollectionsPage() {
     }
   });
 
-  // Bulk approval mutation
+  // Bulk approval mutation (bypass in demo mode)
   const bulkApproveMutation = useMutation({
     mutationFn: async (invoiceIds: number[]) => {
+      if (isDemoMode) {
+        // In demo mode, simulate success
+        return { success: true, message: 'Demo: Batch approved successfully' };
+      }
+      
       const response = await apiRequest('POST', `/api/collections/bulk-approve`, { invoiceIds });
       return await response.json();
     }
@@ -489,13 +602,15 @@ export default function CollectionsPage() {
 
   // Initialize queue when data loads
   useEffect(() => {
-    if (overdueInvoicesData && Array.isArray(overdueInvoicesData)) {
+    const dataToProcess = isDemoMode ? DEMO_INVOICES : overdueInvoicesData;
+    
+    if (dataToProcess && Array.isArray(dataToProcess)) {
       // Set session start time on first load
       if (!localStorage.getItem('sessionStartTime')) {
         setSessionStartTime();
       }
 
-      const transformedInvoices = overdueInvoicesData.map((invoice: any) => ({
+      const transformedInvoices = dataToProcess.map((invoice: any) => ({
         ...invoice,
         id: invoice.id,
         invoiceNumber: invoice.invoiceNumber || 'Unknown',
@@ -510,13 +625,13 @@ export default function CollectionsPage() {
         riskLevel: invoice.riskLevel || 'medium',
         relationship: invoice.relationship || 'analyzing relationship',
         situation: invoice.situation || 'status pending',
-        aiMessage: `Ready to analyze ${invoice.customer} with ${invoice.riskLevel} risk routing`,
-        analysisComplete: false
+        aiMessage: isDemoMode ? invoice.aiMessage : `Ready to analyze ${invoice.customer} with ${invoice.riskLevel} risk routing`,
+        analysisComplete: isDemoMode ? invoice.analysisComplete : false
       }));
 
       dispatch({ type: 'INITIALIZE_QUEUE', payload: { invoices: transformedInvoices } });
     }
-  }, [overdueInvoicesData]);
+  }, [overdueInvoicesData, isDemoMode]);
 
   // Auto-analyze current invoice
   useEffect(() => {
@@ -684,15 +799,19 @@ Best regards,
   };
 
   // Loading state
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <TopHeaderSimplified />
+        <TopHeaderSimplified isDemoMode={isDemoMode} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Loading collections queue...</h2>
-            <p className="text-gray-600">Fetching overdue invoices for analysis</p>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              {isDemoMode ? 'Preparing demo data...' : 'Loading collections queue...'}
+            </h2>
+            <p className="text-gray-600">
+              {isDemoMode ? 'Setting up demonstration invoices' : 'Fetching overdue invoices for analysis'}
+            </p>
           </div>
         </div>
       </div>
@@ -821,28 +940,52 @@ Best regards,
     
     return (
       <div className="min-h-screen bg-gray-50">
-        <TopHeaderSimplified />
+        <TopHeaderSimplified isDemoMode={isDemoMode} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">All invoices processed!</h2>
-            <p className="text-gray-600">No more invoices to review right now.</p>
-            <button
-              onClick={() => {
-                console.log('Return to Dashboard button clicked');
-                try {
-                  localStorage.removeItem('collectionsProgress');
-                  localStorage.removeItem('sessionStartTime');
-                  localStorage.removeItem('processedInvoices');
-                  console.log('Storage cleared, navigating to dashboard');
-                  navigate('/dashboard');
-                } catch (error) {
-                  console.error('Error during navigation:', error);
-                }
-              }}
-              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg"
-            >
-              Return to Dashboard
-            </button>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              {isDemoMode ? 'Demo completed!' : 'All invoices processed!'}
+            </h2>
+            <p className="text-gray-600">
+              {isDemoMode ? 'Try the full version to process real invoices.' : 'No more invoices to review right now.'}
+            </p>
+            <div className="space-y-2 mt-4">
+              {isDemoMode ? (
+                <>
+                  <button
+                    onClick={() => navigate('/?signup=true')}
+                    className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Start Free Trial
+                  </button>
+                  <br />
+                  <button
+                    onClick={() => window.location.href = '/collections?demo=true'}
+                    className="w-full sm:w-auto bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    Try Demo Again
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    console.log('Return to Dashboard button clicked');
+                    try {
+                      localStorage.removeItem('collectionsProgress');
+                      localStorage.removeItem('sessionStartTime');
+                      localStorage.removeItem('processedInvoices');
+                      console.log('Storage cleared, navigating to dashboard');
+                      navigate('/dashboard');
+                    } catch (error) {
+                      console.error('Error during navigation:', error);
+                    }
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                >
+                  Return to Dashboard
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -851,7 +994,7 @@ Best regards,
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <TopHeaderSimplified />
+      <TopHeaderSimplified isDemoMode={isDemoMode} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
