@@ -138,35 +138,50 @@ function collectionsReducer(state: CollectionsState, action: CollectionsAction):
       };
 
     case 'APPROVE_INVOICE':
+      const newApprovedBatch = [...state.approvedForBatch, action.payload.invoice];
+      const totalProcessedAfterApproval = state.processed.length + newApprovedBatch.length + state.needsReview.length;
+      
       return {
         ...state,
-        approvedForBatch: [...state.approvedForBatch, action.payload.invoice],
+        approvedForBatch: newApprovedBatch,
         metrics: {
           ...state.metrics,
           revenueAccelerated: state.metrics.revenueAccelerated + action.payload.invoice.amount,
           timeSaved: state.metrics.timeSaved + 0.5,
           relationshipsProtected: Math.min(100, state.metrics.relationshipsProtected + 1),
-          aiLearningProgress: Math.min(state.metrics.aiLearningProgress + 1, 100)
+          aiLearningProgress: Math.min(state.metrics.aiLearningProgress + 1, 100),
+          remainingQueue: Math.max(0, state.metrics.totalQueue - totalProcessedAfterApproval)
         },
         ui: { ...state.ui, showSuccessAnimation: true }
       };
 
     case 'SEND_INVOICE':
+      const newProcessed = [...state.processed, action.payload.invoice];
+      const totalProcessedAfterSend = newProcessed.length + state.approvedForBatch.length + state.needsReview.length;
+      
       return {
         ...state,
-        processed: [...state.processed, action.payload.invoice],
+        processed: newProcessed,
         metrics: {
           ...state.metrics,
           revenueAccelerated: state.metrics.revenueAccelerated + action.payload.invoice.amount,
-          timeSaved: state.metrics.timeSaved + 0.5
+          timeSaved: state.metrics.timeSaved + 0.5,
+          remainingQueue: Math.max(0, state.metrics.totalQueue - totalProcessedAfterSend)
         },
         ui: { ...state.ui, showSuccessAnimation: true }
       };
 
     case 'REVIEW_LATER':
+      const newNeedsReview = [...state.needsReview, action.payload.invoice];
+      const totalProcessedAfterReview = state.processed.length + state.approvedForBatch.length + newNeedsReview.length;
+      
       return {
         ...state,
-        needsReview: [...state.needsReview, action.payload.invoice]
+        needsReview: newNeedsReview,
+        metrics: {
+          ...state.metrics,
+          remainingQueue: Math.max(0, state.metrics.totalQueue - totalProcessedAfterReview)
+        }
       };
 
     case 'BATCH_SEND':
