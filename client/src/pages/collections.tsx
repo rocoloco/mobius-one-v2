@@ -457,91 +457,29 @@ function collectionsReducer(state: CollectionsState, action: CollectionsAction):
   }
 }
 
-// Simplified TopHeader component (inline) with demo indicator and navigation
-const TopHeaderSimplified = ({ isDemoMode }: { isDemoMode?: boolean }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
-  return (
-    <div className="bg-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-3">
-            <img 
-              src="/logos/mobius-logo-light.png" 
-              alt="Mobius One" 
-              className="w-8 h-8 object-contain"
-            />
-            <span className="text-xl font-bold text-gray-900">Mobius One</span>
-            {isDemoMode && (
-              <div className="flex items-center gap-2 ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                <Play className="w-4 h-4" />
-                Demo Mode
-              </div>
-            )}
-          </div>
-
-          {/* Navigation */}
-          <div className="flex items-center gap-6">
-            <nav className="flex items-center gap-6">
-              <button
-                onClick={() => navigate('/')}
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isActive('/') || isActive('/collections')
-                    ? 'bg-blue-50 text-blue-700' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                Collections
-              </button>
-              <button
-                onClick={() => navigate('/settings')}
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isActive('/settings') 
-                    ? 'bg-blue-50 text-blue-700' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                Settings
-              </button>
-              <a 
-                href="https://docs.mobiusone.com" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-              >
-                Help
-              </a>
-            </nav>
-
-            {/* Demo mode doesn't need profile menu */}
-            {!isDemoMode && (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={async () => {
-                    try {
-                      await logout();
-                    } catch (error) {
-                      console.error('Logout error:', error);
-                      window.location.href = '/';
-                    }
-                  }}
-                  className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
+// Simplified TopHeader component (inline) with demo indicator
+const TopHeaderSimplified = ({ isDemoMode }: { isDemoMode?: boolean }) => (
+  <div className="bg-white border-b border-gray-200">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-between h-16">
+        <div className="flex items-center gap-3">
+          <img 
+            src="/logos/mobius-logo-light.png" 
+            alt="Mobius One" 
+            className="w-8 h-8 object-contain"
+          />
+          <span className="text-xl font-bold text-gray-900">Mobius One</span>
+          {isDemoMode && (
+            <div className="flex items-center gap-2 ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+              <Play className="w-4 h-4" />
+              Demo Mode
+            </div>
+          )}
         </div>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export default function CollectionsPage() {
   const navigate = useNavigate();
