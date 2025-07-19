@@ -476,22 +476,14 @@ export default function CollectionsPage() {
     [uniqueHandledIds.size, state.queue.length]
   );
 
-  const isComplete = useMemo(() => {
-    // Check if we've handled all invoices in TODAY's batch
-    const todaysBatchComplete = state.queue.length > 0 && uniqueHandledIds.size === state.queue.length;
-    
-    if (todaysBatchComplete) {
-      console.log('Daily batch complete:', {
-        queueLength: state.queue.length,
-        handledCount: uniqueHandledIds.size,
-        processed: state.processed.length,
-        approved: state.approvedForBatch.length,
-        needsReview: state.needsReview.length
-      });
-    }
-    
-    return todaysBatchComplete;
-  }, [state.queue.length, uniqueHandledIds.size, state.processed.length, state.approvedForBatch.length, state.needsReview.length]);
+  const workflowState = useMemo(() => {
+    if (state.queue.length === 0) return 'no-invoices';
+    if (state.currentIndex >= state.queue.length) return 'queue-exhausted';  
+    if (state.ui.isQueueComplete) return 'user-quit';
+    return 'working';
+  }, [state.queue.length, state.currentIndex, state.ui.isQueueComplete]);
+
+  const isActuallyComplete = workflowState === 'queue-exhausted' && uniqueHandledIds.size === state.queue.length;
 
   // Initialize queue when data loads
   useEffect(() => {
@@ -705,8 +697,8 @@ Best regards,
     );
   }
 
-  // Completion state - Always prioritize isComplete check
-  if (isComplete) {
+  // Completion state - Only show celebration when truly complete
+  if (isActuallyComplete) {
       // Calculate real business impact
       const totalApprovedValue = [...state.processed, ...state.approvedForBatch].reduce((sum, inv) => sum + inv.amount, 0);
       const workingCapitalFreed = Math.round(totalApprovedValue * 0.4); // ~40% becomes working capital
@@ -735,7 +727,7 @@ Best regards,
   }
 
   // Handle partial completion or user quitting early
-  if (!currentInvoice || state.ui.isQueueComplete) {
+  if (workflowState === 'user-quit' || (workflowState === 'queue-exhausted' && !isActuallyComplete) || (!currentInvoice && !isActuallyComplete)) {
       // Partial session - offer to continue
       const totalValue = [...state.processed, ...state.approvedForBatch].reduce((sum, invoice) => sum + invoice.amount, 0);
       const totalHandled = state.processed.length + state.approvedForBatch.length;
