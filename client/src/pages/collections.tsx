@@ -254,7 +254,7 @@ const CompletionExperience: React.FC<{
           </button>
 
           <p className="text-gray-600 animate-fade-in-simple delay-300">
-            <span className="font-semibold text-gray-900">8 new invoices</span> waiting for tomorrow
+            <span className="font-semibold text-gray-900">Daily batch complete!</span> Check back tomorrow for new invoices
           </p>
         </div>
       </div>
@@ -477,16 +477,20 @@ export default function CollectionsPage() {
   );
 
   const isComplete = useMemo(() => {
-    const complete = state.queue.length > 0 && uniqueHandledIds.size === state.queue.length;
-    console.log('Completion check:', {
-      queueLength: state.queue.length,
-      handledCount: uniqueHandledIds.size,
-      processed: state.processed.length,
-      approved: state.approvedForBatch.length,
-      needsReview: state.needsReview.length,
-      isComplete: complete
-    });
-    return complete;
+    // Check if we've handled all invoices in TODAY's batch
+    const todaysBatchComplete = state.queue.length > 0 && uniqueHandledIds.size === state.queue.length;
+    
+    if (todaysBatchComplete) {
+      console.log('Daily batch complete:', {
+        queueLength: state.queue.length,
+        handledCount: uniqueHandledIds.size,
+        processed: state.processed.length,
+        approved: state.approvedForBatch.length,
+        needsReview: state.needsReview.length
+      });
+    }
+    
+    return todaysBatchComplete;
   }, [state.queue.length, uniqueHandledIds.size, state.processed.length, state.approvedForBatch.length, state.needsReview.length]);
 
   // Initialize queue when data loads

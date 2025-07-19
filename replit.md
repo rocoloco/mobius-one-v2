@@ -291,6 +291,8 @@ Changelog:
   * Extended confetti duration to 5-8 seconds for lasting celebration effect
   * Fixed completion logic to prioritize isComplete check and prevent race conditions
   * Enhanced user experience with gradient backgrounds, shadow effects, and micro-interactions
+  * Fixed misleading "8 new invoices" hardcoded message to accurate "Daily batch complete" messaging
+  * Clarified completion logic to recognize daily batch completion vs all-invoices-ever completion
   * Result: Engaging 15-second completion experience that celebrates business achievements and guides next steps
 ```
 
