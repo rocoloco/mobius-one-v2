@@ -27,6 +27,29 @@ export function useAuth() {
   });
 
   useEffect(() => {
+    // Check if we're in demo mode
+    const isDemoMode = window.location.search.includes('demo=true');
+    
+    if (isDemoMode) {
+      // Provide mock user for demo mode
+      setAuthState({
+        user: {
+          id: 999,
+          username: 'demo',
+          name: 'Demo User',
+          email: 'demo@example.com',
+          companyName: 'Demo Company',
+          permissions: ['read', 'write'],
+          roles: ['user'],
+          riskScore: 0
+        },
+        isLoading: false,
+        isAuthenticated: true,
+        error: null
+      });
+      return;
+    }
+    
     checkAuthStatus();
   }, []);
 
@@ -179,6 +202,15 @@ export function useAuth() {
   };
 
   const logout = async () => {
+    // Check if we're in demo mode
+    const isDemoMode = window.location.search.includes('demo=true');
+    
+    if (isDemoMode) {
+      // In demo mode, just redirect to landing page
+      window.location.href = '/';
+      return;
+    }
+
     try {
       const token = localStorage.getItem('authToken');
       if (token) {

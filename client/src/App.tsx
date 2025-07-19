@@ -44,11 +44,19 @@ function AppRouter() {
   const isLoggedOut = localStorage.getItem('logout') === 'true';
   const hasAuthToken = localStorage.getItem('authToken');
   
+  // Check if we're in demo mode
+  const isDemoMode = window.location.search.includes('demo=true');
+  
   const { data: user, isLoading } = useQuery({
     queryKey: ['/api/user'],
     retry: false,
-    enabled: !isLoggedOut && !!hasAuthToken
+    enabled: !isLoggedOut && !!hasAuthToken && !isDemoMode
   });
+
+  // In demo mode, always show authenticated app
+  if (isDemoMode) {
+    return <AuthenticatedApp />;
+  }
 
   // If explicitly logged out or no auth token, show public app
   if (isLoggedOut || !hasAuthToken) {
