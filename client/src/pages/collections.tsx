@@ -172,97 +172,91 @@ const CompletionExperience: React.FC<{
     <div className="fixed inset-0 z-50 bg-gradient-to-br from-green-50 via-emerald-50 to-blue-50 flex items-center justify-center p-4">
       {/* Confetti Container */}
       {stage === 'celebration' && (
-        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
           {confettiPieces}
         </div>
       )}
 
       <div className="max-w-2xl w-full">
         {/* Stage 1: Celebration */}
-        {stage === 'celebration' && (
-          <div className="text-center animate-fade-in-simple">
-            <div className="relative mb-8 inline-block">
-              <div className="absolute inset-0 bg-green-400 rounded-full blur-3xl opacity-30 animate-pulse" />
-              <div className="relative bg-white rounded-full p-8 shadow-2xl animate-bounce">
-                <CheckCircle className="w-24 h-24 text-green-500" strokeWidth={2} />
-              </div>
+        <div className={`text-center ${stage === 'celebration' ? 'block animate-fade-in-simple' : 'hidden'}`}>
+          <div className="relative mb-8 inline-block">
+            <div className="absolute inset-0 bg-green-400 rounded-full blur-3xl opacity-30 animate-pulse" />
+            <div className="relative bg-white rounded-full p-8 shadow-2xl animate-bounce">
+              <CheckCircle className="w-24 h-24 text-green-500" strokeWidth={2} />
             </div>
-            
-            <h1 className="text-6xl font-bold mb-4 animate-scale-up">
-              <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                {formatCurrency(workingCapitalFreed)}
-              </span>
-            </h1>
-            <p className="text-2xl text-gray-700 animate-slide-up-immediate">
-              freed up for your business
-            </p>
           </div>
-        )}
+          
+          <h1 className="text-6xl font-bold mb-4 animate-scale-up">
+            <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              {formatCurrency(workingCapitalFreed)}
+            </span>
+          </h1>
+          <p className="text-2xl text-gray-700 animate-slide-up-immediate">
+            freed up for your business
+          </p>
+        </div>
 
         {/* Stage 2: Business Impact */}
-        {stage === 'impact' && (
-          <div className="animate-fade-in-simple">
-            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
-              You just gave your business superpowers
-            </h2>
-            
-            <div className="grid grid-cols-3 gap-6 mb-12">
-              <div className="text-center bg-white rounded-2xl p-6 shadow-lg animate-slide-up-immediate delay-100">
-                <Zap className="w-12 h-12 text-green-600 mx-auto mb-4" />
-                <div className="text-4xl font-bold text-green-600 mb-2">{daysAccelerated}</div>
-                <div className="text-sm text-gray-600">Days faster cash</div>
-              </div>
-              
-              <div className="text-center bg-white rounded-2xl p-6 shadow-lg animate-slide-up-immediate delay-200">
-                <TrendingUp className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                <div className="text-4xl font-bold text-blue-600 mb-2">
-                  {formatCurrency(workingCapitalFreed)}
-                </div>
-                <div className="text-sm text-gray-600">Working capital</div>
-              </div>
-              
-              <div className="text-center bg-white rounded-2xl p-6 shadow-lg animate-slide-up-immediate delay-300">
-                <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-                <div className="text-4xl font-bold text-purple-600 mb-2">100%</div>
-                <div className="text-sm text-gray-600">Relationships safe</div>
-              </div>
+        <div className={`${stage === 'impact' ? 'block animate-fade-in-simple' : 'hidden'}`}>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+            You just gave your business superpowers
+          </h2>
+          
+          <div className="grid grid-cols-3 gap-6 mb-12">
+            <div className="text-center bg-white rounded-2xl p-6 shadow-lg animate-slide-up-immediate delay-100">
+              <Zap className="w-12 h-12 text-green-600 mx-auto mb-4" />
+              <div className="text-4xl font-bold text-green-600 mb-2">{daysAccelerated}</div>
+              <div className="text-sm text-gray-600">Days faster cash</div>
             </div>
-
-            <div className="bg-white/50 backdrop-blur rounded-xl p-4 text-center animate-fade-in-simple">
-              <p className="text-gray-600">
-                {totalProcessed} invoices • {sessionDuration} minutes • 
-                <span className="font-semibold"> Zero stress</span>
-              </p>
+            
+            <div className="text-center bg-white rounded-2xl p-6 shadow-lg animate-slide-up-immediate delay-200">
+              <TrendingUp className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <div className="text-4xl font-bold text-blue-600 mb-2">
+                {formatCurrency(workingCapitalFreed)}
+              </div>
+              <div className="text-sm text-gray-600">Working capital</div>
+            </div>
+            
+            <div className="text-center bg-white rounded-2xl p-6 shadow-lg animate-slide-up-immediate delay-300">
+              <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <div className="text-4xl font-bold text-purple-600 mb-2">100%</div>
+              <div className="text-sm text-gray-600">Relationships safe</div>
             </div>
           </div>
-        )}
 
-        {/* Stage 3: Next Actions */}
-        {stage === 'next' && (
-          <div className="text-center animate-fade-in-simple">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-6 mb-8 shadow-xl animate-slide-up-immediate">
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <Clock className="w-5 h-5" />
-                <span className="text-lg font-semibold">Batch Run Tonight</span>
-              </div>
-              <p className="text-blue-100">
-                Your approved messages will be sent at 6:00 PM PST
-              </p>
-            </div>
-
-            <button
-              onClick={onComplete}
-              className="group bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xl font-semibold px-12 py-6 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 mb-6"
-            >
-              Back to work
-              <ArrowRight className="inline-block ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </button>
-
-            <p className="text-gray-600 animate-fade-in-simple delay-300">
-              <span className="font-semibold text-gray-900">8 new invoices</span> waiting for tomorrow
+          <div className="bg-white/50 backdrop-blur rounded-xl p-4 text-center animate-fade-in-simple">
+            <p className="text-gray-600">
+              {totalProcessed} invoices • {sessionDuration} minutes • 
+              <span className="font-semibold"> Zero stress</span>
             </p>
           </div>
-        )}
+        </div>
+
+        {/* Stage 3: Next Actions */}
+        <div className={`text-center ${stage === 'next' ? 'block animate-fade-in-simple' : 'hidden'}`}>
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-6 mb-8 shadow-xl animate-slide-up-immediate">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <Clock className="w-5 h-5" />
+              <span className="text-lg font-semibold">Batch Run Tonight</span>
+            </div>
+            <p className="text-blue-100">
+              Your approved messages will be sent at 6:00 PM PST
+            </p>
+          </div>
+
+          <button
+            onClick={onComplete}
+            className="group bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xl font-semibold px-12 py-6 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 mb-6"
+          >
+            Back to work
+            <ArrowRight className="inline-block ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          </button>
+
+          <p className="text-gray-600 animate-fade-in-simple delay-300">
+            <span className="font-semibold text-gray-900">8 new invoices</span> waiting for tomorrow
+          </p>
+        </div>
       </div>
     </div>
   );
