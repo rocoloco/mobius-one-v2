@@ -917,10 +917,10 @@ Best regards,
                 Continue Session
               </button>
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/settings')}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
               >
-                Return to Dashboard
+                System Settings
               </button>
             </div>
           </div>
@@ -969,20 +969,20 @@ Best regards,
               ) : (
                 <button
                   onClick={() => {
-                    console.log('Return to Dashboard button clicked');
+                    console.log('Return to Collections button clicked');
                     try {
                       localStorage.removeItem('collectionsProgress');
                       localStorage.removeItem('sessionStartTime');
                       localStorage.removeItem('processedInvoices');
-                      console.log('Storage cleared, navigating to dashboard');
-                      navigate('/dashboard');
+                      console.log('Storage cleared, reloading collections');
+                      window.location.reload();
                     } catch (error) {
                       console.error('Error during navigation:', error);
                     }
                   }}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg"
                 >
-                  Return to Dashboard
+                  Check for New Invoices
                 </button>
               )}
             </div>
@@ -998,31 +998,54 @@ Best regards,
       <div className="min-h-screen bg-gray-50">
         <TopHeaderSimplified isDemoMode={isDemoMode} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {isDemoMode ? 'Ready for demo!' : 'No overdue invoices found'}
-            </h2>
-            <p className="text-gray-600">
-              {isDemoMode ? 'Click below to start the collections demonstration.' : 'All invoices are current. Great job!'}
-            </p>
-            <div className="space-y-2 mt-4">
-              {isDemoMode ? (
-                <button
-                  onClick={() => window.location.href = '/collections?demo=true'}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Start Demo
-                </button>
-              ) : (
-                <button
-                  onClick={() => navigate('/dashboard')}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                >
-                  Return to Dashboard
-                </button>
-              )}
+          {isDemoMode ? (
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Ready for demo!</h2>
+              <p className="text-gray-600 mb-4">Click below to start the collections demonstration.</p>
+              <button
+                onClick={() => window.location.href = '/collections?demo=true'}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Start Demo
+              </button>
             </div>
-          </div>
+          ) : (
+            <div className="text-center space-y-6 max-w-md mx-auto">
+              <div className="text-6xl">🎉</div>
+              <h2 className="text-2xl font-bold text-green-600">Perfect Cash Flow!</h2>
+              <p className="text-gray-600 mb-6">
+                All invoices are current. Your collections are working perfectly!
+              </p>
+              
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-green-800 mb-2">What this means:</h3>
+                <ul className="text-sm text-green-700 space-y-1">
+                  <li>• DSO is optimized</li>
+                  <li>• Working capital is healthy</li> 
+                  <li>• Customer relationships are strong</li>
+                </ul>
+              </div>
+
+              <div className="space-y-3">
+                <button 
+                  onClick={() => window.location.href = '/collections?demo=true'}
+                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700"
+                >
+                  Try Demo Mode
+                </button>
+                <button 
+                  onClick={() => navigate('/settings')}
+                  className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-200"
+                >
+                  System Settings
+                </button>
+              </div>
+              
+              <p className="text-xs text-gray-500">
+                Check back later for new invoices or connect additional systems for continuous monitoring
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
