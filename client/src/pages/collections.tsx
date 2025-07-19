@@ -2,7 +2,7 @@ import { useReducer, useEffect, useMemo, useCallback, useState, useRef } from 'r
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { 
-  DollarSign, Clock, Shield, BarChart3, ArrowRight, CheckCircle, 
+  DollarSign, Clock, Shield, ArrowRight, CheckCircle, 
   User, ChevronDown, Settings, CreditCard, LogOut 
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
@@ -43,6 +43,7 @@ interface CollectionMetrics {
   relationshipsProtected: number;
   aiLearningProgress: number;
   remainingQueue: number;
+  totalQueue: number;
 }
 
 interface CollectionsState {
@@ -88,7 +89,8 @@ const initialState: CollectionsState = {
     timeSaved: 0,
     relationshipsProtected: 95,
     aiLearningProgress: 73,
-    remainingQueue: 0
+    remainingQueue: 0,
+    totalQueue: 0
   },
   ui: {
     isAnimating: false,
@@ -116,7 +118,8 @@ function collectionsReducer(state: CollectionsState, action: CollectionsAction):
         },
         metrics: {
           ...state.metrics,
-          remainingQueue: action.payload.invoices.length
+          remainingQueue: action.payload.invoices.length,
+          totalQueue: action.payload.invoices.length
         },
         ui: {
           ...state.ui,
@@ -773,10 +776,17 @@ Best regards,
                     </button>
                   )}
 
-                  <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
-                    <BarChart3 className="w-5 h-5" />
-                    See Full Queue ({state.metrics.remainingQueue} remaining)
-                  </button>
+                  <div className="w-full bg-gray-50 text-gray-600 py-3 px-4 rounded-lg flex items-center justify-between">
+                    <span className="text-sm font-medium">
+                      {state.metrics.remainingQueue} of {state.metrics.totalQueue} invoices remaining
+                    </span>
+                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${((state.metrics.totalQueue - state.metrics.remainingQueue) / state.metrics.totalQueue) * 100}%` }}
+                      />
+                    </div>
+                  </div>
 
                   {/* Profile Dropdown */}
                   <div className="relative" ref={dropdownRef}>
