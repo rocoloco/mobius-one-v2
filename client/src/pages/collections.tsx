@@ -106,6 +106,16 @@ const initialState: CollectionsState = {
   }
 };
 
+// Session tracking
+const getSessionStartTime = () => {
+  const stored = localStorage.getItem('sessionStartTime');
+  return stored ? new Date(stored) : new Date();
+};
+
+const setSessionStartTime = () => {
+  localStorage.setItem('sessionStartTime', new Date().toISOString());
+};
+
 function collectionsReducer(state: CollectionsState, action: CollectionsAction): CollectionsState {
   switch (action.type) {
     case 'INITIALIZE_QUEUE':
@@ -328,6 +338,11 @@ export default function CollectionsPage() {
   // Initialize queue when data loads
   useEffect(() => {
     if (overdueInvoicesData && Array.isArray(overdueInvoicesData)) {
+      // Set session start time on first load
+      if (!localStorage.getItem('sessionStartTime')) {
+        setSessionStartTime();
+      }
+
       const transformedInvoices = overdueInvoicesData.map((invoice: any) => ({
         ...invoice,
         id: invoice.id,
@@ -535,31 +550,49 @@ Best regards,
   // Completion state
   if (!currentInvoice || state.ui.isQueueComplete) {
     if (isComplete) {
+      // Calculate impact metrics
+      const totalApprovedValue = [...state.processed, ...state.approvedForBatch].reduce((sum, inv) => sum + inv.amount, 0);
+      const averageDSOReduction = 15; // Average days sales outstanding reduction
+      const businessImpact = (totalApprovedValue / 30) * averageDSOReduction;
+      
+      // Calculate session duration
+      const sessionStart = getSessionStartTime();
+      const sessionDuration = Math.round((Date.now() - sessionStart.getTime()) / (1000 * 60)); // minutes
+      
       // Complete session - celebration with auto-redirect
       return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
           <div className="text-center max-w-lg mx-auto p-8">
-            <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
-              <CheckCircle className="w-12 h-12 text-white" />
+            <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+              <CheckCircle className="w-12 h-12 text-white animate-pulse" />
             </div>
 
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">✨ Queue Clear! ✨</h1>
-            <p className="text-xl text-gray-700 mb-6">
-              You've handled {state.processed.length + state.approvedForBatch.length} invoices worth {formatCurrency([...state.processed, ...state.approvedForBatch].reduce((sum, inv) => sum + inv.amount, 0))}
+            <h1 className="text-4xl font-bold text-gray-900 mb-2 animate-fade-in">✨ Queue Clear! ✨</h1>
+            <p className="text-xl text-gray-700 mb-6 animate-fade-in-delay">
+              You've handled {state.processed.length + state.approvedForBatch.length} invoices worth {formatCurrency(totalApprovedValue)}
             </p>
-            <p className="text-lg text-green-700 mb-8 font-medium">
+            <p className="text-lg text-green-700 mb-8 font-medium animate-fade-in-delay-2">
               They'll be sent in the next batch run
             </p>
 
-            <div className="bg-white rounded-lg p-6 shadow-lg mb-8">
+            <div className="bg-white rounded-lg p-6 shadow-lg mb-8 animate-slide-up">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Impact Today</h3>
               <div className="grid grid-cols-2 gap-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-1">{state.metrics.timeSaved.toFixed(0)} min</div>
-                  <div className="text-gray-600">Time saved today</div>
+                  <div className="text-3xl font-bold text-green-600 mb-1">{formatCurrency(businessImpact)}</div>
+                  <div className="text-gray-600 text-sm">Cash flow acceleration</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600 mb-1">7 days</div>
-                  <div className="text-gray-600">Expected acceleration</div>
+                  <div className="text-3xl font-bold text-blue-600 mb-1">{sessionDuration} min</div>
+                  <div className="text-gray-600 text-sm">Time invested</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-purple-600 mb-1">{averageDSOReduction} days</div>
+                  <div className="text-gray-600 text-sm">Expected acceleration</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-indigo-600 mb-1">100%</div>
+                  <div className="text-gray-600 text-sm">Relationships protected</div>
                 </div>
               </div>
             </div>
@@ -572,6 +605,7 @@ Best regards,
               onClick={() => {
                 // Clear any running timers by forcing navigation
                 localStorage.removeItem('collectionsProgress');
+                localStorage.removeItem('sessionStartTime');
 
                 // Save all processed invoice IDs to persistent storage
                 const allProcessedIds = [
@@ -582,10 +616,10 @@ Best regards,
 
                 localStorage.setItem('processedInvoices', JSON.stringify(allProcessedIds));
 
-                // Navigate immediately
-                window.location.href = '/';
+                // Navigate to dashboard
+                navigate('/dashboard');
               }}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200"
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105"
             >
               See you tomorrow!
             </button>
@@ -634,24 +668,19 @@ Best regards,
             <div className="space-y-2">
               <button
                 onClick={() => {
-                  dispatch({ type: 'SET_UI_STATE', payload: { isQueueComplete: false } });
-                  // Find next unprocessed invoice
-                  const nextIndex = state.queue.findIndex(invoice => 
-                    !state.processed.some(p => p.id === invoice.id) && 
-                    !state.approvedForBatch.some(a => a.id === invoice.id) &&
-                    !state.needsReview.some(n => n.id === invoice.id)
-                  );
-                  if (nextIndex >= 0) {
-                    dispatch({ type: 'SET_UI_STATE', payload: { isQueueComplete: false } });
-                    // Update current index in reducer if needed
-                  }
+                  // Clear processed invoices to reload fresh data
+                  localStorage.removeItem('processedInvoices');
+                  localStorage.removeItem('collectionsProgress');
+                  localStorage.removeItem('sessionStartTime');
+                  // Reload the page to check for new invoices
+                  window.location.reload();
                 }}
                 className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
               >
                 Continue Session
               </button>
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/dashboard')}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
               >
                 Return to Dashboard

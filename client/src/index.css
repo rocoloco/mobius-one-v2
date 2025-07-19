@@ -1,12 +1,52 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Celebration animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.6s ease-out 0.3s both;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.6s ease-out 0.6s both;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out 0.9s both;
+}
+
 /* Mobius Brand Colors with Shadcn/UI design system */
 :root {
   --radius: 0.65rem;
-  
+
   /* Mobius Brand Colors */
   --mobius-navy: #061A40;
   --mobius-teal: #048BA8;
@@ -17,7 +57,7 @@
   --text-secondary: #4A5568;
   --text-light: #718096;
   --border-light: #E2E8F0;
-  
+
   /* Shadcn/UI Variables using Mobius Colors */
   --background: oklch(0.99 0.002 247.858);
   --foreground: oklch(0.225 0.058 245.294);
@@ -289,12 +329,12 @@ body {
     min-height: 44px;
     padding: 0.875rem 1.5rem;
   }
-  
+
   .btn-secondary {
     min-height: 44px;
     padding: 0.75rem 1rem;
   }
-  
+
   textarea {
     font-size: 16px !important; /* Prevents zoom on iOS */
   }
@@ -615,4 +655,3 @@ body {
     transform: translateY(0);
   }
 }
-
