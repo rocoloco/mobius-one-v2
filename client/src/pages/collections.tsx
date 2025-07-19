@@ -331,7 +331,7 @@ export default function CollectionsPage() {
   );
 
   const isComplete = useMemo(() => 
-    state.queue.length > 0 && uniqueHandledIds.size === state.queue.length,
+    state.queue.length > 0 && uniqueHandledIds.size >= state.queue.length,
     [state.queue.length, uniqueHandledIds.size]
   );
 
@@ -406,7 +406,7 @@ export default function CollectionsPage() {
 
   // Auto-redirect countdown for completed sessions
   useEffect(() => {
-    if (state.ui.isQueueComplete && isComplete) {
+    if (isComplete) {
       // Save all processed invoice IDs to persistent storage
       const allProcessedIds = [
         ...state.processed.map(inv => inv.id),
@@ -548,7 +548,7 @@ Best regards,
   }
 
   // Completion state
-  if (!currentInvoice || state.ui.isQueueComplete) {
+  if (!currentInvoice || state.ui.isQueueComplete || isComplete) {
     if (isComplete) {
       // Calculate impact metrics
       const totalApprovedValue = [...state.processed, ...state.approvedForBatch].reduce((sum, inv) => sum + inv.amount, 0);
