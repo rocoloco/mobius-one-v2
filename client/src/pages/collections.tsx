@@ -928,14 +928,19 @@ Best regards,
       );
   }
 
-  // Guard clause for when currentInvoice is undefined
+  // Guard clause for when currentInvoice is undefined - differentiate between empty queue and completed queue
   if (!currentInvoice) {
-    console.log('Showing fallback completion screen - currentInvoice is undefined:', {
+    const hasProcessedInvoices = state.processed.length > 0 || state.approvedForBatch.length > 0 || state.needsReview.length > 0;
+    const isInitialEmptyState = state.queue.length === 0 && !hasProcessedInvoices;
+    
+    console.log('Showing fallback screen - currentInvoice is undefined:', {
       currentIndex: state.currentIndex,
       queueLength: state.queue.length,
       workflowState,
       isActuallyComplete,
-      uniqueHandledIds: uniqueHandledIds.size
+      uniqueHandledIds: uniqueHandledIds.size,
+      hasProcessedInvoices,
+      isInitialEmptyState
     });
     
     return (
@@ -943,49 +948,87 @@ Best regards,
         <TopHeaderSimplified isDemoMode={isDemoMode} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {isDemoMode ? 'Demo completed!' : 'All invoices processed!'}
-            </h2>
-            <p className="text-gray-600">
-              {isDemoMode ? 'Try the full version to process real invoices.' : 'No more invoices to review right now.'}
-            </p>
-            <div className="space-y-2 mt-4">
-              {isDemoMode ? (
-                <>
+            {isInitialEmptyState && !isDemoMode ? (
+              // Show welcome screen for empty queue on first load
+              <>
+                <div className="mb-8">
+                  <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <DollarSign className="w-10 h-10 text-blue-600" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Collections</h2>
+                  <p className="text-gray-600 max-w-md mx-auto">
+                    Ready to process overdue invoices with AI-powered analysis and recommendations.
+                  </p>
+                </div>
+                <div className="space-y-4 max-w-sm mx-auto">
                   <button
-                    onClick={() => navigate('/?signup=true')}
-                    className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    Start Free Trial
-                  </button>
-                  <br />
-                  <button
-                    onClick={() => window.location.href = '/collections?demo=true'}
-                    className="w-full sm:w-auto bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-                  >
-                    Try Demo Again
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => {
-                    console.log('Return to Dashboard button clicked');
-                    try {
+                    onClick={() => {
+                      // Clear any cached data and reload to fetch fresh invoices
+                      localStorage.removeItem('processedInvoices');
                       localStorage.removeItem('collectionsProgress');
                       localStorage.removeItem('sessionStartTime');
-                      localStorage.removeItem('processedInvoices');
-                      console.log('Storage cleared, navigating to dashboard');
-                      navigate('/collections');
-                    } catch (error) {
-                      console.error('Error during navigation:', error);
-                    }
-                  }}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                >
-                  Back to Collections
-                </button>
-              )}
-            </div>
+                      window.location.reload();
+                    }}
+                    className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Load Invoice Queue
+                  </button>
+                  <button
+                    onClick={() => navigate('/settings')}
+                    className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    Configure Integrations
+                  </button>
+                </div>
+              </>
+            ) : (
+              // Show completion screen for finished processing
+              <>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                  {isDemoMode ? 'Demo completed!' : 'All invoices processed!'}
+                </h2>
+                <p className="text-gray-600">
+                  {isDemoMode ? 'Try the full version to process real invoices.' : 'No more invoices to review right now.'}
+                </p>
+                <div className="space-y-2 mt-4">
+                  {isDemoMode ? (
+                    <>
+                      <button
+                        onClick={() => navigate('/?signup=true')}
+                        className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                      >
+                        Start Free Trial
+                      </button>
+                      <br />
+                      <button
+                        onClick={() => window.location.href = '/collections?demo=true'}
+                        className="w-full sm:w-auto bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                      >
+                        Try Demo Again
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        console.log('Back to Collections button clicked');
+                        try {
+                          localStorage.removeItem('collectionsProgress');
+                          localStorage.removeItem('sessionStartTime');
+                          localStorage.removeItem('processedInvoices');
+                          console.log('Storage cleared, reloading page');
+                          window.location.reload();
+                        } catch (error) {
+                          console.error('Error during reload:', error);
+                        }
+                      }}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                    >
+                      Back to Collections
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
