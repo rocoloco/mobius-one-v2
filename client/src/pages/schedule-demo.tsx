@@ -253,7 +253,7 @@ export default function ScheduleDemo() {
             <div>
               <div className="text-2xl mb-2">📈</div>
               <h4 className="font-medium" style={{ color: '#1B3A57' }}>ROI Roadmap</h4>
-              <p style={{ color: '#4A5568' }}>Get your personalized 60-day implementation and results timeline</p>
+              <p style={{ color: '#4A5568' }}>Get your personalized 2-week implementation and results timeline</p>
             </div>
           </div>
         </div>

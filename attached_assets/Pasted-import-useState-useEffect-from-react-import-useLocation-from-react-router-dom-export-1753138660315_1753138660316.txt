@@ -13,7 +13,7 @@ export default function ROICalculator() {
     const params = new URLSearchParams(location.search);
     const emailParam = params.get('email');
     const arrParam = params.get('arr');
-
+    
     if (emailParam) setEmail(emailParam);
     if (arrParam) setArrRange(arrParam);
 
@@ -42,10 +42,10 @@ export default function ROICalculator() {
   const calculateROI = (arr: string) => {
     const baseRevenue = getBaseRevenue(arr);
     const dsoImprovement = 17; // 52 to 35 days
-
+    
     // Accurate working capital calculation
     const workingCapitalFreed = Math.round((dsoImprovement / 365) * baseRevenue);
-
+    
     return {
       workingCapitalFreed,
       monthlyBenefit: Math.round(workingCapitalFreed / 12)
@@ -71,7 +71,7 @@ export default function ROICalculator() {
       style={{ backgroundColor: '#1B3A57' }}
     >
       <div className="max-w-2xl mx-auto p-8 text-center">
-
+        
         {/* The One Number That Matters */}
         <div className="mb-12">
           <div 
@@ -84,11 +84,11 @@ export default function ROICalculator() {
           >
             ${results?.workingCapitalFreed?.toLocaleString()}
           </div>
-
+          
           <h1 className="text-3xl font-normal text-white mb-4">
             Additional cash flow in 60 days.
           </h1>
-
+          
           <p className="text-xl text-white/80">
             For your {arrRange} company.
           </p>
@@ -124,7 +124,7 @@ export default function ROICalculator() {
 
         {/* Confidence Line */}
         <p className="text-white/60 text-sm">
-          Full optimization in 2 weeks • SOC 2 certified • No long-term contracts
+          60-day implementation • SOC 2 certified • No long-term contracts
         </p>
 
         {/* Subtle Email Confirmation */}

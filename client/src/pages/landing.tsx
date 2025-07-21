@@ -305,11 +305,11 @@ export default function LandingPage() {
               letterSpacing: '-0.02em'
             }}
           >
-            Average 35% DSO improvement in 60 days
+            Average 35% DSO improvement in 2 weeks
           </h2>
           
           <p className="text-gray-600 mb-16 max-w-2xl mx-auto">
-            Unlike 6-12 month enterprise implementations, our staged approach delivers measurable results quickly.
+            Unlike 6-12 month enterprise implementations, our streamlined approach delivers measurable results in 2 weeks.
           </p>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -394,7 +394,7 @@ export default function LandingPage() {
                 Rapid Implementation
               </h3>
               <p className="text-sm" style={{ color: '#4A5568' }}>
-                60-day deployment vs 6-12 month enterprise rollouts
+                Full optimization in 2 weeks vs 6-12 month enterprise rollouts
               </p>
             </div>
             <div className="text-center">
