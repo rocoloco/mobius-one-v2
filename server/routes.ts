@@ -69,6 +69,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Collections routes
   app.use('/api/collections', collectionsRoutes);
 
+  // Lead capture endpoint for demo completion (no auth required)
+  app.post('/api/leads', async (req, res) => {
+    try {
+      const { email, arrRange, source, timestamp } = req.body;
+      
+      // Validate required fields
+      if (!email || !arrRange || !source) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+      
+      // Store lead data (in production, this would go to CRM/database)
+      const leadData = {
+        id: Date.now().toString(),
+        email,
+        arrRange,
+        source,
+        timestamp,
+        status: 'new'
+      };
+      
+      console.log('New lead captured:', leadData);
+      
+      res.json({ success: true, leadId: leadData.id });
+    } catch (error) {
+      console.error('Lead capture error:', error);
+      res.status(500).json({ error: 'Failed to capture lead' });
+    }
+  });
+
   // Create demo user if none exists
   app.get("/api/setup-demo", async (req, res) => {
     try {

@@ -12,12 +12,18 @@ import LoginPage from "./pages/login";
 import OnboardingPage from "@/pages/onboarding";
 import CollectionsPage from "@/pages/collections";
 import SettingsPage from "@/pages/settings";
+import DemoCompletionPage from "@/pages/demo-completion";
+import ROICalculatorPage from "@/pages/roi-calculator";
+import ScheduleDemoPage from "@/pages/schedule-demo";
 
 function AuthenticatedApp() {
   return (
     <Routes>
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
+      <Route path="/demo-completion" element={<DemoCompletionPage />} />
+      <Route path="/roi-calculator" element={<ROICalculatorPage />} />
+      <Route path="/schedule-demo" element={<ScheduleDemoPage />} />
       <Route path="/" element={<Layout />}>
         <Route index element={<CollectionsPage />} />
         <Route path="collections" element={<CollectionsPage />} />
@@ -35,6 +41,9 @@ function PublicApp() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/demo-completion" element={<DemoCompletionPage />} />
+      <Route path="/roi-calculator" element={<ROICalculatorPage />} />
+      <Route path="/schedule-demo" element={<ScheduleDemoPage />} />
       <Route path="*" element={<LandingPage />} />
     </Routes>
   );

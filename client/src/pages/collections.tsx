@@ -844,7 +844,7 @@ Best regards,
           daysAccelerated={daysAccelerated}
           sessionDuration={sessionDuration}
           onComplete={() => {
-            console.log('Back to work button clicked');
+            console.log('Demo completion - redirecting to lead capture');
             try {
               // Clear session data
               localStorage.removeItem('collectionsProgress');
@@ -852,8 +852,8 @@ Best regards,
               localStorage.removeItem('processedInvoices');
               console.log('Storage cleared successfully');
               
-              // Force page reload to collections
-              window.location.reload();
+              // Redirect to demo completion screen for lead capture
+              window.location.href = '/demo-completion';
             } catch (error) {
               console.error('Error during navigation:', error);
             }
