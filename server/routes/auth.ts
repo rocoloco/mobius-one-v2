@@ -16,7 +16,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     try {
       // Check if user exists
       const existingUser = await storage.getUserByUsername(profile.id);
-      
+
       if (existingUser) {
         // Update existing user with fresh Google data
         const updatedUser = await storage.updateUser(existingUser.id, {
@@ -24,9 +24,9 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           email: profile.emails?.[0]?.value,
           lastActivity: new Date()
         });
-        return done(null, updatedUser);
+        return done(null, { user: updatedUser, isNewUser: false });
       }
-      
+
       // Create new user from Google profile
       const newUser = await storage.createUser({
         username: profile.id,
@@ -38,8 +38,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         permissions: ['read', 'write'],
         roles: ['user']
       });
-      
-      return done(null, newUser);
+
+      return done(null, { user: newUser, isNewUser: true });
     } catch (error) {
       return done(error, null);
     }
@@ -146,6 +146,7 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({
       message: 'User registered successfully',
+      isNewUser: true, // CRITICAL: This is what was missing!
       user: {
         id: user.id,
         username: user.username,
@@ -212,7 +213,7 @@ router.post('/login', async (req, res) => {
     if (!isPasswordValid) {
       // Increment failed attempts
       await storage.incrementFailedLoginAttempts(user.id);
-      
+
       // Lock account after 5 failed attempts
       if ((user.failedLoginAttempts || 0) >= 4) {
         await storage.lockAccount(user.id, 30); // 30 minute lockout
@@ -255,8 +256,21 @@ router.post('/login', async (req, res) => {
       }
     });
 
+    // Check if user has completed onboarding
+    // In a real implementation, you'd check the database for this
+    // For now, we'll check if they have system connections set up
+    let hasCompletedOnboarding = false;
+    try {
+      const connections = await storage.getSystemConnectionsByUserId(user.id);
+      hasCompletedOnboarding = connections && connections.length > 0;
+    } catch (error) {
+      // If we can't check, assume they need onboarding
+      hasCompletedOnboarding = false;
+    }
+
     res.json({
       message: 'Login successful',
+      isNewUser: !hasCompletedOnboarding, // If no system connections, treat as new user needing onboarding
       user: {
         id: user.id,
         username: user.username,
@@ -288,7 +302,7 @@ router.get('/google', (req, res, next) => {
       message: 'Administrator needs to configure GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables'
     });
   }
-  
+
   passport.authenticate('google', {
     scope: ['profile', 'email']
   })(req, res, next);
@@ -298,11 +312,11 @@ router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   async (req: any, res) => {
     try {
-      const user = req.user;
-      
+      const { user, isNewUser } = req.user;
+
       // Calculate risk score for OAuth login
       const riskScore = calculateRiskScore(req, user);
-      
+
       // Create audit log for OAuth login
       await storage.createAuditLog({
         userId: user.id,
@@ -319,17 +333,17 @@ router.get('/google/callback',
           deviceFingerprint: generateDeviceFingerprint(req)
         }
       });
-      
+
       // Generate JWT tokens for OAuth user
       const tokenData = generateToken(user);
-      
+
       // Update user activity
       await storage.updateUser(user.id, {
         lastActivity: new Date(),
         lastKnownIp: req.ip,
         riskScore
       });
-      
+
       // Create session for OAuth user
       await storage.createSession({
         sessionId: `oauth_${Date.now()}`,
@@ -341,9 +355,10 @@ router.get('/google/callback',
         mfaVerified: true, // OAuth is considered MFA
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
       });
-      
-      // Redirect to frontend with tokens
-      const redirectUrl = `/?token=${tokenData.accessToken}&refresh=${tokenData.refreshToken}`;
+
+      // Redirect to appropriate page based on user status
+      const destination = isNewUser ? '/onboarding' : '/collections';
+      const redirectUrl = `${destination}?token=${tokenData.accessToken}&refresh=${tokenData.refreshToken}`;
       res.redirect(redirectUrl);
     } catch (error) {
       console.error('OAuth callback error:', error);

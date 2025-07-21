@@ -38,18 +38,26 @@ export default function LoginPage() {
       if (data.refreshToken) {
         localStorage.setItem('refreshToken', data.refreshToken);
       }
-      
+
       // Clear logout flag and invalidate queries
       localStorage.removeItem('logout');
       queryClient.invalidateQueries({ queryKey: ['/api/user'] });
-      
-      // Force a page reload to ensure app state is reset properly
-      if (isSignUp) {
-        setError(""); // Clear any previous errors
-        setTimeout(() => {
-          window.location.href = '/collections';
-        }, 100);
+
+      // Route new users to onboarding, existing users to collections
+      if (isSignUp || data.isNewUser) {
+        // Clear any existing onboarding progress for new users
+        localStorage.removeItem('onboardingProgress');
+        window.location.href = '/onboarding';
       } else {
+        // For existing users, check if they need to complete onboarding
+        const onboardingProgress = localStorage.getItem('onboardingProgress');
+        if (onboardingProgress) {
+          const progress = JSON.parse(onboardingProgress);
+          if (!progress.isComplete) {
+            window.location.href = '/onboarding';
+            return;
+          }
+        }
         window.location.href = '/collections';
       }
     },
@@ -297,7 +305,7 @@ export default function LoginPage() {
               marginBottom: '24px',
               fontFamily: 'Inter, sans-serif'
             }}>
-              Account created successfully! Redirecting to dashboard...
+              Account created successfully! Taking you to setup...
             </div>
           )}
 

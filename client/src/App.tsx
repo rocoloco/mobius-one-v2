@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
 import LandingPage from "@/pages/landing";
 import LoginPage from "./pages/login";
+import OnboardingPage from "@/pages/onboarding";
 import CollectionsPage from "@/pages/collections";
 import SettingsPage from "@/pages/settings";
 
@@ -16,6 +17,7 @@ function AuthenticatedApp() {
   return (
     <Routes>
       <Route path="/landing" element={<LandingPage />} />
+      <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/" element={<Layout />}>
         <Route index element={<CollectionsPage />} />
         <Route path="collections" element={<CollectionsPage />} />
@@ -41,10 +43,10 @@ function PublicApp() {
 function AppRouter() {
   const isLoggedOut = localStorage.getItem('logout') === 'true';
   const hasAuthToken = localStorage.getItem('authToken');
-  
+
   // Check if we're in demo mode
   const isDemoMode = window.location.search.includes('demo=true');
-  
+
   const { data: user, isLoading } = useQuery({
     queryKey: ['/api/user'],
     retry: false,
@@ -116,7 +118,7 @@ function AppRouter() {
             Initializing your AI Terminal...
           </p>
         </div>
-        
+
         <style dangerouslySetInnerHTML={{
           __html: `
             @keyframes pulse {
