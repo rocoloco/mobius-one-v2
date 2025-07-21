@@ -215,7 +215,7 @@ export default function LandingPage() {
                 className="inline-block px-4 py-2 rounded-full text-sm font-medium text-white/90 backdrop-blur-sm border border-white/20 mb-8"
                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
               >
-                SOC 2 Type II Certified • 60-Day Implementation
+                SOC 2 Type II Certified • Full optimization in 2 weeks
               </div>
 
               {/* 7-Word Headline */}
@@ -237,22 +237,22 @@ export default function LandingPage() {
                   lineHeight: '1.6'
                 }}
               >
-                AI analyzes your customer data, preserves relationships, and accelerates payment by 35% in 60 days.
+                Mobius 1 analyzes your customer data, preserves relationships, and accelerates payment.
               </p>
 
               {/* Key Differentiators */}
               <div className="space-y-3 mb-8">
                 <div className="flex items-center gap-3 text-white/90">
                   <CheckCircle className="w-5 h-5" style={{ color: '#10B981' }} />
-                  <span>60-day implementation vs 12-month enterprise rollouts</span>
+                  <span>Full optimization in 2 weeks vs 12-month enterprise rollouts</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/90">
                   <Shield className="w-5 h-5" style={{ color: '#10B981' }} />
-                  <span>Transparent AI explains every recommendation</span>
+                  <span>You see the data behind every suggested action</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/90">
                   <Clock className="w-5 h-5" style={{ color: '#10B981' }} />
-                  <span>Zero relationship damage with smart outreach</span>
+                  <span>Smart outreach that protects customer lifetime value</span>
                 </div>
               </div>
 
@@ -276,12 +276,12 @@ export default function LandingPage() {
                   e.currentTarget.style.boxShadow = '';
                 }}
               >
-                See Collections Automated
+                Try Interactive Demo
                 <ArrowRight className="inline-block ml-2 h-5 w-5" />
               </button>
 
               <p className="text-white/60 mt-4 text-sm">
-                Interactive demo • No signup required
+               No signup required
               </p>
             </div>
 
@@ -305,7 +305,7 @@ export default function LandingPage() {
               letterSpacing: '-0.02em'
             }}
           >
-            Average 35% DSO improvement in 2 weeks
+            Built to reduce DSO by 15-25% within 60 days
           </h2>
           
           <p className="text-gray-600 mb-16 max-w-2xl mx-auto">
@@ -318,7 +318,7 @@ export default function LandingPage() {
                 className="text-6xl font-bold mb-2"
                 style={{ color: '#F59E0B' }}
               >
-                35%
+                15-25%
               </div>
               <div style={{ color: '#4A5568' }}>DSO Reduction</div>
             </div>
@@ -336,9 +336,9 @@ export default function LandingPage() {
                 className="text-6xl font-bold mb-2"
                 style={{ color: '#7C3AED' }}
               >
-                0
+                100%
               </div>
-              <div style={{ color: '#4A5568' }}>Customer Complaints</div>
+              <div style={{ color: '#4A5568' }}>Transparent AI</div>
             </div>
           </div>
         </div>
@@ -382,10 +382,10 @@ export default function LandingPage() {
             <div className="text-center">
               <Shield className="w-8 h-8 mx-auto mb-3" style={{ color: '#10B981' }} />
               <h3 className="font-semibold mb-2" style={{ color: '#1B3A57' }}>
-                Enterprise Security
+                Secure API architecture
               </h3>
               <p className="text-sm" style={{ color: '#4A5568' }}>
-                Enterprise-grade security with bank-level encryption
+                Industry-standard protocols protect all data exchanges
               </p>
             </div>
             <div className="text-center">
@@ -400,10 +400,10 @@ export default function LandingPage() {
             <div className="text-center">
               <CheckCircle className="w-8 h-8 mx-auto mb-3" style={{ color: '#7C3AED' }} />
               <h3 className="font-semibold mb-2" style={{ color: '#1B3A57' }}>
-                Guaranteed Results
+                Human-Controlled AI
               </h3>
               <p className="text-sm" style={{ color: '#4A5568' }}>
-                ROI guarantee with transparent AI decision-making
+                AI recommends, you decide, complete transparency guaranteed
               </p>
             </div>
           </div>
