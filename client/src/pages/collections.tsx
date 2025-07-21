@@ -326,12 +326,12 @@ const CompletionExperience: React.FC<{
 
           <button
             onClick={() => {
-              console.log('Back to work button clicked in CompletionExperience');
+              console.log('See results for your company button clicked');
               onComplete();
             }}
-            className="group bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xl font-semibold px-12 py-6 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 mb-6"
+            className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xl font-semibold px-12 py-6 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 mb-6"
           >
-            Back to work
+            See results for your company
             <ArrowRight className="inline-block ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
           </button>
 
@@ -928,9 +928,9 @@ Best regards,
       );
   }
 
-  // Guard clause for when currentInvoice is undefined - only after queue is initialized
+  // Guard clause for when currentInvoice is undefined - redirect to demo completion  
   if (!currentInvoice && state.queue.length > 0 && workflowState === 'queue-exhausted') {
-    console.log('Showing fallback completion screen - currentInvoice is undefined:', {
+    console.log('Queue exhausted - redirecting to demo completion:', {
       currentIndex: state.currentIndex,
       queueLength: state.queue.length,
       workflowState,
@@ -938,58 +938,13 @@ Best regards,
       uniqueHandledIds: uniqueHandledIds.size
     });
     
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <TopHeaderSimplified isDemoMode={isDemoMode} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {isDemoMode ? 'Demo completed!' : 'All invoices processed!'}
-            </h2>
-            <p className="text-gray-600">
-              {isDemoMode ? 'Try the full version to process real invoices.' : 'No more invoices to review right now.'}
-            </p>
-            <div className="space-y-2 mt-4">
-              {isDemoMode ? (
-                <>
-                  <button
-                    onClick={() => navigate('/?signup=true')}
-                    className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    Start Free Trial
-                  </button>
-                  <br />
-                  <button
-                    onClick={() => window.location.href = '/collections?demo=true'}
-                    className="w-full sm:w-auto bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-                  >
-                    Try Demo Again
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => {
-                    console.log('Return to Collections button clicked');
-                    try {
-                      localStorage.removeItem('collectionsProgress');
-                      localStorage.removeItem('sessionStartTime');
-                      localStorage.removeItem('processedInvoices');
-                      console.log('Storage cleared, reloading collections');
-                      window.location.reload();
-                    } catch (error) {
-                      console.error('Error during navigation:', error);
-                    }
-                  }}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                >
-                  Check for New Invoices
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    // Clear session data and redirect to demo completion
+    localStorage.removeItem('collectionsProgress');
+    localStorage.removeItem('sessionStartTime');
+    localStorage.removeItem('processedInvoices');
+    window.location.href = '/demo-completion';
+    
+    return null; // Will never render due to redirect
   }
 
   // If we have no invoices and no data is loading, show appropriate message
