@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -109,11 +109,72 @@
   animation-delay: 0.3s;
 }
 
-/* Mobius Brand Colors with Shadcn/UI design system */
+/* Steve Jobs-Inspired Micro-Interactions */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-count-up {
+  animation: count-up 0.4s ease-out;
+}
+
+.animate-gentle-float {
+  animation: gentle-float 3s ease-in-out infinite;
+}
+
+/* Executive-focused hover states */
+.cta-primary {
+  transition: all 0.2s ease-out;
+}
+
+.cta-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Typography system for finance executives */
+.headline-primary {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.body-executive {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-display {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Steve Jobs-Inspired B2B Finance Executive Color System */
 :root {
   --radius: 0.65rem;
 
-  /* Mobius Brand Colors */
+  /* Primary Colors (build trust) */
+  --primary-blue: #1B3A57;
+  --professional-gray: #4A5568;
+  --clean-white: #FFFFFF;
+  --subtle-gray: #F7FAFC;
+
+  /* Strategic Accents (drive action) */
+  --growth-green: #10B981;
+  --premium-purple: #7C3AED;
+  --conversion-orange: #F59E0B;
+
+  /* Legacy Mobius Colors (maintained for existing components) */
   --mobius-navy: #061A40;
   --mobius-teal: #048BA8;
   --mobius-sage: #C1EDCC;
