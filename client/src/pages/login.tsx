@@ -153,7 +153,7 @@ export default function LoginPage() {
             fontSize: '16px',
             margin: 0
           }}>
-            {getGreeting()}, welcome back to your AI Terminal
+            {getGreeting()}, welcome back to your Collections Platform
           </p>
         </div>
 
@@ -188,8 +188,8 @@ export default function LoginPage() {
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#048BA8';
-                e.target.style.boxShadow = '0 0 0 3px rgba(4, 139, 168, 0.1)';
+                e.target.style.borderColor = '#F59E0B';
+                e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = '#E2E8F0';
@@ -228,8 +228,8 @@ export default function LoginPage() {
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#048BA8';
-                e.target.style.boxShadow = '0 0 0 3px rgba(4, 139, 168, 0.1)';
+                e.target.style.borderColor = '#F59E0B';
+                e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = '#E2E8F0';
@@ -269,8 +269,8 @@ export default function LoginPage() {
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = '#048BA8';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(4, 139, 168, 0.1)';
+                  e.target.style.borderColor = '#F59E0B';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
                 }}
                 onBlur={(e) => {
                   e.target.style.borderColor = '#E2E8F0';
@@ -315,7 +315,7 @@ export default function LoginPage() {
             style={{
               width: '100%',
               padding: '16px',
-              background: 'linear-gradient(135deg, #048BA8 0%, #037A96 100%)',
+              background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '12px',
@@ -330,7 +330,7 @@ export default function LoginPage() {
             onMouseEnter={(e) => {
               if (!isLoading) {
                 e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(4, 139, 168, 0.3)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.3)';
               }
             }}
             onMouseLeave={(e) => {
@@ -348,7 +348,7 @@ export default function LoginPage() {
                   borderRadius: '50%',
                   animation: 'spin 1s linear infinite'
                 }} />
-                {isSignUp ? 'Creating Account...' : 'Signing In...'}
+                {isSignUp ? 'Connecting to Mobius...' : 'Connecting to Mobius...'}
               </div>
             ) : (
               isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN'
@@ -378,8 +378,8 @@ export default function LoginPage() {
             marginBottom: '24px'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = '#048BA8';
-            e.currentTarget.style.backgroundColor = 'rgba(4, 139, 168, 0.02)';
+            e.currentTarget.style.borderColor = '#F59E0B';
+            e.currentTarget.style.backgroundColor = 'rgba(245, 158, 11, 0.02)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.borderColor = '#E2E8F0';
@@ -400,7 +400,8 @@ export default function LoginPage() {
           textAlign: 'center',
           fontFamily: 'Inter, sans-serif',
           fontSize: '14px',
-          color: '#718096'
+          color: '#718096',
+          marginBottom: '16px'
         }}>
           {isSignUp ? "Already have an account? " : "Don't have an account? "}
           <button
@@ -413,7 +414,7 @@ export default function LoginPage() {
             style={{
               background: 'none',
               border: 'none',
-              color: '#048BA8',
+              color: '#F59E0B',
               fontWeight: 600,
               cursor: 'pointer',
               textDecoration: 'underline'
@@ -421,6 +422,43 @@ export default function LoginPage() {
           >
             {isSignUp ? "Sign in" : "Sign up"}
           </button>
+        </div>
+
+        {/* Forgot Password */}
+        {!isSignUp && (
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '24px'
+          }}>
+            <button
+              onClick={() => {
+                // Handle forgot password - could be email reset or admin contact
+                alert("Please contact your administrator or email support@mobiusone.com for password reset assistance.");
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#718096',
+                fontSize: '12px',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                fontFamily: 'Inter, sans-serif'
+              }}
+            >
+              Forgot your password?
+            </button>
+          </div>
+        )}
+
+        {/* Social Proof */}
+        <div style={{
+          textAlign: 'center',
+          fontSize: '12px',
+          color: '#718096',
+          fontFamily: 'Inter, sans-serif',
+          lineHeight: '1.4'
+        }}>
+          SOC 2 Type II Certified • Trusted by 200+ Finance Teams
         </div>
       </div>
 
