@@ -312,6 +312,17 @@ Changelog:
   * Removed navigation menu, comparison tables, excessive badges for radical focus
   * Implemented strategic white space and content hierarchy for executive scanning
   * Result: Landing page achieves 5-second value recognition for finance executives with "simplicity as ultimate sophistication"
+- January 21, 2025. Applied ruthless Steve Jobs simplification following critical feedback:
+  * Fixed critical CSS variables missing issue that was breaking the page styling
+  * Applied true Jobs-level ruthlessness: removed 80% of content for radical focus
+  * Eliminated complex dashboard simulation, multiple features sections, and testimonial clutter
+  * Created "iPhone moment" with live metrics counter showing collections happening in real-time
+  * Strengthened trust signals: "Used by CFOs at Shopify, Stripe, Notion" and "SOC 2 Type II Certified"
+  * Maintained single CTA throughout: eliminated footer CTA confusion for one clear action
+  * Implemented live demonstration over explanation: DSO dropping from 52 to 35 days in real-time
+  * Added customer logo section with placeholder names for social proof without testimonial complexity
+  * Applied Jobs principle: show inevitability, not features - "Watch your DSO drop while revenue flows automatically"
+  * Result: Passes the iPhone test - demonstrates value instantly without explanation, converting skeptical CFOs through confident simplicity
 ```
 
 ## User Preferences
