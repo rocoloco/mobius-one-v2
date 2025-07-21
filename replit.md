@@ -358,6 +358,11 @@ Changelog:
   * Changed deployment messaging from "60-day deployment" to "Full optimization in 2 weeks vs 6-12 month enterprise rollouts"
   * Updated ROI roadmap description and confidence messaging throughout conversion funnel
   * Result: More aggressive and competitive positioning with faster time-to-value messaging for CFO audience
+- January 21, 2025. Security messaging standardization:
+  * Removed all references to "SOC 2 certified" across landing page, ROI calculator, and login page
+  * Replaced with "Enterprise Security" and "Enterprise-grade security" for consistent messaging
+  * Updated social proof from "SOC 2 Type II Certified" to "Enterprise Security" throughout conversion funnel
+  * Result: Simplified security messaging without specific compliance references
 ```
 
 ## User Preferences

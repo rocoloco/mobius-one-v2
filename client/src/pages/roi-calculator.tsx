@@ -124,7 +124,7 @@ export default function ROICalculator() {
 
         {/* Confidence Line */}
         <p className="text-white/60 text-sm">
-          Full optimization in 2 weeks • SOC 2 certified • No long-term contracts
+          Full optimization in 2 weeks • Enterprise security • No long-term contracts
         </p>
 
         {/* Subtle Email Confirmation */}

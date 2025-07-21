@@ -385,7 +385,7 @@ export default function LandingPage() {
                 Enterprise Security
               </h3>
               <p className="text-sm" style={{ color: '#4A5568' }}>
-                SOC 2 Type II certified with bank-level encryption
+                Enterprise-grade security with bank-level encryption
               </p>
             </div>
             <div className="text-center">

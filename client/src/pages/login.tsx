@@ -458,7 +458,7 @@ export default function LoginPage() {
           fontFamily: 'Inter, sans-serif',
           lineHeight: '1.4'
         }}>
-          SOC 2 Type II Certified • Trusted by 200+ Finance Teams
+          Enterprise Security • Trusted by 200+ Finance Teams
         </div>
       </div>
 
