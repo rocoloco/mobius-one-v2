@@ -265,9 +265,11 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Centered CTA Section */}
-        <div className="max-w-4xl mx-auto px-6 text-center mt-16">
+      {/* Centered CTA Section */}
+      <section className="py-16" style={{ backgroundColor: '#F7FAFC' }}>
+        <div className="max-w-4xl mx-auto px-6 text-center">
           <button
             onClick={() => window.location.href = '/collections?demo=true'}
             className="px-12 py-4 text-xl font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
@@ -283,7 +285,7 @@ export default function LandingPage() {
             <ArrowRight className="inline-block ml-2 h-6 w-6" />
           </button>
           
-          <p className="text-white/60 text-sm mt-4">
+          <p className="text-sm mt-4" style={{ color: '#4A5568' }}>
             No signup required • See results instantly
           </p>
         </div>
