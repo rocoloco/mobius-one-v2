@@ -1,0 +1,60 @@
+You're right! The mock data in the Collections page is missing contact names or has them as "Unknown Contact". 
+
+**Tell the Replit Agent:**
+
+> Find the `invoices` array in the Collections page component and update ALL the contact names. Replace the entire invoices array with this:
+
+```javascript
+const invoices: Invoice[] = [
+  {
+    id: 1,
+    invoiceNumber: "INV-2024-001",
+    customer: "Acme Corp",
+    contactName: "Sarah Johnson", // This one is correct
+    amount: 15750,
+    daysPastDue: 45,
+    relationshipScore: 85,
+    aiRecommendation: "Send gentle reminder with payment plan options",
+    recommendationConfidence: 94,
+    approvalStatus: "pending",
+    riskLevel: "medium",
+    relationship: "valued partner",
+    situation: "going through a tough quarter",
+    aiMessage: "Based on their payment history and current market conditions, I recommend a supportive approach with flexible payment terms. They've been reliable for 3 years."
+  },
+  {
+    id: 2,
+    invoiceNumber: "INV-2024-002",
+    customer: "TechFlow Solutions",
+    contactName: "Michael Chen", // ADD THIS
+    amount: 8500,
+    daysPastDue: 30,
+    relationshipScore: 92,
+    aiRecommendation: "Friendly check-in call",
+    recommendationConfidence: 87,
+    approvalStatus: "pending",
+    riskLevel: "low",
+    relationship: "long-term client",
+    situation: "likely oversight",
+    aiMessage: "Their payment pattern suggests this is simply an oversight. A friendly reminder should resolve this quickly without any relationship damage."
+  },
+  {
+    id: 3,
+    invoiceNumber: "INV-2024-003",
+    customer: "StartupXYZ",
+    contactName: "David Park", // ADD THIS
+    amount: 22000,
+    daysPastDue: 65,
+    relationshipScore: 62,
+    aiRecommendation: "Escalate to collections agency",
+    recommendationConfidence: 78,
+    approvalStatus: "pending",
+    riskLevel: "high",
+    relationship: "new client",
+    situation: "showing concerning payment patterns",
+    aiMessage: "Multiple missed payments and declining communication. Time to escalate while preserving professional relationship for potential future recovery."
+  }
+];
+```
+
+**Make sure every invoice has a proper `contactName` field filled in.** If some are still showing "Unknown Contact", it means the code is trying to access the name from a different field or there's a rendering issue in the JSX.

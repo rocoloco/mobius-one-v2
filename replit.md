@@ -1,8 +1,10 @@
-# Business AI Assistant
+# Mobius One - Collections Acceleration Engine
 
 ## Overview
 
-This is a full-stack business AI assistant application that integrates with Salesforce CRM and NetSuite ERP systems. The application provides a chat interface where users can interact with an AI assistant to query and analyze business data from these integrated systems.
+Mobius One is an autonomous revenue optimization platform that starts with collection acceleration to prove AI can make trusted revenue decisions. The MVP focuses on a single autonomous workflow that accelerates collections for overdue invoices by analyzing customer data across Salesforce and NetSuite, making intelligent outreach decisions with relationship preservation, and measuring revenue impact.
+
+**Target Customer**: CFOs at $5-15M ARR SaaS companies with 50+ day DSO looking to free up $100K+ working capital through automated, intelligent collections that preserve customer relationships.
 
 ## System Architecture
 
@@ -246,6 +248,55 @@ Changelog:
   * Updated dashboard terminology: "todaysQueries" → "todaysConversations", "quickQueries" → "quickQuestions"
   * Applied conversational language consistently: "Mobius is thinking..." instead of "AI is thinking..."
   * Result: Application now feels like conversing with intelligent business advisor rather than using database software
+- January 14, 2025. Official logo integration and mobile responsive fixes:
+  * Integrated official Mobius "M" logo files from ZIP folder throughout application
+  * Applied proper logos: light background version for landing header, dark background version for sidebar and footer
+  * Updated all components: Landing page header/footer, Sidebar (collapsed/expanded), Login page, and favicon
+  * Fixed mobile responsive layout issues: button overflow, text wrapping, horizontal scrolling prevention
+  * Applied responsive design improvements: proper width constraints, mobile-first padding, typography scaling
+  * Result: Professional brand consistency with official logos and optimal mobile experience
+- January 15, 2025. Real AI-powered collections analysis integration:
+  * Implemented authentic OpenAI and Anthropic API integration for collections analysis
+  * Created intelligent AI model routing based on risk factors: invoice amount, relationship score, days overdue
+  * Added automatic fallback mechanism from Anthropic Claude 3.5 Sonnet to OpenAI GPT-4o-mini when credits insufficient
+  * Routes high-risk scenarios (>$100K, score <40, >60 days overdue) to Claude 3.5 Sonnet for strategic analysis
+  * Routes routine scenarios to GPT-4o-mini for cost-effective analysis
+  * Generated real collection emails with personalized tone and professional language
+  * Fixed frontend API request parameter ordering issue that was causing "Method is not a valid HTTP token" errors
+  * Result: Authentic AI analysis replacing mock data with real intelligence and strategic recommendations
+- January 15, 2025. Strategic demo scenarios implementation:
+  * Replaced random invoice generation with strategic demo scenarios showcasing AI routing capabilities
+  * Created 10 strategic test cases: 3 low-risk (GPT-4o-mini), 4 medium-risk (Claude 3.5 Sonnet), 3 high-risk (Claude Opus)
+  * Each scenario designed to trigger specific AI model routing based on relationship score, amount, and days overdue
+  * Low-risk: Score 70+, amounts $8K-45K, 8-18 days overdue (friendly tone, quick approval)
+  * Medium-risk: Score 40-69, amounts $18K-32K, 28-42 days overdue (professional tone, strategic review)
+  * High-risk: Score 18-32, amounts $12K-95K, 68-92 days overdue (firm tone, executive review)
+  * Updated client-side transformations to handle strategic demo data with proper risk level indicators
+  * Result: Consistent test scenarios that properly demonstrate AI routing logic and relationship-based analysis
+- January 19, 2025. Application cleanup and page consolidation:
+  * Removed unnecessary pages: empty-queue.tsx, home.tsx, query.tsx, history.tsx, help.tsx, not-found.tsx
+  * Streamlined routing to focus on core functionality: collections, chat, settings, dashboard, landing, login
+  * Updated navigation components to remove references to deleted pages
+  * Replaced help page links with external documentation links (https://docs.mobiusone.com)
+  * Consolidated empty state handling directly within collections.tsx instead of separate empty-queue page
+  * Updated dashboard.tsx to reference /chat instead of deleted /query route
+  * Result: Cleaner, more focused application structure with fewer redundant pages and simplified navigation
+- January 19, 2025. Enhanced completion experience with celebration stages:
+  * Implemented multi-stage completion experience: celebration, impact visualization, next actions
+  * Added animated confetti effects with falling particles in multiple colors
+  * Created business impact metrics display: working capital freed, cash acceleration days, relationship preservation
+  * Added progressive stage transitions: 7-second celebration, 8-second impact, final action stage
+  * Implemented custom animations: scale-up, slide-up-immediate, fade-in-simple, confetti fall effects
+  * Enhanced timing for emotional impact: 1.2s scale animations, 0.8s slide animations, 1s fade animations
+  * Extended confetti duration to 5-8 seconds for lasting celebration effect
+  * Fixed completion logic to prioritize isComplete check and prevent race conditions
+  * Enhanced user experience with gradient backgrounds, shadow effects, and micro-interactions
+  * Fixed misleading "8 new invoices" hardcoded message to accurate "Daily batch complete" messaging
+  * Clarified completion logic to recognize daily batch completion vs all-invoices-ever completion
+  * Fixed workflow completion logic to prevent premature celebration when users approve invoices for batch
+  * Replaced binary completion check with workflow-aware states (working, queue-exhausted, user-quit)
+  * Users can now approve multiple invoices without being forced into celebration screen
+  * Result: Engaging 15-second completion experience that celebrates business achievements and guides next steps
 ```
 
 ## User Preferences

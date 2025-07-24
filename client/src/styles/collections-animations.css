@@ -1,0 +1,73 @@
+/* Confetti fall animation */
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Scale up animation that persists */
+@keyframes scale-up {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Slide up animation that persists */
+@keyframes slide-up-immediate {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Fade in animation that persists */
+@keyframes fade-in-simple {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Animation classes */
+.animate-fall {
+  animation: fall linear forwards;
+}
+
+.animate-scale-up {
+  animation: scale-up 1.2s ease-out forwards;
+}
+
+.animate-slide-up-immediate {
+  animation: slide-up-immediate 0.8s ease-out forwards;
+}
+
+.animate-fade-in-simple {
+  animation: fade-in-simple 1s ease-out forwards;
+}
+
+
+
+/* Animation delay classes */
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}

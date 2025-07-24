@@ -1,183 +1,228 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import helmet from "helmet";
+import cors from "cors";
+import session from "express-session";
+import passport from "passport";
 import { storage } from "./storage";
 import { litellmService } from "./services/litellm";
 import { salesforceService } from "./services/salesforce";
 import { netsuiteService } from "./services/netsuite";
-import { insertMessageSchema, insertConversationSchema } from "@shared/schema";
+import { 
+  insertUserSchema, 
+  insertCustomerSchema, 
+  insertInvoiceSchema, 
+  insertCollectionActionSchema,
+  insertDsoMetricSchema,
+  insertSystemConnectionSchema 
+} from "@shared/schema";
+import { authenticateToken } from "./auth";
+import authRoutes from "./routes/auth";
+import collectionsRoutes from "./routes/collections";
+import { scoringService } from "./services/scoringService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Get current user (mock user for development)
-  app.get("/api/user", async (req, res) => {
-    try {
-      const user = await storage.getUser(1); // Default user
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+  // Zero Trust Security Configuration
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
+        fontSrc: ["'self'", "fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "wss:", "https:"],
+        frameAncestors: ["'none'"]
       }
-      res.json(user);
+    },
+    crossOriginEmbedderPolicy: false
+  }));
+
+  app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+      ? ['https://yourdomain.com'] 
+      : ['http://localhost:5000', 'http://127.0.0.1:5000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  }));
+
+  // Session configuration for OAuth
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'mobius-oauth-session-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
+
+  // Initialize passport
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Authentication routes (no auth required)
+  app.use('/api/auth', authRoutes);
+  
+  // Collections routes
+  app.use('/api/collections', collectionsRoutes);
+
+  // Create demo user if none exists
+  app.get("/api/setup-demo", async (req, res) => {
+    try {
+      const existingUser = await storage.getUserByUsername("demo");
+      if (!existingUser) {
+        const { hashPassword } = await import("./auth");
+        const passwordHash = await hashPassword("Demo123!");
+        
+        await storage.createUser({
+          username: "demo",
+          name: "Demo User",
+          email: "demo@example.com",
+          passwordHash,
+          role: "user",
+          companyName: "Demo Company",
+          permissions: ["read", "write"],
+          roles: ["user"]
+        });
+      }
+      res.json({ message: "Demo user ready" });
     } catch (error) {
+      console.error("Demo setup error:", error);
+      res.status(500).json({ message: "Error setting up demo user" });
+    }
+  });
+
+  // Get current user (protected route)
+  app.get("/api/user", authenticateToken, async (req: any, res) => {
+    try {
+      const user = req.user;
+      res.json({
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        companyName: user.companyName,
+        role: user.role,
+        permissions: user.permissions,
+        roles: user.roles,
+        lastActivity: user.lastActivity,
+        riskScore: user.riskScore
+      });
+    } catch (error) {
+      console.error("Error fetching user:", error);
       res.status(500).json({ message: "Error fetching user" });
     }
   });
 
-  // Get conversations for user
-  app.get("/api/conversations", async (req, res) => {
+
+
+  // Get customers
+  app.get("/api/customers", async (req, res) => {
     try {
-      const conversations = await storage.getConversationsByUserId(1); // Default user
-      res.json(conversations);
+      const userId = 1; // Default user for demo
+      const customers = await storage.getCustomersByUserId(userId);
+      res.json(customers);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching conversations" });
+      res.status(500).json({ message: "Error fetching customers" });
     }
   });
 
-  // Create new conversation
-  app.post("/api/conversations", async (req, res) => {
+  // Get DSO metrics history
+  app.get("/api/dso-metrics", async (req, res) => {
     try {
-      const result = insertConversationSchema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: "Invalid conversation data" });
-      }
-
-      const conversation = await storage.createConversation({
-        userId: 1, // Default user
-        title: result.data.title
-      });
-
-      res.json(conversation);
+      const userId = 1; // Default user for demo
+      const metrics = await storage.getDsoMetricsByUserId(userId, 12);
+      res.json(metrics);
     } catch (error) {
-      res.status(500).json({ message: "Error creating conversation" });
+      res.status(500).json({ message: "Error fetching DSO metrics" });
     }
   });
 
-  // Get messages for conversation
-  app.get("/api/conversations/:id/messages", async (req, res) => {
-    try {
-      const conversationId = parseInt(req.params.id);
-      const messages = await storage.getMessagesByConversationId(conversationId);
-      res.json(messages);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching messages" });
-    }
-  });
-
-  // Send message and get AI response
-  app.post("/api/conversations/:id/messages", async (req, res) => {
-    try {
-      const conversationId = parseInt(req.params.id);
-      const result = insertMessageSchema.safeParse({
-        ...req.body,
-        conversationId,
-        role: 'user'
-      });
-
-      if (!result.success) {
-        return res.status(400).json({ message: "Invalid message data" });
-      }
-
-      // Create user message
-      const userMessage = await storage.createMessage(result.data);
-
-      // Get conversation history
-      const messages = await storage.getMessagesByConversationId(conversationId);
-      const conversationHistory = messages.map(msg => ({
-        role: msg.role as 'user' | 'assistant',
-        content: msg.content
-      }));
-
-      // Determine if we need system data
-      let systemData = null;
-      const messageText = result.data.content.toLowerCase();
-      
-      if (messageText.includes('salesforce') || messageText.includes('opportunity') || messageText.includes('pipeline')) {
-        try {
-          systemData = await salesforceService.getTopOpportunities(5);
-        } catch (error) {
-          console.error('Error fetching Salesforce data:', error);
-        }
-      } else if (messageText.includes('netsuite') || messageText.includes('revenue') || messageText.includes('financial')) {
-        try {
-          systemData = await netsuiteService.getRevenueData();
-        } catch (error) {
-          console.error('Error fetching NetSuite data:', error);
-        }
-      }
-
-      // Generate AI response
-      const aiResponse = await litellmService.generateContextualResponse(
-        result.data.content,
-        conversationHistory.slice(-10), // Last 10 messages for context
-        systemData
-      );
-
-      // Create AI message
-      const aiMessage = await storage.createMessage({
-        conversationId,
-        content: aiResponse.content,
-        role: 'assistant',
-        systemSource: aiResponse.systemSource || null,
-        metadata: systemData ? JSON.stringify(systemData) : null
-      });
-
-      // Update conversation timestamp
-      await storage.updateConversation(conversationId, {
-        updatedAt: new Date()
-      });
-
-      res.json({ userMessage, aiMessage });
-    } catch (error) {
-      console.error('Error processing message:', error);
-      res.status(500).json({ message: "Error processing message" });
-    }
-  });
-
-  // Get system connections status
+  // System connections
   app.get("/api/systems", async (req, res) => {
     try {
-      const connections = await storage.getSystemConnectionsByUserId(1); // Default user
+      const userId = 1; // Default user for demo
+      const connections = await storage.getSystemConnectionsByUserId(userId);
       
-      // If no connections exist, create default ones
-      if (connections.length === 0) {
-        await storage.createSystemConnection({
+      // Mock data for demonstration
+      const mockConnections = [
+        {
+          id: 1,
           userId: 1,
           systemType: 'salesforce',
-          isConnected: true,
-          connectionData: JSON.stringify({ status: 'connected' })
-        });
-        
-        await storage.createSystemConnection({
+          connectionStatus: 'active',
+          lastSyncAt: new Date(),
+          settings: { instanceUrl: 'https://demo.salesforce.com' }
+        },
+        {
+          id: 2,
           userId: 1,
           systemType: 'netsuite',
-          isConnected: true,
-          connectionData: JSON.stringify({ status: 'connected' })
-        });
-
-        const newConnections = await storage.getSystemConnectionsByUserId(1);
-        return res.json(newConnections);
-      }
-
-      res.json(connections);
+          connectionStatus: 'active',
+          lastSyncAt: new Date(),
+          settings: { accountId: 'demo-account' }
+        }
+      ];
+      
+      res.json(mockConnections);
     } catch (error) {
       res.status(500).json({ message: "Error fetching system connections" });
     }
   });
 
   // Test Salesforce connection
-  app.get("/api/salesforce/test", async (req, res) => {
+  app.get("/api/test/salesforce", async (req, res) => {
     try {
-      const opportunities = await salesforceService.getTopOpportunities(3);
-      res.json({ status: 'connected', data: opportunities });
+      const result = await salesforceService.getTopOpportunities(5);
+      res.json({ status: 'connected', data: result });
     } catch (error) {
-      res.status(500).json({ status: 'error', message: 'Failed to connect to Salesforce' });
+      res.status(500).json({ 
+        status: 'error', 
+        message: 'Salesforce connection failed. Please check your credentials.' 
+      });
     }
   });
 
   // Test NetSuite connection
-  app.get("/api/netsuite/test", async (req, res) => {
+  app.get("/api/test/netsuite", async (req, res) => {
     try {
-      const revenueData = await netsuiteService.getRevenueData();
-      res.json({ status: 'connected', data: revenueData });
+      const result = await netsuiteService.getRevenueData('Q4');
+      res.json({ status: 'connected', data: result });
     } catch (error) {
-      res.status(500).json({ status: 'error', message: 'Failed to connect to NetSuite' });
+      res.status(500).json({ 
+        status: 'error', 
+        message: 'NetSuite connection failed. Please check your credentials.' 
+      });
+    }
+  });
+
+  // AI collection recommendation generation
+  app.post("/api/collections/generate-recommendation", async (req, res) => {
+    try {
+      const { invoiceId, customerData, invoiceData } = req.body;
+      
+      const systemContext = `
+        You are a collections AI assistant that generates relationship-preserving collection recommendations.
+        
+        Customer: ${customerData.name}
+        Relationship Score: ${customerData.relationshipScore}/100
+        Invoice Amount: $${invoiceData.amount}
+        Days Past Due: ${invoiceData.daysPastDue}
+        
+        Generate a gentle but effective collection recommendation that preserves the customer relationship.
+      `;
+      
+      const response = await litellmService.generateResponse([], systemContext);
+      
+      res.json({ 
+        recommendation: response,
+        confidence: Math.floor(Math.random() * 20) + 80 // Mock confidence score
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error generating recommendation" });
     }
   });
 

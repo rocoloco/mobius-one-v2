@@ -1,0 +1,55 @@
+The AI messages are all showing the same generic text. We need to connect this to our smart backend routing system. Replace the invoice transformation logic in the useEffect with this:
+
+javascript// Transform backend data and get real AI recommendations
+const availableInvoices = await Promise.all(overdueInvoicesData.map(async (invoice: any) => {
+  // Call our analysis API for each invoice to get real AI recommendations
+  try {
+    const analysisResponse = await fetch('/api/collections/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customer: {
+          id: invoice.customerId,
+          name: invoice.customer || 'Unknown Customer',
+          email: invoice.contactEmail || 'unknown@example.com',
+          arr: invoice.arr || 50000,
+          segment: invoice.segment || 'midmarket',
+          healthScore: invoice.relationshipScore || 65
+        },
+        invoice: {
+          id: invoice.id,
+          invoiceNumber: invoice.invoiceNumber || 'Unknown',
+          totalAmount: invoice.totalAmount || invoice.amount || 0,
+          dueDate: new Date(Date.now() - (invoice.daysPastDue * 24 * 60 * 60 * 1000)),
+          daysPastDue: invoice.daysPastDue || 0
+        }
+      })
+    });
+    
+    const analysis = await analysisResponse.json();
+    
+    return {
+      ...invoice,
+      contactName: invoice.contactName || 'Unknown Contact',
+      amount: invoice.totalAmount || invoice.amount || 0,
+      // Use REAL AI analysis results
+      relationshipScore: analysis.analysis?.scoring?.score || 65,
+      aiMessage: analysis.analysis?.recommendation?.reasoning || 'AI analysis in progress...',
+      recommendationConfidence: analysis.analysis?.recommendation?.confidence || 75,
+      riskLevel: analysis.analysis?.scoring?.riskLevel || 'medium',
+      aiModel: analysis.analysis?.routing?.aiModel || 'gpt-4o-mini',
+      estimatedCost: analysis.analysis?.routing?.estimatedCost || 0.001,
+      estimatedReviewTime: analysis.analysis?.routing?.estimatedReviewTime || 0.5,
+      analysisComplete: true
+    };
+  } catch (error) {
+    console.error('Failed to analyze invoice:', invoice.id, error);
+    // Fallback to mock data if analysis fails
+    return {
+      ...invoice,
+      contactName: invoice.contactName || 'Unknown Contact',
+      aiMessage: 'Analysis temporarily unavailable',
+      analysisComplete: false
+    };
+  }
+}));

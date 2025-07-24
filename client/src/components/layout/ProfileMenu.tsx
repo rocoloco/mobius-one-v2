@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function ProfileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { logout } = useAuth();
 
   const { data: user } = useQuery({
     queryKey: ['/api/user'],
@@ -198,9 +200,9 @@ export default function ProfileMenu() {
           
           <div style={{borderTop: '1px solid #E2E8F0', padding: '8px 0'}}>
             <button 
-              onClick={() => {
-                localStorage.setItem('logout', 'true');
-                window.location.href = '/';
+              onClick={async () => {
+                await logout();
+                setIsOpen(false);
               }}
               style={{
                 display: 'block',

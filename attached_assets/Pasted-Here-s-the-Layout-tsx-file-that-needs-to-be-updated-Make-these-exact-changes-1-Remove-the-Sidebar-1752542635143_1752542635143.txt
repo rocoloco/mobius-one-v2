@@ -1,0 +1,57 @@
+Here's the Layout.tsx file that needs to be updated. Make these exact changes:
+1. Remove the Sidebar import and all sidebar-related code:
+jsximport { useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { Button } from "@heroui/react";
+import { Plus } from "lucide-react";
+// REMOVE: import Sidebar from "./Sidebar";
+import BreadcrumbNavigation from "./Breadcrumb";
+import { useNavigate } from "react-router-dom";
+
+export default function Layout() {
+  // REMOVE: const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // REMOVE: const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  const showBreadcrumbs = location.pathname !== '/';
+  const showQuickAction = location.pathname !== '/';
+  
+  const handleNewQuery = () => {
+    navigate('/');
+  };
+  
+  // REMOVE: const toggleMobileMenu = () => { setMobileMenuOpen(!mobileMenuOpen); };
+  
+  return (
+    <div className="h-screen flex flex-col" style={{background: 'linear-gradient(180deg, #FAFBFC 0%, rgba(193, 237, 204, 0.02) 100%)'}}>
+      {/* REMOVE: Mobile Menu Overlay */}
+      {/* REMOVE: Sidebar */}
+      
+      {/* Main Content Area - Now Full Width */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Breadcrumb Navigation */}
+        {showBreadcrumbs && <BreadcrumbNavigation />}
+        
+        {/* Page Content */}
+        <div className="flex-1 overflow-auto">
+          <Outlet />
+        </div>
+        
+        {/* Quick Action Button */}
+        {showQuickAction && (
+          <Button
+            color="primary"
+            isIconOnly
+            className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+            onClick={handleNewQuery}
+          >
+            <Plus size={24} />
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+2. Delete the Sidebar.tsx file completely
+3. Change the main container from flex (horizontal) to flex flex-col (vertical) for full-width layout

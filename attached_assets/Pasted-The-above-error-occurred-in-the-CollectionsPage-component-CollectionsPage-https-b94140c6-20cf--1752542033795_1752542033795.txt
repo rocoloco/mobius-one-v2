@@ -1,0 +1,33 @@
+The above error occurred in the <CollectionsPage> component:
+
+CollectionsPage@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/src/pages/collections.tsx:27:31
+RenderedRoute@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-router-dom.js:5456:33
+Outlet@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-router-dom.js:6122:25
+div
+div
+div
+Layout@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/src/components/layout/Layout.tsx:27:59
+RenderedRoute@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-router-dom.js:5456:33
+Routes@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-router-dom.js:6191:19
+AuthenticatedApp
+AppRouter@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/src/App.tsx:194:45
+div
+Router@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-router-dom.js:6134:17
+BrowserRouter@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-router-dom.js:9153:27
+TooltipProviderProvider@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-532U4VYK.js:72:13
+TooltipProvider@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js:2248:43
+QueryClientProvider@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js:2805:9
+div
+$f57aed4a881a3485$var$OverlayContainerDOM@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@heroui_react.js:12992:73
+$f57aed4a881a3485$export$178405afcd8c5eb@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@heroui_react.js:12962:15
+$f57aed4a881a3485$export$bf688221f59024e5
+MotionConfig@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RXZICUNT.js:7871:23
+$18f2051aff69b9bf$export$a54013f0d02a8f82@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@heroui_react.js:2651:15
+HeroUIProvider@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@heroui_react.js:13467:19
+V@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/next-themes.js:44:26
+J@https://b94140c6-20cf-4f57-af18-f6b11c01ba2e-00-26sgv7ihird8w.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/next-themes.js:42:28
+App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+Can't find variable: ProgressStats
