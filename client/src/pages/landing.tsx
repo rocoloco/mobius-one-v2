@@ -201,7 +201,7 @@ export default function LandingPage() {
 
       {/* Responsive Hero Section */}
       <section 
-        className="min-h-screen flex items-center justify-center relative py-12 sm:py-16 lg:py-0"
+        className="min-h-screen flex items-center justify-center relative py-16 sm:py-20 lg:py-8"
         style={{ 
           background: 'linear-gradient(135deg, #1B3A57 0%, #4A5568 100%)'
         }}
@@ -209,9 +209,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
             {/* Left: Value Proposition - shows first on mobile */}
-            <div className="text-center lg:text-left order-1 lg:order-1">
+            <div className="text-center lg:text-left order-1 lg:order-1 pt-4 sm:pt-0">
               {/* Trust Signal - centered on mobile, left-aligned on desktop */}
-              <div className="text-center lg:text-left mb-4 sm:mb-6">
+              <div className="text-center lg:text-left mb-6 sm:mb-8">
                 <div 
                   className="inline-block px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-white/90 backdrop-blur-sm border border-white/20"
                   style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
