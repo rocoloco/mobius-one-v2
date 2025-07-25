@@ -201,17 +201,17 @@ export default function LandingPage() {
 
       {/* Responsive Hero Section */}
       <section 
-        className="min-h-screen flex items-center justify-center relative py-16 sm:py-20 lg:py-0"
+        className="min-h-screen flex items-center justify-center relative py-12 sm:py-16 lg:py-0"
         style={{ 
           background: 'linear-gradient(135deg, #1B3A57 0%, #4A5568 100%)'
         }}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
             {/* Left: Value Proposition - shows first on mobile */}
             <div className="text-center lg:text-left order-1 lg:order-1">
               {/* Trust Signal - centered on mobile, left-aligned on desktop */}
-              <div className="text-center lg:text-left mb-6 sm:mb-8">
+              <div className="text-center lg:text-left mb-4 sm:mb-6">
                 <div 
                   className="inline-block px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-white/90 backdrop-blur-sm border border-white/20"
                   style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
@@ -222,7 +222,7 @@ export default function LandingPage() {
 
               {/* 7-Word Headline - centered on mobile, left-aligned on desktop */}
               <h1 
-                className="text-white mb-4 sm:mb-6 font-bold leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center lg:text-left"
+                className="text-white mb-3 sm:mb-4 font-bold leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center lg:text-left"
                 style={{ 
                   letterSpacing: '-0.02em'
                 }}
@@ -232,7 +232,7 @@ export default function LandingPage() {
 
               {/* Value Statement - centered on mobile, left-aligned on desktop */}
               <p 
-                className="text-white/90 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 text-lg sm:text-xl text-center lg:text-left"
+                className="text-white/90 mb-4 sm:mb-6 max-w-lg mx-auto lg:mx-0 text-lg sm:text-xl text-center lg:text-left"
                 style={{ 
                   lineHeight: '1.6'
                 }}
@@ -241,7 +241,7 @@ export default function LandingPage() {
               </p>
 
               {/* Key Differentiators - centered on mobile, left-aligned on desktop */}
-              <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0">
+              <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6 max-w-lg mx-auto lg:mx-0">
                 <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base justify-center lg:justify-start">
                   <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} />
                   <span>First results in 2 weeks vs 12-month enterprise rollouts</span>
@@ -266,7 +266,7 @@ export default function LandingPage() {
       </section>
 
       {/* Responsive Centered CTA Section */}
-      <section className="py-12 sm:py-16 lg:py-20" style={{ backgroundColor: '#F7FAFC' }}>
+      <section className="py-8 sm:py-12 lg:py-16" style={{ backgroundColor: '#F7FAFC' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <button
             onClick={() => window.location.href = '/collections?demo=true'}
@@ -290,10 +290,10 @@ export default function LandingPage() {
       </section>
 
       {/* Responsive Results Section */}
-      <section className="py-12 sm:py-16 lg:py-20" style={{ backgroundColor: '#F7FAFC' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-10 sm:py-12 lg:py-16" style={{ backgroundColor: '#F7FAFC' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 
-            className="mb-4 sm:mb-6 font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
+            className="mb-3 sm:mb-4 font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
             style={{ 
               color: '#1B3A57',
               lineHeight: '1.1',
@@ -303,32 +303,32 @@ export default function LandingPage() {
             Built to reduce DSO by 15-25% within 60 days
           </h2>
           
-          <p className="text-gray-600 mb-12 sm:mb-16 max-w-2xl mx-auto text-base sm:text-lg">
+          <p className="text-gray-600 mb-8 sm:mb-12 max-w-2xl mx-auto text-base sm:text-lg">
             Unlike 6-12 month enterprise implementations, our streamlined approach delivers measurable results in 2 weeks.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            <div className="text-center p-4 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="text-center p-3 sm:p-4">
               <div 
-                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-1"
                 style={{ color: '#F59E0B' }}
               >
                 15-25%
               </div>
               <div className="text-sm sm:text-base" style={{ color: '#4A5568' }}>DSO Reduction</div>
             </div>
-            <div className="text-center p-4 sm:p-6">
+            <div className="text-center p-3 sm:p-4">
               <div 
-                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-1"
                 style={{ color: '#10B981' }}
               >
                 60
               </div>
               <div className="text-sm sm:text-base" style={{ color: '#4A5568' }}>Days to ROI</div>
             </div>
-            <div className="text-center p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
+            <div className="text-center p-3 sm:p-4 sm:col-span-2 lg:col-span-1">
               <div 
-                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-1"
                 style={{ color: '#7C3AED' }}
               >
                 100%
@@ -340,15 +340,15 @@ export default function LandingPage() {
       </section>
 
       {/* Responsive Testimonial */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-10 sm:py-12 lg:py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <blockquote 
-            className="text-lg sm:text-xl md:text-2xl font-medium mb-6 sm:mb-8 leading-relaxed max-w-3xl mx-auto"
+            className="text-lg sm:text-xl md:text-2xl font-medium mb-4 sm:mb-6 leading-relaxed max-w-3xl mx-auto"
             style={{ color: '#1B3A57' }}
           >
             "At $7M ARR, our manual processes broke. Mobius One reduced our DSO from 52 to 35 days while we scaled to $15M. The AI actually works—it's not just marketing fluff."
           </blockquote>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
             <div 
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-semibold"
               style={{ backgroundColor: '#10B981' }}
@@ -371,30 +371,30 @@ export default function LandingPage() {
       </section>
 
       {/* Responsive Trust Architecture */}
-      <section className="py-12 sm:py-16 lg:py-20" style={{ backgroundColor: '#F7FAFC' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            <div className="text-center p-4 sm:p-6">
-              <Shield className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3" style={{ color: '#10B981' }} />
-              <h3 className="font-semibold mb-2 text-sm sm:text-base" style={{ color: '#1B3A57' }}>
+      <section className="py-10 sm:py-12 lg:py-16" style={{ backgroundColor: '#F7FAFC' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="text-center p-3 sm:p-4">
+              <Shield className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2" style={{ color: '#10B981' }} />
+              <h3 className="font-semibold mb-1 text-sm sm:text-base" style={{ color: '#1B3A57' }}>
                 Secure API architecture
               </h3>
               <p className="text-xs sm:text-sm" style={{ color: '#4A5568' }}>
                 Industry-standard protocols protect all data exchanges
               </p>
             </div>
-            <div className="text-center p-4 sm:p-6">
-              <Clock className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3" style={{ color: '#F59E0B' }} />
-              <h3 className="font-semibold mb-2 text-sm sm:text-base" style={{ color: '#1B3A57' }}>
+            <div className="text-center p-3 sm:p-4">
+              <Clock className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2" style={{ color: '#F59E0B' }} />
+              <h3 className="font-semibold mb-1 text-sm sm:text-base" style={{ color: '#1B3A57' }}>
                 Rapid Implementation
               </h3>
               <p className="text-xs sm:text-sm" style={{ color: '#4A5568' }}>
                 Full optimization in 2 weeks vs 6-12 month enterprise rollouts
               </p>
             </div>
-            <div className="text-center p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
-              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3" style={{ color: '#7C3AED' }} />
-              <h3 className="font-semibold mb-2 text-sm sm:text-base" style={{ color: '#1B3A57' }}>
+            <div className="text-center p-3 sm:p-4 sm:col-span-2 lg:col-span-1">
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2" style={{ color: '#7C3AED' }} />
+              <h3 className="font-semibold mb-1 text-sm sm:text-base" style={{ color: '#1B3A57' }}>
                 Human-Controlled AI
               </h3>
               <p className="text-xs sm:text-sm" style={{ color: '#4A5568' }}>
@@ -406,8 +406,8 @@ export default function LandingPage() {
       </section>
 
       {/* Responsive Footer */}
-      <footer className="bg-white border-t py-6 sm:py-8" style={{ borderColor: '#E2E8F0' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="bg-white border-t py-4 sm:py-6" style={{ borderColor: '#E2E8F0' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 sm:gap-3">
               <img 
