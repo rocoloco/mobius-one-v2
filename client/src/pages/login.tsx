@@ -52,7 +52,7 @@ export default function LoginPage() {
 
   // Debug CAPTCHA loading
   useEffect(() => {
-    console.log('Using ReCAPTCHA Site Key: 6LdadI4rAAAAAOGf7_hCPhko9EdbI93tsvJP25OG (configured for replit.dev)');
+    console.log('Using ReCAPTCHA Site Key: 6LdadI4rAAAAAOGf7_hCPhko9EdbI93tsvJP25OG (configured for replit.dev and spock.replit.dev)');
     
     // Check if Google ReCAPTCHA script is loaded
     const checkRecaptcha = () => {
