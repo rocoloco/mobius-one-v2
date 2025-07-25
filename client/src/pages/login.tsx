@@ -1,25 +1,78 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import ReCAPTCHA from "react-google-recaptcha";
+
+// Validation schemas
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+const signupSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+  emailUpdates: z.boolean().optional(),
+  captchaToken: z.string().min(1, "Please complete the CAPTCHA verification"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+type SignupFormData = z.infer<typeof signupSchema>;
 
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  // Form setup
+  const loginForm = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const signupForm = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      emailUpdates: false,
+      captchaToken: "",
+    },
+  });
+
+  const currentForm = isSignUp ? signupForm : loginForm;
+
   const authMutation = useMutation({
-    mutationFn: async (data: { username: string; password: string; isSignUp: boolean }) => {
-      const endpoint = data.isSignUp ? '/api/auth/register' : '/api/auth/login';
+    mutationFn: async (data: LoginFormData | SignupFormData) => {
+      const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login';
+      const requestBody = isSignUp 
+        ? { 
+            username: data.email, 
+            password: data.password,
+            emailUpdates: (data as SignupFormData).emailUpdates,
+            captchaToken: (data as SignupFormData).captchaToken
+          }
+        : { username: data.email, password: data.password };
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: data.username, password: data.password }),
+        body: JSON.stringify(requestBody),
       });
 
       const responseData = await response.json();
@@ -63,25 +116,41 @@ export default function LoginPage() {
     },
     onError: (error: Error) => {
       setError(error.message);
-      setIsLoading(false);
+      // Reset CAPTCHA on error for sign-up
+      if (isSignUp && recaptchaRef.current) {
+        recaptchaRef.current.reset();
+        setCaptchaToken(null);
+        signupForm.setValue('captchaToken', '');
+      }
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (data: LoginFormData | SignupFormData) => {
     setError("");
-    setIsLoading(true);
-
-    if (isSignUp && password !== confirmPassword) {
-      setError("Passwords don't match");
-      setIsLoading(false);
-      return;
-    }
 
     try {
-      await authMutation.mutateAsync({ username, password, isSignUp });
+      await authMutation.mutateAsync(data);
     } catch (error) {
-      setIsLoading(false);
+      // Error handling is done in the mutation's onError
+    }
+  };
+
+  const handleCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
+    if (isSignUp && token) {
+      signupForm.setValue('captchaToken', token);
+      signupForm.clearErrors('captchaToken');
+    }
+  };
+
+  const handleModeSwitch = () => {
+    setIsSignUp(!isSignUp);
+    setError("");
+    loginForm.reset();
+    signupForm.reset();
+    setCaptchaToken(null);
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
     }
   };
 
@@ -158,7 +227,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{marginBottom: '24px'}}>
+        <form onSubmit={currentForm.handleSubmit(handleSubmit)} style={{marginBottom: '24px'}}>
           <div style={{marginBottom: '24px'}}>
             <label style={{
               display: 'block',
@@ -168,17 +237,16 @@ export default function LoginPage() {
               fontSize: '14px',
               marginBottom: '8px'
             }}>
-              Username
+              Email
             </label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              type="email"
+              {...(isSignUp ? signupForm.register('email') : loginForm.register('email'))}
+              placeholder="Enter your email"
               style={{
                 width: '100%',
                 padding: '16px',
-                border: '2px solid #E2E8F0',
+                border: `2px solid ${currentForm.formState.errors.email ? '#DC2626' : '#E2E8F0'}`,
                 borderRadius: '12px',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: '16px',
@@ -192,11 +260,15 @@ export default function LoginPage() {
                 e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#E2E8F0';
+                e.target.style.borderColor = currentForm.formState.errors.email ? '#DC2626' : '#E2E8F0';
                 e.target.style.boxShadow = 'none';
               }}
-              required
             />
+            {currentForm.formState.errors.email && (
+              <p style={{ color: '#DC2626', fontSize: '14px', marginTop: '4px', fontFamily: 'Inter, sans-serif' }}>
+                {currentForm.formState.errors.email.message}
+              </p>
+            )}
           </div>
 
           <div style={{marginBottom: '24px'}}>
@@ -212,13 +284,12 @@ export default function LoginPage() {
             </label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...(isSignUp ? signupForm.register('password') : loginForm.register('password'))}
               placeholder="Enter your password"
               style={{
                 width: '100%',
                 padding: '16px',
-                border: '2px solid #E2E8F0',
+                border: `2px solid ${currentForm.formState.errors.password ? '#DC2626' : '#E2E8F0'}`,
                 borderRadius: '12px',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: '16px',
@@ -232,53 +303,114 @@ export default function LoginPage() {
                 e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#E2E8F0';
+                e.target.style.borderColor = currentForm.formState.errors.password ? '#DC2626' : '#E2E8F0';
                 e.target.style.boxShadow = 'none';
               }}
-              required
             />
+            {currentForm.formState.errors.password && (
+              <p style={{ color: '#DC2626', fontSize: '14px', marginTop: '4px', fontFamily: 'Inter, sans-serif' }}>
+                {currentForm.formState.errors.password.message}
+              </p>
+            )}
           </div>
 
           {isSignUp && (
-            <div style={{marginBottom: '24px'}}>
-              <label style={{
-                display: 'block',
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: 500,
-                color: '#061A40',
-                fontSize: '14px',
-                marginBottom: '8px'
-              }}>
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password"
-                style={{
-                  width: '100%',
-                  padding: '16px',
-                  border: '2px solid #E2E8F0',
-                  borderRadius: '12px',
+            <>
+              <div style={{marginBottom: '24px'}}>
+                <label style={{
+                  display: 'block',
                   fontFamily: 'Inter, sans-serif',
-                  fontSize: '16px',
+                  fontWeight: 500,
+                  color: '#061A40',
+                  fontSize: '14px',
+                  marginBottom: '8px'
+                }}>
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  {...signupForm.register('confirmPassword')}
+                  placeholder="Confirm your password"
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    border: `2px solid ${signupForm.formState.errors.confirmPassword ? '#DC2626' : '#E2E8F0'}`,
+                    borderRadius: '12px',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    color: '#4A5568',
+                    outline: 'none',
+                    transition: 'all 0.2s ease',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#F59E0B';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = signupForm.formState.errors.confirmPassword ? '#DC2626' : '#E2E8F0';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+                {signupForm.formState.errors.confirmPassword && (
+                  <p style={{ color: '#DC2626', fontSize: '14px', marginTop: '4px', fontFamily: 'Inter, sans-serif' }}>
+                    {signupForm.formState.errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
+
+              {/* CAPTCHA Section */}
+              <div style={{marginBottom: '24px'}}>
+                <label style={{
+                  display: 'block',
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: 500,
+                  color: '#061A40',
+                  fontSize: '14px',
+                  marginBottom: '8px'
+                }}>
+                  Let us know you're human
+                </label>
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
+                  onChange={handleCaptchaChange}
+                  theme="light"
+                />
+                {signupForm.formState.errors.captchaToken && (
+                  <p style={{ color: '#DC2626', fontSize: '14px', marginTop: '4px', fontFamily: 'Inter, sans-serif' }}>
+                    {signupForm.formState.errors.captchaToken.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Email Updates Checkbox */}
+              <div style={{marginBottom: '24px'}}>
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '14px',
                   color: '#4A5568',
-                  outline: 'none',
-                  transition: 'all 0.2s ease',
-                  boxSizing: 'border-box'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#F59E0B';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#E2E8F0';
-                  e.target.style.boxShadow = 'none';
-                }}
-                required
-              />
-            </div>
+                  cursor: 'pointer'
+                }}>
+                  <input
+                    type="checkbox"
+                    {...signupForm.register('emailUpdates')}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      marginTop: '2px',
+                      accentColor: '#F59E0B'
+                    }}
+                  />
+                  <span>
+                    I would like to receive occasional email updates and special offers for Mobius One products, services, and events.
+                  </span>
+                </label>
+              </div>
+            </>
           )}
 
           {error && (
@@ -309,26 +441,53 @@ export default function LoginPage() {
             </div>
           )}
 
+          {/* Terms and Conditions for Sign Up */}
+          {isSignUp && (
+            <div style={{
+              fontSize: '12px',
+              color: '#718096',
+              fontFamily: 'Inter, sans-serif',
+              marginBottom: '16px',
+              lineHeight: '1.4'
+            }}>
+              By clicking Sign Up or Continue, I agree to Mobius One's{' '}
+              <a href="/terms" style={{ color: '#F59E0B', textDecoration: 'underline' }}>
+                terms
+              </a>
+              ,{' '}
+              <a href="/privacy" style={{ color: '#F59E0B', textDecoration: 'underline' }}>
+                privacy policy
+              </a>
+              , and{' '}
+              <a href="/cookies" style={{ color: '#F59E0B', textDecoration: 'underline' }}>
+                cookie policy
+              </a>
+              .
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={authMutation.isPending || (isSignUp && !captchaToken)}
             style={{
               width: '100%',
               padding: '16px',
-              background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+              background: (authMutation.isPending || (isSignUp && !captchaToken)) 
+                ? '#D1D5DB' 
+                : 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '12px',
               fontFamily: 'Inter, sans-serif',
               fontWeight: 600,
               fontSize: '16px',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
+              cursor: (authMutation.isPending || (isSignUp && !captchaToken)) ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s ease',
-              opacity: isLoading ? 0.7 : 1,
+              opacity: (authMutation.isPending || (isSignUp && !captchaToken)) ? 0.7 : 1,
               marginBottom: '16px'
             }}
             onMouseEnter={(e) => {
-              if (!isLoading) {
+              if (!authMutation.isPending && !(isSignUp && !captchaToken)) {
                 e.currentTarget.style.transform = 'translateY(-1px)';
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.3)';
               }
@@ -338,7 +497,7 @@ export default function LoginPage() {
               e.currentTarget.style.boxShadow = 'none';
             }}
           >
-            {isLoading ? (
+            {authMutation.isPending ? (
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'}}>
                 <div style={{
                   width: '16px',
@@ -348,10 +507,10 @@ export default function LoginPage() {
                   borderRadius: '50%',
                   animation: 'spin 1s linear infinite'
                 }} />
-                {isSignUp ? 'Connecting to Mobius...' : 'Connecting to Mobius...'}
+                {isSignUp ? 'Creating Account...' : 'Signing In...'}
               </div>
             ) : (
-              isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN'
+              isSignUp ? 'Sign up' : 'SIGN IN'
             )}
           </button>
         </form>
@@ -405,12 +564,7 @@ export default function LoginPage() {
         }}>
           {isSignUp ? "Already have an account? " : "Don't have an account? "}
           <button
-            onClick={() => {
-              setIsSignUp(!isSignUp);
-              setError("");
-              setPassword("");
-              setConfirmPassword("");
-            }}
+            onClick={handleModeSwitch}
             style={{
               background: 'none',
               border: 'none',
@@ -458,7 +612,7 @@ export default function LoginPage() {
           fontFamily: 'Inter, sans-serif',
           lineHeight: '1.4'
         }}>
-          Enterprise Security • Trusted by 200+ Finance Teams
+          Built for growing SaaS companies
         </div>
       </div>
 

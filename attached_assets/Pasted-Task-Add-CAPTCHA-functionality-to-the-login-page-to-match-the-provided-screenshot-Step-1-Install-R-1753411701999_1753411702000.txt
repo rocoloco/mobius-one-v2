@@ -1,0 +1,48 @@
+Task: Add CAPTCHA functionality to the login page to match the provided screenshot
+Step 1: Install Required Dependencies
+bashnpm install react-hook-form @hookform/resolvers zod react-google-recaptcha
+npm install -D @types/react-google-recaptcha
+Step 2: Replace the Login Page Component
+Replace the entire contents of client/src/pages/login.tsx with the updated version that includes:
+
+reCAPTCHA integration (only shows during sign-up)
+Form validation using react-hook-form
+Email updates checkbox
+Terms and conditions text
+Improved styling to match the screenshot
+Password confirmation field for sign-up
+Proper error handling for CAPTCHA validation
+
+The new component should:
+
+Use useForm from react-hook-form for form management
+Include a ReCAPTCHA component that only appears during sign-up
+Add proper validation for email, password, and password confirmation
+Include an email updates checkbox for sign-up mode
+Show terms and conditions text during sign-up
+Disable the submit button until CAPTCHA is completed (for sign-up)
+Reset CAPTCHA on form errors
+Maintain the existing authentication flow with the backend
+
+Step 3: Add Environment Variable
+Add to your .env file:
+REACT_APP_RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+(This is Google's test key for development - replace with your actual key for production)
+Step 4: Update Backend (if needed)
+Ensure your backend authentication endpoints can handle:
+
+captchaToken field in the request body
+emailUpdates boolean field
+Verification of the CAPTCHA token with Google's API
+
+Key Requirements:
+
+CAPTCHA should only appear during sign-up, not login
+Form should use proper validation with clear error messages
+Submit button should be disabled until CAPTCHA is completed (sign-up only)
+Maintain existing authentication flow and navigation
+Style should match the clean, modern look of the screenshot
+Include the email updates checkbox and terms text for sign-up
+
+Expected Outcome:
+The login page should now match the screenshot with a functional CAPTCHA system that prevents automated sign-ups while maintaining a smooth user experience for legitimate users.
