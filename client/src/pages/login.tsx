@@ -6,6 +6,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import ReCAPTCHA from "react-google-recaptcha";
 
+// Type declarations for ReCAPTCHA
+declare global {
+  interface Window {
+    grecaptcha?: {
+      ready: (callback: () => void) => void;
+      render: (container: string | HTMLElement, parameters: any) => number;
+      reset: (widgetId?: number) => void;
+    };
+    recaptchaLoaded?: boolean;
+    recaptchaCallback?: () => void;
+  }
+}
+
 // Validation schemas
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -66,6 +79,14 @@ export default function LoginPage() {
         });
         return true;
       }
+      
+      // Debug current state
+      console.log('ReCAPTCHA status:', {
+        recaptchaLoaded: window.recaptchaLoaded,
+        grecaptcha: !!window.grecaptcha,
+        grecaptchaReady: !!(window.grecaptcha && window.grecaptcha.ready),
+        currentDomain: window.location.hostname
+      });
       
       return false;
     };
