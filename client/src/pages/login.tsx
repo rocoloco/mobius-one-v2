@@ -16,7 +16,6 @@ const signupSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   confirmPassword: z.string().min(1, "Please confirm your password"),
-  emailUpdates: z.boolean().optional(),
   captchaToken: z.string().min(1, "Please complete the CAPTCHA verification"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -50,7 +49,6 @@ export default function LoginPage() {
       email: "",
       password: "",
       confirmPassword: "",
-      emailUpdates: false,
       captchaToken: "",
     },
   });
@@ -64,7 +62,6 @@ export default function LoginPage() {
         ? { 
             username: data.email, 
             password: data.password,
-            emailUpdates: (data as SignupFormData).emailUpdates,
             captchaToken: (data as SignupFormData).captchaToken
           }
         : { username: data.email, password: data.password };
@@ -384,32 +381,7 @@ export default function LoginPage() {
                 )}
               </div>
 
-              {/* Email Updates Checkbox */}
-              <div style={{marginBottom: '24px'}}>
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '12px',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '14px',
-                  color: '#4A5568',
-                  cursor: 'pointer'
-                }}>
-                  <input
-                    type="checkbox"
-                    {...signupForm.register('emailUpdates')}
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      marginTop: '2px',
-                      accentColor: '#F59E0B'
-                    }}
-                  />
-                  <span>
-                    I would like to receive occasional email updates and special offers for Mobius One products, services, and events.
-                  </span>
-                </label>
-              </div>
+
             </>
           )}
 
