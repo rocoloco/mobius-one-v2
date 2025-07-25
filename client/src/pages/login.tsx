@@ -35,6 +35,7 @@ export default function LoginPage() {
   const queryClient = useQueryClient();
 
   const [recaptchaReady, setRecaptchaReady] = useState(false);
+  const [useDemo, setUseDemo] = useState(false);
 
   // Debug CAPTCHA loading
   useEffect(() => {
@@ -42,6 +43,21 @@ export default function LoginPage() {
     
     // Check if Google ReCAPTCHA script is loaded
     const checkRecaptcha = () => {
+      // Check for callback method first
+      if (window.recaptchaLoaded && window.grecaptcha) {
+        console.log('Google ReCAPTCHA loaded via callback');
+        if (window.grecaptcha.ready) {
+          window.grecaptcha.ready(() => {
+            console.log('ReCAPTCHA ready callback fired');
+            setRecaptchaReady(true);
+          });
+        } else {
+          setRecaptchaReady(true); // fallback if ready method not available
+        }
+        return true;
+      }
+      
+      // Original check
       if (window.grecaptcha && window.grecaptcha.ready) {
         console.log('Google ReCAPTCHA API loaded successfully');
         window.grecaptcha.ready(() => {
@@ -49,16 +65,9 @@ export default function LoginPage() {
           setRecaptchaReady(true);
         });
         return true;
-      } else {
-        console.log('Google ReCAPTCHA API not yet loaded');
-        // Check if script tag exists
-        const scriptTag = document.querySelector('script[src*="recaptcha"]');
-        console.log('ReCAPTCHA script tag found:', !!scriptTag);
-        if (scriptTag) {
-          console.log('Script src:', scriptTag.getAttribute('src'));
-        }
-        return false;
       }
+      
+      return false;
     };
     
     // Check immediately and with intervals
@@ -69,8 +78,14 @@ export default function LoginPage() {
         }
       }, 500);
       
-      // Cleanup after 10 seconds if still not loaded
-      setTimeout(() => clearInterval(interval), 10000);
+      // After 5 seconds, fallback to demo mode
+      setTimeout(() => {
+        clearInterval(interval);
+        if (!recaptchaReady) {
+          console.log('ReCAPTCHA failed to load after 5 seconds, switching to demo mode');
+          setUseDemo(true);
+        }
+      }, 5000);
     }
   }, []);
 
@@ -418,7 +433,7 @@ export default function LoginPage() {
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
-                  {recaptchaReady ? (
+                  {recaptchaReady && !useDemo ? (
                     <ReCAPTCHA
                       ref={recaptchaRef}
                       sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
@@ -442,27 +457,32 @@ export default function LoginPage() {
                     }}>
                       <div>🤖 CAPTCHA Verification</div>
                       <div style={{ fontSize: '12px', marginTop: '8px', marginBottom: '8px' }}>
-                        For demo purposes, click the button below to simulate CAPTCHA completion
+                        {useDemo ? 
+                          'ReCAPTCHA is temporarily unavailable. Use demo verification below:' :
+                          'Loading CAPTCHA verification...'
+                        }
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCaptchaToken('demo-token-' + Date.now());
-                          signupForm.setValue('captchaToken', 'demo-token-' + Date.now());
-                        }}
-                        style={{
-                          padding: '8px 16px',
-                          backgroundColor: '#F59E0B',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          cursor: 'pointer',
-                          fontFamily: 'Inter, sans-serif'
-                        }}
-                      >
-                        Verify I'm Human (Demo)
-                      </button>
+                      {useDemo && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCaptchaToken('demo-token-' + Date.now());
+                            signupForm.setValue('captchaToken', 'demo-token-' + Date.now());
+                          }}
+                          style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#F59E0B',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            fontFamily: 'Inter, sans-serif'
+                          }}
+                        >
+                          Verify I'm Human
+                        </button>
+                      )}
                       {captchaToken && (
                         <div style={{ 
                           fontSize: '12px', 
