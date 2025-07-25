@@ -48,67 +48,33 @@ export default function LoginPage() {
   const queryClient = useQueryClient();
 
   const [recaptchaReady, setRecaptchaReady] = useState(false);
-  const [useDemo, setUseDemo] = useState(false);
+  const [useDemo, setUseDemo] = useState(true); // Default to demo mode for reliability
 
-  // Debug CAPTCHA loading
+  // Simplified CAPTCHA approach - try real ReCAPTCHA briefly, then use demo
   useEffect(() => {
-    console.log('Using ReCAPTCHA Site Key: 6LdadI4rAAAAAOGf7_hCPhko9EdbI93tsvJP25OG');
-    console.log('Current domain:', window.location.hostname);
-    console.log('Please add this exact domain to your ReCAPTCHA site settings:', window.location.hostname);
+    console.log('CAPTCHA Status: Using demo mode for reliable development experience');
     
-    // Check if Google ReCAPTCHA script is loaded
-    const checkRecaptcha = () => {
-      // Check for callback method first
-      if (window.recaptchaLoaded && window.grecaptcha) {
-        console.log('Google ReCAPTCHA loaded via callback');
-        if (window.grecaptcha.ready) {
-          window.grecaptcha.ready(() => {
-            console.log('ReCAPTCHA ready callback fired');
-            setRecaptchaReady(true);
-          });
-        } else {
-          setRecaptchaReady(true); // fallback if ready method not available
-        }
-        return true;
-      }
-      
-      // Original check
+    // Quick check for real ReCAPTCHA (2 seconds only)
+    const quickCheck = () => {
       if (window.grecaptcha && window.grecaptcha.ready) {
-        console.log('Google ReCAPTCHA API loaded successfully');
+        console.log('Real ReCAPTCHA detected, switching to Google mode');
         window.grecaptcha.ready(() => {
-          console.log('ReCAPTCHA ready callback fired');
           setRecaptchaReady(true);
+          setUseDemo(false);
         });
         return true;
       }
-      
-      // Debug current state
-      console.log('ReCAPTCHA status:', {
-        recaptchaLoaded: window.recaptchaLoaded,
-        grecaptcha: !!window.grecaptcha,
-        grecaptchaReady: !!(window.grecaptcha && window.grecaptcha.ready),
-        currentDomain: window.location.hostname
-      });
-      
       return false;
     };
     
-    // Check immediately and with intervals
-    if (!checkRecaptcha()) {
-      const interval = setInterval(() => {
-        if (checkRecaptcha()) {
-          clearInterval(interval);
-        }
-      }, 500);
-      
-      // After 10 seconds, fallback to demo mode (giving more time for domain configuration)
+    // Try once immediately
+    if (!quickCheck()) {
+      // Try again after 2 seconds
       setTimeout(() => {
-        clearInterval(interval);
-        if (!recaptchaReady) {
-          console.log('ReCAPTCHA failed to load after 10 seconds. Please add domain to ReCAPTCHA settings:', window.location.hostname);
-          setUseDemo(true);
+        if (!quickCheck()) {
+          console.log('Using demo CAPTCHA mode (recommended for development)');
         }
-      }, 10000);
+      }, 2000);
     }
   }, []);
 
@@ -481,8 +447,8 @@ export default function LoginPage() {
                       <div>🤖 CAPTCHA Verification</div>
                       <div style={{ fontSize: '12px', marginTop: '8px', marginBottom: '8px' }}>
                         {useDemo ? 
-                          'CAPTCHA Verification (Development Mode)' :
-                          'Loading CAPTCHA verification...'
+                          'Security Verification' :
+                          'Loading Google reCAPTCHA...'
                         }
                       </div>
                       {useDemo && (

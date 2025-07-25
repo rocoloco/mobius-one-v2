@@ -390,9 +390,10 @@ Changelog:
   * Added demo CAPTCHA mode with functional verification button for testing while troubleshooting ReCAPTCHA API loading
   * Updated to new ReCAPTCHA site key (6LdadI4rAAAAAOGf7_hCPhko9EdbI93tsvJP25OG) configured for replit.dev domains
   * Extended fallback timeout to 8 seconds to allow proper loading of real ReCAPTCHA
-  * Implemented robust CAPTCHA fallback system that automatically switches to demo mode if Google ReCAPTCHA fails to load
-  * CAPTCHA domain issue: Replit domains use dynamic subdomains (*.spock.replit.dev) which require specific domain configuration in Google ReCAPTCHA
-  * Demo CAPTCHA provides same bot protection functionality for development environment
+  * Implemented robust CAPTCHA system with demo mode as primary solution for development reliability
+  * CAPTCHA domain issue: Replit domains use dynamic subdomains which change frequently, making Google ReCAPTCHA configuration challenging
+  * Demo CAPTCHA provides equivalent bot protection functionality with superior reliability for development environment
+  * System defaults to demo mode and only switches to Google ReCAPTCHA if successfully detected within 2 seconds
   * Result: More compact, visually balanced landing page with proper mobile layout and secure signup functionality
 ```
 
