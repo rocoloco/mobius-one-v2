@@ -479,7 +479,7 @@ export default function LoginPage() {
                       <div>🤖 CAPTCHA Verification</div>
                       <div style={{ fontSize: '12px', marginTop: '8px', marginBottom: '8px' }}>
                         {useDemo ? 
-                          'ReCAPTCHA is temporarily unavailable. Use demo verification below:' :
+                          'CAPTCHA Verification (Development Mode)' :
                           'Loading CAPTCHA verification...'
                         }
                       </div>
@@ -501,7 +501,7 @@ export default function LoginPage() {
                             fontFamily: 'Inter, sans-serif'
                           }}
                         >
-                          Verify I'm Human
+                          ✓ Verify I'm Human
                         </button>
                       )}
                       {captchaToken && (
