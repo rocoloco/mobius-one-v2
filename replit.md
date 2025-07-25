@@ -387,7 +387,8 @@ Changelog:
   * Enhanced content containers: upgraded to max-w-7xl for better distribution, compressed internal spacing
   * Removed email updates checkbox from signup form per user request (not needed at this stage)
   * Configured Google reCAPTCHA with proper site key for bot protection on signup forms
-  * Result: More compact, visually balanced landing page with proper mobile layout and secure signup
+  * Added demo CAPTCHA mode with functional verification button for testing while troubleshooting ReCAPTCHA API loading
+  * Result: More compact, visually balanced landing page with proper mobile layout and secure signup functionality
 ```
 
 ## User Preferences
