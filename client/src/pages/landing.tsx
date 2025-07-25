@@ -240,19 +240,19 @@ export default function LandingPage() {
                 Mobius 1 analyzes your customer data, preserves relationships, and accelerates payment.
               </p>
 
-              {/* Key Differentiators - aligned with text direction */}
+              {/* Key Differentiators - centered on mobile, left-aligned on desktop */}
               <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0">
-                <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base">
+                <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base justify-center lg:justify-start">
                   <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} />
-                  <span className="text-left">First results in 2 weeks vs 12-month enterprise rollouts</span>
+                  <span>First results in 2 weeks vs 12-month enterprise rollouts</span>
                 </div>
-                <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base">
+                <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base justify-center lg:justify-start">
                   <Shield className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} />
-                  <span className="text-left">You see the data behind every suggested action</span>
+                  <span>You see the data behind every suggested action</span>
                 </div>
-                <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base">
+                <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base justify-center lg:justify-start">
                   <Clock className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} />
-                  <span className="text-left">Smart outreach that protects customer lifetime value</span>
+                  <span>Smart outreach that protects customer lifetime value</span>
                 </div>
               </div>
             </div>
