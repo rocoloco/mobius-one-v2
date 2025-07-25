@@ -388,6 +388,8 @@ Changelog:
   * Removed email updates checkbox from signup form per user request (not needed at this stage)
   * Configured Google reCAPTCHA with proper site key for bot protection on signup forms
   * Added demo CAPTCHA mode with functional verification button for testing while troubleshooting ReCAPTCHA API loading
+  * Updated to new ReCAPTCHA site key (6LdadI4rAAAAAOGf7_hCPhko9EdbI93tsvJP25OG) configured for replit.dev domains
+  * Extended fallback timeout to 8 seconds to allow proper loading of real ReCAPTCHA
   * Result: More compact, visually balanced landing page with proper mobile layout and secure signup functionality
 ```
 

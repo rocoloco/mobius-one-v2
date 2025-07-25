@@ -39,7 +39,7 @@ export default function LoginPage() {
 
   // Debug CAPTCHA loading
   useEffect(() => {
-    console.log('CAPTCHA Environment Variable:', import.meta.env.VITE_RECAPTCHA_SITE_KEY);
+    console.log('Using ReCAPTCHA Site Key: 6LdadI4rAAAAAOGf7_hCPhko9EdbI93tsvJP25OG (configured for replit.dev)');
     
     // Check if Google ReCAPTCHA script is loaded
     const checkRecaptcha = () => {
@@ -78,14 +78,14 @@ export default function LoginPage() {
         }
       }, 500);
       
-      // After 5 seconds, fallback to demo mode
+      // After 8 seconds, fallback to demo mode (giving more time for new key)
       setTimeout(() => {
         clearInterval(interval);
         if (!recaptchaReady) {
-          console.log('ReCAPTCHA failed to load after 5 seconds, switching to demo mode');
+          console.log('ReCAPTCHA failed to load after 8 seconds, switching to demo mode');
           setUseDemo(true);
         }
-      }, 5000);
+      }, 8000);
     }
   }, []);
 
@@ -436,7 +436,7 @@ export default function LoginPage() {
                   {recaptchaReady && !useDemo ? (
                     <ReCAPTCHA
                       ref={recaptchaRef}
-                      sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
+                      sitekey="6LdadI4rAAAAAOGf7_hCPhko9EdbI93tsvJP25OG"
                       onChange={handleCaptchaChange}
                       theme="light"
                       onErrored={() => {
