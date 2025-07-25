@@ -11,9 +11,9 @@ app.use((req, res, next) => {
   // Allow Google ReCAPTCHA to load in frames and make requests
   res.setHeader('Content-Security-Policy', 
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com; " +
-    "frame-src 'self' https://www.google.com https://recaptcha.google.com; " +
-    "connect-src 'self' https://www.google.com https://www.gstatic.com; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.google.com https://recaptcha.google.com; " +
+    "frame-src 'self' https://www.google.com https://recaptcha.google.com https://www.recaptcha.google.com; " +
+    "connect-src 'self' https://www.google.com https://www.gstatic.com https://recaptcha.google.com; " +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "font-src 'self' https://fonts.gstatic.com; " +
     "img-src 'self' data: https:;"
