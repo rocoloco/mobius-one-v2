@@ -1,0 +1,71 @@
+Task: Make the landing page fully responsive and mobile-friendly
+Step 1: Replace the Landing Page Component
+Update client/src/pages/landing.tsx to include proper responsive design with:
+
+Responsive grid layouts that stack on mobile
+Flexible text sizing that scales with screen size
+Mobile-first approach with proper breakpoints
+Responsive padding and margins
+Flexible image and content sizing
+
+Key Changes Needed:
+Hero Section Fixes:
+
+Change grid from lg:grid-cols-2 to responsive grid
+Add responsive text sizes: text-2xl sm:text-3xl md:text-4xl lg:text-5xl
+Make button stack vertically on mobile
+Add responsive padding: px-4 sm:px-6 lg:px-8
+
+Features Section Fixes:
+
+Change from lg:grid-cols-3 to grid-cols-1 md:grid-cols-2 lg:grid-cols-3
+Add responsive padding to cards
+Ensure icons and text scale properly
+
+Comparison Table Fixes:
+
+Make table horizontally scrollable on mobile
+Add responsive text sizing
+Consider stacking table rows on very small screens
+
+Navigation Fixes:
+
+Add mobile hamburger menu if needed
+Make buttons stack on mobile
+Ensure logo scales properly
+
+Step 2: Add Responsive Utility Classes
+Ensure these responsive patterns are used throughout:
+javascript// Text sizing
+className="text-xl sm:text-2xl md:text-3xl lg:text-4xl"
+
+// Padding/margins  
+className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16"
+
+// Grid layouts
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
+
+// Flex direction
+className="flex flex-col sm:flex-row gap-4"
+
+// Width constraints
+className="max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl"
+Step 3: Test Responsive Breakpoints
+Ensure the page works well at these breakpoints:
+
+Mobile: 320px - 640px (sm)
+Tablet: 640px - 1024px (md/lg)
+Desktop: 1024px+ (xl)
+
+Step 4: Fix Specific Problem Areas
+Pay special attention to:
+
+Hero text alignment - should center on mobile, left-align on desktop
+Button groups - stack vertically on mobile
+Feature cards - single column on mobile, 2-3 columns on larger screens
+Testimonial cards - single column on mobile
+Footer - stack footer sections on mobile
+
+Expected Outcome:
+The landing page should smoothly adapt to any screen size without text going off-center or elements breaking the layout. All content should remain readable and properly aligned at every breakpoint.
+The main issue is that your current landing page uses fixed layouts without responsive breakpoints, so when the window shrinks, elements don't adapt properly.

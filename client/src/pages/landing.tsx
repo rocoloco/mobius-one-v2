@@ -162,23 +162,23 @@ function CollectionsWorkflowDemo() {
 export default function LandingPage() {
   return (
     <div className="min-h-screen" style={{ fontFamily: 'Inter, sans-serif' }}>
-      {/* Minimal Header */}
+      {/* Responsive Header */}
       <header className="absolute top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <img 
                 src="/logos/mobius-logo-light.png" 
                 alt="Mobius One" 
-                className="h-8 w-8 object-contain"
+                className="h-6 w-6 sm:h-8 sm:w-8 object-contain"
               />
-              <span className="text-xl font-semibold" style={{ color: '#1B3A57' }}>
+              <span className="text-lg sm:text-xl font-semibold" style={{ color: '#1B3A57' }}>
                 Mobius One
               </span>
             </div>
             <Link to="/login">
               <button 
-                className="px-6 py-2 text-sm font-medium rounded-lg transition-all duration-200 border"
+                className="px-4 sm:px-6 py-2 text-sm font-medium rounded-lg transition-all duration-200 border"
                 style={{ 
                   color: '#4A5568',
                   borderColor: '#4A5568'
@@ -199,20 +199,20 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Responsive Hero Section */}
       <section 
-        className="min-h-screen flex items-center justify-center relative"
+        className="min-h-screen flex items-center justify-center relative py-16 sm:py-20 lg:py-0"
         style={{ 
           background: 'linear-gradient(135deg, #1B3A57 0%, #4A5568 100%)'
         }}
       >
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             {/* Left: Value Proposition */}
-            <div className="text-center lg:text-left">
+            <div className="text-center lg:text-left order-2 lg:order-1">
               {/* Trust Signal */}
               <div 
-                className="inline-block px-4 py-2 rounded-full text-sm font-medium text-white/90 backdrop-blur-sm border border-white/20 mb-8"
+                className="inline-block px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-white/90 backdrop-blur-sm border border-white/20 mb-6 sm:mb-8"
                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
               >
                 Native Salesforce + NetSuite integration
@@ -220,9 +220,8 @@ export default function LandingPage() {
 
               {/* 7-Word Headline */}
               <h1 
-                className="text-white mb-6 font-bold leading-tight"
+                className="text-white mb-4 sm:mb-6 font-bold leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
                 style={{ 
-                  fontSize: 'clamp(2.5rem, 8vw, 4rem)',
                   letterSpacing: '-0.02em'
                 }}
               >
@@ -231,9 +230,8 @@ export default function LandingPage() {
 
               {/* Value Statement */}
               <p 
-                className="text-white/90 mb-8 max-w-lg"
+                className="text-white/90 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 text-lg sm:text-xl"
                 style={{ 
-                  fontSize: '1.25rem',
                   lineHeight: '1.6'
                 }}
               >
@@ -241,63 +239,60 @@ export default function LandingPage() {
               </p>
 
               {/* Key Differentiators */}
-              <div className="space-y-3 mb-8">
-                <div className="flex items-center gap-3 text-white/90">
-                  <CheckCircle className="w-5 h-5" style={{ color: '#10B981' }} />
+              <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                <div className="flex items-start sm:items-center gap-3 text-white/90 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 sm:mt-0 flex-shrink-0" style={{ color: '#10B981' }} />
                   <span>First results in 2 weeks vs 12-month enterprise rollouts</span>
                 </div>
-                <div className="flex items-center gap-3 text-white/90">
-                  <Shield className="w-5 h-5" style={{ color: '#10B981' }} />
+                <div className="flex items-start sm:items-center gap-3 text-white/90 text-sm sm:text-base">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 sm:mt-0 flex-shrink-0" style={{ color: '#10B981' }} />
                   <span>You see the data behind every suggested action</span>
                 </div>
-                <div className="flex items-center gap-3 text-white/90">
-                  <Clock className="w-5 h-5" style={{ color: '#10B981' }} />
+                <div className="flex items-start sm:items-center gap-3 text-white/90 text-sm sm:text-base">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 sm:mt-0 flex-shrink-0" style={{ color: '#10B981' }} />
                   <span>Smart outreach that protects customer lifetime value</span>
                 </div>
               </div>
-
-
             </div>
 
             {/* Right: Live Product Demo */}
-            <div className="relative">
+            <div className="relative order-1 lg:order-2">
               <CollectionsWorkflowDemo />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Centered CTA Section */}
-      <section className="py-16" style={{ backgroundColor: '#F7FAFC' }}>
-        <div className="max-w-4xl mx-auto px-6 text-center">
+      {/* Responsive Centered CTA Section */}
+      <section className="py-12 sm:py-16 lg:py-20" style={{ backgroundColor: '#F7FAFC' }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <button
             onClick={() => window.location.href = '/collections?demo=true'}
-            className="px-12 py-4 text-xl font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+            className="w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 text-lg sm:text-xl font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
             style={{
               backgroundColor: '#F59E0B',
               color: 'white',
               border: 'none',
-              minHeight: '56px',
-              minWidth: '280px'
+              minHeight: '48px',
+              maxWidth: '320px'
             }}
           >
             Try Interactive Demo
-            <ArrowRight className="inline-block ml-2 h-6 w-6" />
+            <ArrowRight className="inline-block ml-2 h-5 w-5 sm:h-6 sm:w-6" />
           </button>
           
-          <p className="text-sm mt-4" style={{ color: '#4A5568' }}>
+          <p className="text-xs sm:text-sm mt-3 sm:mt-4" style={{ color: '#4A5568' }}>
             No signup required • See results instantly
           </p>
         </div>
       </section>
 
-      {/* Results Section */}
-      <section className="py-20" style={{ backgroundColor: '#F7FAFC' }}>
-        <div className="max-w-4xl mx-auto px-6 text-center">
+      {/* Responsive Results Section */}
+      <section className="py-12 sm:py-16 lg:py-20" style={{ backgroundColor: '#F7FAFC' }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 
-            className="mb-4 font-bold"
+            className="mb-4 sm:mb-6 font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
             style={{ 
-              fontSize: 'clamp(1.75rem, 5vw, 2.5rem)',
               color: '#1B3A57',
               lineHeight: '1.1',
               letterSpacing: '-0.02em'
@@ -306,63 +301,63 @@ export default function LandingPage() {
             Built to reduce DSO by 15-25% within 60 days
           </h2>
           
-          <p className="text-gray-600 mb-16 max-w-2xl mx-auto">
+          <p className="text-gray-600 mb-12 sm:mb-16 max-w-2xl mx-auto text-base sm:text-lg">
             Unlike 6-12 month enterprise implementations, our streamlined approach delivers measurable results in 2 weeks.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="text-center p-4 sm:p-6">
               <div 
-                className="text-6xl font-bold mb-2"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2"
                 style={{ color: '#F59E0B' }}
               >
                 15-25%
               </div>
-              <div style={{ color: '#4A5568' }}>DSO Reduction</div>
+              <div className="text-sm sm:text-base" style={{ color: '#4A5568' }}>DSO Reduction</div>
             </div>
-            <div className="text-center">
+            <div className="text-center p-4 sm:p-6">
               <div 
-                className="text-6xl font-bold mb-2"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2"
                 style={{ color: '#10B981' }}
               >
                 60
               </div>
-              <div style={{ color: '#4A5568' }}>Days to ROI</div>
+              <div className="text-sm sm:text-base" style={{ color: '#4A5568' }}>Days to ROI</div>
             </div>
-            <div className="text-center">
+            <div className="text-center p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
               <div 
-                className="text-6xl font-bold mb-2"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2"
                 style={{ color: '#7C3AED' }}
               >
                 100%
               </div>
-              <div style={{ color: '#4A5568' }}>Transparent AI</div>
+              <div className="text-sm sm:text-base" style={{ color: '#4A5568' }}>Transparent AI</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Single Strong Testimonial */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+      {/* Responsive Testimonial */}
+      <section className="py-12 sm:py-16 lg:py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <blockquote 
-            className="text-2xl font-medium mb-8 leading-relaxed max-w-3xl mx-auto"
+            className="text-lg sm:text-xl md:text-2xl font-medium mb-6 sm:mb-8 leading-relaxed max-w-3xl mx-auto"
             style={{ color: '#1B3A57' }}
           >
             "At $7M ARR, our manual processes broke. Mobius One reduced our DSO from 52 to 35 days while we scaled to $15M. The AI actually works—it's not just marketing fluff."
           </blockquote>
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <div 
-              className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-semibold"
               style={{ backgroundColor: '#10B981' }}
             >
               S
             </div>
-            <div className="text-left">
-              <div className="font-semibold" style={{ color: '#1B3A57' }}>
+            <div className="text-center sm:text-left">
+              <div className="font-semibold text-sm sm:text-base" style={{ color: '#1B3A57' }}>
                 Sarah Chen
               </div>
-              <div className="text-sm" style={{ color: '#4A5568' }}>
+              <div className="text-xs sm:text-sm" style={{ color: '#4A5568' }}>
                 CFO, TechFlow Solutions
               </div>
               <div className="text-xs" style={{ color: '#10B981' }}>
@@ -373,34 +368,34 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Trust Architecture */}
-      <section className="py-16" style={{ backgroundColor: '#F7FAFC' }}>
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <Shield className="w-8 h-8 mx-auto mb-3" style={{ color: '#10B981' }} />
-              <h3 className="font-semibold mb-2" style={{ color: '#1B3A57' }}>
+      {/* Responsive Trust Architecture */}
+      <section className="py-12 sm:py-16 lg:py-20" style={{ backgroundColor: '#F7FAFC' }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="text-center p-4 sm:p-6">
+              <Shield className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3" style={{ color: '#10B981' }} />
+              <h3 className="font-semibold mb-2 text-sm sm:text-base" style={{ color: '#1B3A57' }}>
                 Secure API architecture
               </h3>
-              <p className="text-sm" style={{ color: '#4A5568' }}>
+              <p className="text-xs sm:text-sm" style={{ color: '#4A5568' }}>
                 Industry-standard protocols protect all data exchanges
               </p>
             </div>
-            <div className="text-center">
-              <Clock className="w-8 h-8 mx-auto mb-3" style={{ color: '#F59E0B' }} />
-              <h3 className="font-semibold mb-2" style={{ color: '#1B3A57' }}>
+            <div className="text-center p-4 sm:p-6">
+              <Clock className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3" style={{ color: '#F59E0B' }} />
+              <h3 className="font-semibold mb-2 text-sm sm:text-base" style={{ color: '#1B3A57' }}>
                 Rapid Implementation
               </h3>
-              <p className="text-sm" style={{ color: '#4A5568' }}>
+              <p className="text-xs sm:text-sm" style={{ color: '#4A5568' }}>
                 Full optimization in 2 weeks vs 6-12 month enterprise rollouts
               </p>
             </div>
-            <div className="text-center">
-              <CheckCircle className="w-8 h-8 mx-auto mb-3" style={{ color: '#7C3AED' }} />
-              <h3 className="font-semibold mb-2" style={{ color: '#1B3A57' }}>
+            <div className="text-center p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3" style={{ color: '#7C3AED' }} />
+              <h3 className="font-semibold mb-2 text-sm sm:text-base" style={{ color: '#1B3A57' }}>
                 Human-Controlled AI
               </h3>
-              <p className="text-sm" style={{ color: '#4A5568' }}>
+              <p className="text-xs sm:text-sm" style={{ color: '#4A5568' }}>
                 AI recommends, you decide, complete transparency guaranteed
               </p>
             </div>
@@ -408,21 +403,21 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Minimal Footer */}
-      <footer className="bg-white border-t py-8" style={{ borderColor: '#E2E8F0' }}>
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+      {/* Responsive Footer */}
+      <footer className="bg-white border-t py-6 sm:py-8" style={{ borderColor: '#E2E8F0' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               <img 
                 src="/logos/mobius-logo-light.png" 
                 alt="Mobius One" 
-                className="h-6 w-6 object-contain"
+                className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
               />
-              <span className="font-medium" style={{ color: '#1B3A57' }}>
+              <span className="font-medium text-sm sm:text-base" style={{ color: '#1B3A57' }}>
                 Mobius One
               </span>
             </div>
-            <div className="text-sm" style={{ color: '#4A5568' }}>
+            <div className="text-xs sm:text-sm text-center sm:text-right" style={{ color: '#4A5568' }}>
               Built for SaaS Finance Teams • Native Salesforce + NetSuite Integration
             </div>
           </div>
