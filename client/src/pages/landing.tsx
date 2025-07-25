@@ -210,17 +210,19 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             {/* Left: Value Proposition */}
             <div className="text-center lg:text-left order-2 lg:order-1">
-              {/* Trust Signal */}
-              <div 
-                className="inline-block px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-white/90 backdrop-blur-sm border border-white/20 mb-6 sm:mb-8"
-                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-              >
-                Native Salesforce + NetSuite integration
+              {/* Trust Signal - centered on mobile, left-aligned on desktop */}
+              <div className="text-center lg:text-left mb-6 sm:mb-8">
+                <div 
+                  className="inline-block px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-white/90 backdrop-blur-sm border border-white/20"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                >
+                  Native Salesforce + NetSuite integration
+                </div>
               </div>
 
-              {/* 7-Word Headline */}
+              {/* 7-Word Headline - centered on mobile, left-aligned on desktop */}
               <h1 
-                className="text-white mb-4 sm:mb-6 font-bold leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
+                className="text-white mb-4 sm:mb-6 font-bold leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center lg:text-left"
                 style={{ 
                   letterSpacing: '-0.02em'
                 }}
@@ -228,9 +230,9 @@ export default function LandingPage() {
                 Collections. Automated. Trusted.
               </h1>
 
-              {/* Value Statement */}
+              {/* Value Statement - centered on mobile, left-aligned on desktop */}
               <p 
-                className="text-white/90 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 text-lg sm:text-xl"
+                className="text-white/90 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 text-lg sm:text-xl text-center lg:text-left"
                 style={{ 
                   lineHeight: '1.6'
                 }}
@@ -238,24 +240,24 @@ export default function LandingPage() {
                 Mobius 1 analyzes your customer data, preserves relationships, and accelerates payment.
               </p>
 
-              {/* Key Differentiators */}
-              <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                <div className="flex items-start sm:items-center gap-3 text-white/90 text-sm sm:text-base">
-                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 sm:mt-0 flex-shrink-0" style={{ color: '#10B981' }} />
-                  <span>First results in 2 weeks vs 12-month enterprise rollouts</span>
+              {/* Key Differentiators - aligned with text direction */}
+              <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0">
+                <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} />
+                  <span className="text-left">First results in 2 weeks vs 12-month enterprise rollouts</span>
                 </div>
-                <div className="flex items-start sm:items-center gap-3 text-white/90 text-sm sm:text-base">
-                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 sm:mt-0 flex-shrink-0" style={{ color: '#10B981' }} />
-                  <span>You see the data behind every suggested action</span>
+                <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} />
+                  <span className="text-left">You see the data behind every suggested action</span>
                 </div>
-                <div className="flex items-start sm:items-center gap-3 text-white/90 text-sm sm:text-base">
-                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 sm:mt-0 flex-shrink-0" style={{ color: '#10B981' }} />
-                  <span>Smart outreach that protects customer lifetime value</span>
+                <div className="flex items-start gap-3 text-white/90 text-sm sm:text-base">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} />
+                  <span className="text-left">Smart outreach that protects customer lifetime value</span>
                 </div>
               </div>
             </div>
 
-            {/* Right: Live Product Demo */}
+            {/* Right: Live Product Demo - shows first on mobile */}
             <div className="relative order-1 lg:order-2">
               <CollectionsWorkflowDemo />
             </div>
