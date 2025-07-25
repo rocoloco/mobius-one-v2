@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -33,6 +33,24 @@ export default function LoginPage() {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  // Debug CAPTCHA loading
+  useEffect(() => {
+    console.log('CAPTCHA Environment Variable:', import.meta.env.VITE_RECAPTCHA_SITE_KEY);
+    
+    // Check if Google ReCAPTCHA script is loaded
+    const checkRecaptcha = () => {
+      if (window.grecaptcha) {
+        console.log('Google ReCAPTCHA API loaded successfully');
+      } else {
+        console.log('Google ReCAPTCHA API not yet loaded');
+      }
+    };
+    
+    // Check immediately and after a delay
+    checkRecaptcha();
+    setTimeout(checkRecaptcha, 2000);
+  }, []);
 
   // Form setup
   const loginForm = useForm<LoginFormData>({
@@ -368,12 +386,35 @@ export default function LoginPage() {
                 }}>
                   Let us know you're human
                 </label>
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
-                  onChange={handleCaptchaChange}
-                  theme="light"
-                />
+                <div style={{ 
+                  border: '1px solid #E2E8F0', 
+                  borderRadius: '8px', 
+                  padding: '16px',
+                  backgroundColor: '#FAFBFC'
+                }}>
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
+                    onChange={handleCaptchaChange}
+                    theme="light"
+                    onErrored={() => {
+                      console.error('ReCAPTCHA failed to load');
+                      setError('CAPTCHA failed to load. Please refresh the page and try again.');
+                    }}
+                    onExpired={() => {
+                      setCaptchaToken(null);
+                      signupForm.setValue('captchaToken', '');
+                    }}
+                  />
+                  <div style={{ 
+                    color: '#4A5568', 
+                    fontSize: '12px', 
+                    marginTop: '8px',
+                    fontFamily: 'Inter, sans-serif'
+                  }}>
+                    Site Key: {import.meta.env.VITE_RECAPTCHA_SITE_KEY ? `${import.meta.env.VITE_RECAPTCHA_SITE_KEY.substring(0, 20)}...` : 'Not configured'}
+                  </div>
+                </div>
                 {signupForm.formState.errors.captchaToken && (
                   <p style={{ color: '#DC2626', fontSize: '14px', marginTop: '4px', fontFamily: 'Inter, sans-serif' }}>
                     {signupForm.formState.errors.captchaToken.message}
