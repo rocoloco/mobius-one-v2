@@ -52,7 +52,9 @@ export default function LoginPage() {
 
   // Debug CAPTCHA loading
   useEffect(() => {
-    console.log('Using ReCAPTCHA Site Key: 6LdadI4rAAAAAOGf7_hCPhko9EdbI93tsvJP25OG (configured for replit.dev and spock.replit.dev)');
+    console.log('Using ReCAPTCHA Site Key: 6LdadI4rAAAAAOGf7_hCPhko9EdbI93tsvJP25OG');
+    console.log('Current domain:', window.location.hostname);
+    console.log('Please add this exact domain to your ReCAPTCHA site settings:', window.location.hostname);
     
     // Check if Google ReCAPTCHA script is loaded
     const checkRecaptcha = () => {
@@ -99,14 +101,14 @@ export default function LoginPage() {
         }
       }, 500);
       
-      // After 8 seconds, fallback to demo mode (giving more time for new key)
+      // After 10 seconds, fallback to demo mode (giving more time for domain configuration)
       setTimeout(() => {
         clearInterval(interval);
         if (!recaptchaReady) {
-          console.log('ReCAPTCHA failed to load after 8 seconds, switching to demo mode');
+          console.log('ReCAPTCHA failed to load after 10 seconds. Please add domain to ReCAPTCHA settings:', window.location.hostname);
           setUseDemo(true);
         }
-      }, 8000);
+      }, 10000);
     }
   }, []);
 
