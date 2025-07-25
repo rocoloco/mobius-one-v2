@@ -208,8 +208,8 @@ export default function LandingPage() {
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
-            {/* Left: Value Proposition */}
-            <div className="text-center lg:text-left order-2 lg:order-1">
+            {/* Left: Value Proposition - shows first on mobile */}
+            <div className="text-center lg:text-left order-1 lg:order-1">
               {/* Trust Signal - centered on mobile, left-aligned on desktop */}
               <div className="text-center lg:text-left mb-6 sm:mb-8">
                 <div 
@@ -257,8 +257,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right: Live Product Demo - shows first on mobile */}
-            <div className="relative order-1 lg:order-2">
+            {/* Right: Live Product Demo - shows second on mobile */}
+            <div className="relative order-2 lg:order-2">
               <CollectionsWorkflowDemo />
             </div>
           </div>
